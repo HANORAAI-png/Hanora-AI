@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ede8df">
+<title>Hanora AI — Global Campaign Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#121711;--ink-soft:#566056;--paper:#ede8df;--paper-light:#f7f3eb;--paper-dark:#d8d1c4;
+  --acid:#d8ff45;--lime:#a6ff4d;--orange:#ff6d2e;--blue:#4d7dff;--red:#e8382f;
+  --line:rgba(18,23,17,.14);--line-light:rgba(255,255,255,.18);
+  --header-height:88px;--radius:26px;--ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto;background:var(--paper)}
+body{min-height:100%;overflow-x:hidden;color:var(--ink);background:radial-gradient(circle at 15% 5%,rgba(216,255,69,.16),transparent 28rem),radial-gradient(circle at 90% 55%,rgba(77,125,255,.08),transparent 34rem),var(--paper);font-family:"DM Sans",sans-serif}
+body.is-loading{overflow:hidden}
+a{color:inherit}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}
+img{max-width:100%;display:block}
+::selection{background:var(--ink);color:var(--acid)}
+.mono{font-family:"Space Mono",monospace}
+.container{width:min(1440px,calc(100% - 64px));margin-inline:auto}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:11px;line-height:1;letter-spacing:.13em;text-transform:uppercase}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(255,109,46,.12)}
+.display{font-family:"Manrope",sans-serif;font-weight:600;letter-spacing:-.065em;line-height:.92}
+.section-title{max-width:980px;margin-top:24px;font-family:"Manrope",sans-serif;font-size:clamp(50px,7vw,112px);font-weight:600;letter-spacing:-.07em;line-height:.91}
+.section-copy{max-width:640px;color:var(--ink-soft);font-size:clamp(16px,1.4vw,20px);line-height:1.6}
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(38px);transition:opacity 1s var(--ease),transform 1s var(--ease);will-change:transform,opacity}
+.reveal.is-in{opacity:1;transform:none}
+.reveal-stagger>*{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal-stagger.is-in>*{opacity:1;transform:none}
+.tilt{transition:transform .5s var(--ease)}
+.split-line{display:block;overflow:hidden}
+.split-word{display:inline-block;will-change:transform}
+.noise{position:fixed;inset:0;z-index:9990;opacity:.055;pointer-events:none;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E")}
+.cursor{position:fixed;top:0;left:0;z-index:10000;width:14px;height:14px;border-radius:50%;pointer-events:none;background:var(--acid);border:1px solid rgba(18,23,17,.7);transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .4s var(--ease),height .4s var(--ease),background .4s var(--ease)}
+.cursor.is-active{width:54px;height:54px;background:white}
+.progress{position:fixed;top:0;left:0;z-index:9998;width:100%;height:3px;transform-origin:left center;transform:scaleX(0);background:linear-gradient(90deg,var(--orange),var(--acid),var(--blue))}
+.loader{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#141b15,#0a0e0b 70%);color:white;overflow:hidden}
+.loader__core{width:min(440px,calc(100% - 48px));text-align:center}
+.loader__radar{position:relative;width:210px;height:210px;margin:0 auto 40px}
+.loader__radar span{position:absolute;inset:0;border:1px solid rgba(216,255,69,.16);border-radius:50%}
+.loader__radar span:nth-child(2){inset:26%}
+.loader__radar span:nth-child(3){inset:46%;border-color:rgba(216,255,69,.3)}
+.loader__sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,rgba(216,255,69,.02) 300deg,rgba(216,255,69,.28) 350deg,rgba(216,255,69,.6) 360deg);animation:sweep 1.7s linear infinite;-webkit-mask:radial-gradient(circle,transparent 12%,black 13%);mask:radial-gradient(circle,transparent 12%,black 13%)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.loader__blip{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--acid);box-shadow:0 0 0 5px rgba(216,255,69,.14);opacity:0;transform:translate(-50%,-50%) scale(.4)}
+.loader__blip.lit{opacity:1;transform:translate(-50%,-50%) scale(1);transition:opacity .3s var(--ease),transform .5s var(--ease)}
+.loader__center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--acid);font-family:"Space Mono",monospace;font-size:23px;letter-spacing:-.02em}
+.loader__top,.loader__bottom{display:flex;align-items:center;justify-content:space-between}
+.loader__mark{font-family:"Manrope",sans-serif;font-size:15px;font-weight:700;letter-spacing:-.04em}
+.loader__percent{color:var(--acid);font-family:"Space Mono",monospace;font-size:12px}
+.loader__readout{height:15px;margin:16px 0 12px;overflow:hidden;color:rgba(216,255,69,.85);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.loader__line{height:1px;overflow:hidden;background:rgba(255,255,255,.15)}
+.loader__fill{width:100%;height:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--blue),var(--acid))}
+.loader__bottom{margin-top:14px;color:rgba(255,255,255,.4);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.header{position:fixed;top:0;left:0;z-index:5000;width:100%;height:var(--header-height);color:white;pointer-events:none;mix-blend-mode:difference;transition:height .4s var(--ease)}
+.header.on-dark{height:calc(var(--header-height) - 20px)}
+.header__inner{width:min(1440px,calc(100% - 64px));height:100%;margin-inline:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.logo,.nav,.header__action{pointer-events:auto}
+.logo{justify-self:start;text-decoration:none;font-family:"Manrope",sans-serif;font-size:20px;font-weight:700;letter-spacing:-.05em}
+.logo span{font-size:9px;vertical-align:top;margin-left:4px;font-family:"Space Mono",monospace;letter-spacing:0}
+.nav{display:flex;gap:32px}
+.nav a{position:relative;text-decoration:none;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.nav a::after{content:"";position:absolute;right:0;bottom:-7px;left:0;height:1px;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease);background:currentColor}
+.nav a:hover::after{transform:scaleX(1);transform-origin:left}
+.header__action{justify-self:end;border:0;color:inherit;background:transparent;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}
+.header__action span{display:inline-grid;width:25px;height:25px;margin-left:8px;place-items:center;border:1px solid currentColor;border-radius:50%}
+
+/* ── HERO ── */
+.hero-scroll{position:relative;height:300vh;color:white;background:var(--ink)}
+.hero-stage{position:sticky;top:0;width:100%;height:100vh;height:100svh;overflow:hidden;isolation:isolate;perspective:1600px}
+.hero-panel,#signalCanvas{width:100%;height:100%}
+.hero-ambient{position:absolute;inset:0;z-index:-4;background:radial-gradient(circle at 20% 18%,rgba(216,255,69,.13),transparent 28%),radial-gradient(circle at 80% 72%,rgba(77,125,255,.15),transparent 30%),linear-gradient(140deg,#0a100c,#18221b 50%,#090d0b)}
+.hero-grid{position:absolute;inset:0;z-index:-3;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at center,black,transparent 78%)}
+.hero-orbit{position:absolute;top:50%;left:50%;z-index:-2;width:90vmin;height:90vmin;border:1px solid rgba(216,255,69,.18);border-radius:50%;transform:translate(-50%,-50%)}
+.hero-orbit::before,.hero-orbit::after{content:"";position:absolute;inset:12%;border:1px solid rgba(255,255,255,.09);border-radius:inherit}
+.hero-orbit::after{inset:26%}
+.hero-panel{position:absolute;inset:0;z-index:1;overflow:hidden;transform-origin:center;background:#182019;box-shadow:0 40px 120px rgba(0,0,0,.48)}
+.hero-panel::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 30%,rgba(0,0,0,.42)),radial-gradient(circle at center,transparent 35%,rgba(0,0,0,.35))}
+.hero-image{position:absolute;inset:-7%;width:114%;height:114%;object-fit:cover;filter:saturate(.76) contrast(1.08) brightness(.72);transform:scale(1.02)}
+#signalCanvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
+/* ── LIQUID GLASS ── */
+.glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.02));backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 1px rgba(0,0,0,.28),0 22px 60px rgba(0,0,0,.34)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.14) 46%,rgba(255,255,255,.03) 54%,transparent 66%);background-size:280% 280%;background-position:120% 0;transition:background-position 1.1s var(--ease);mix-blend-mode:screen}
+.glass:hover::before{background-position:-40% 0}
+.hero-copy{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 32px 40px;text-align:center}
+.hero-copy__label{margin-bottom:30px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.hero-title{max-width:1240px;font-family:"Manrope",sans-serif;font-size:clamp(70px,11vw,176px);font-weight:500;letter-spacing:-.085em;line-height:.78}
+.hero-title__line{display:block;overflow:hidden}
+.hero-title__line span{display:block}
+.hero-title em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
+.hero-intro{max-width:630px;margin-top:34px;color:rgba(255,255,255,.76);font-size:clamp(15px,1.4vw,20px);line-height:1.55}
+.hero-bottom{position:absolute;right:42px;bottom:32px;left:42px;z-index:4;display:flex;align-items:flex-end;justify-content:space-between}
+.hero-bottom__index{font-family:"Space Mono",monospace;font-size:10px;line-height:1.7;letter-spacing:.08em;text-transform:uppercase}
+.scroll-cue{display:flex;align-items:center;gap:13px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase}
+.scroll-cue__circle{display:grid;width:42px;height:42px;place-items:center;border:1px solid rgba(255,255,255,.5);border-radius:50%}
+.scroll-cue__circle::after{content:"↓";animation:cue 1.5s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(-3px)}50%{transform:translateY(4px)}}
+.hero-side{position:absolute;z-index:3;width:min(280px,21vw);padding:20px;border:1px solid rgba(255,255,255,.15);border-radius:18px;color:white;background:rgba(18,23,17,.48);backdrop-filter:blur(18px);opacity:0}
+.hero-side--a{top:22%;left:4%;transform:translateX(-60px)}
+.hero-side--b{top:19%;right:4%;transform:translateX(60px)}
+.hero-side--c{bottom:14%;left:5%;transform:translateX(-60px)}
+.hero-side--d{right:5%;bottom:13%;transform:translateX(60px)}
+.hero-side__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.hero-side__number{color:var(--acid);font-family:"Space Mono",monospace;font-size:10px}
+.hero-side__signal{width:7px;height:7px;border-radius:50%;background:var(--acid);box-shadow:0 0 0 6px rgba(216,255,69,.1)}
+.hero-side h3{margin-bottom:10px;font-family:"Manrope",sans-serif;font-size:clamp(18px,1.6vw,25px);font-weight:600;letter-spacing:-.04em}
+.hero-side p{color:rgba(255,255,255,.58);font-size:12px;line-height:1.55}
+.hero-coordinate{position:absolute;bottom:30px;left:50%;z-index:3;color:rgba(255,255,255,.45);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;opacity:0;transform:translateX(-50%);text-transform:uppercase}
+
+/* ── MANIFESTO ── */
+.manifesto{position:relative;z-index:2;padding:180px 0 150px;background:var(--paper)}
+.manifesto__grid{display:grid;grid-template-columns:minmax(180px,.65fr) 2fr;gap:clamp(50px,9vw,150px);align-items:start}
+.manifesto__aside{position:sticky;top:130px}
+.manifesto__aside p{max-width:210px;margin-top:24px;color:var(--ink-soft);font-size:13px;line-height:1.6}
+.manifesto__statement{font-family:"Manrope",sans-serif;font-size:clamp(40px,5.6vw,86px);font-weight:500;letter-spacing:-.065em;line-height:1.02}
+.manifesto__statement .muted{color:#a39d92}
+.manifesto__statement .accent{display:inline-block;padding:.03em .18em .08em;border-radius:100px;color:var(--ink);background:var(--acid);transform:rotate(-2deg)}
+.manifesto__facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:80px}
+.fact{min-height:210px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:18px}
+.fact__number{font-family:"Manrope",sans-serif;font-size:clamp(42px,5vw,74px);font-weight:600;letter-spacing:-.07em}
+.fact__label{color:var(--ink-soft);font-size:13px;line-height:1.45}
+
+/* ── MODULES ── */
+.modules{position:relative;overflow:hidden;color:white;background:var(--ink)}
+.modules__pin{position:relative;height:100vh;overflow:hidden}
+.modules__header{position:absolute;top:112px;right:5vw;left:5vw;z-index:3;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}
+.modules__header h2{max-width:680px;font-family:"Manrope",sans-serif;font-size:clamp(46px,6vw,94px);font-weight:500;letter-spacing:-.07em;line-height:.9}
+.modules__header p{max-width:310px;color:rgba(255,255,255,.54);font-size:13px;line-height:1.6}
+.modules__track{position:absolute;top:43%;left:0;display:flex;gap:18px;width:max-content;padding:0 8vw 80px;will-change:transform}
+.module-card{position:relative;width:min(520px,78vw);height:min(440px,48vh);padding:32px;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);background:#1d241e;transform-style:preserve-3d}
+.module-card:nth-child(2){background:#262120}
+.module-card:nth-child(3){background:#1c2530}
+.module-card:nth-child(4){background:#291d21}
+.module-card:nth-child(5){background:#24251c}
+.module-card:nth-child(6){background:#1e202b}
+.module-card__gradient{position:absolute;right:-20%;bottom:-45%;width:430px;height:430px;border-radius:50%;opacity:.65;filter:blur(3px);background:radial-gradient(circle,var(--card-color),transparent 68%)}
+.module-card__grid{position:absolute;inset:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 75%)}
+.module-card__index{position:relative;z-index:2;color:rgba(255,255,255,.55);font-family:"Space Mono",monospace;font-size:10px}
+.module-card__icon{position:absolute;top:30px;right:30px;z-index:2;display:grid;width:54px;height:54px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:50%;font-size:22px;background:rgba(255,255,255,.05);backdrop-filter:blur(10px)}
+.module-card__content{position:absolute;right:32px;bottom:32px;left:32px;z-index:2}
+.module-card h3{max-width:370px;margin-bottom:18px;font-family:"Manrope",sans-serif;font-size:clamp(30px,3vw,48px);font-weight:500;letter-spacing:-.06em;line-height:.98}
+.module-card p{max-width:390px;color:rgba(255,255,255,.58);font-size:14px;line-height:1.55}
+.modules__counter{position:absolute;right:5vw;bottom:36px;z-index:4;color:rgba(255,255,255,.54);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em}
+
+/* ── PROCESS ── */
+.process{padding:180px 0;background:var(--paper-light)}
+.process__header{display:flex;align-items:flex-end;justify-content:space-between;gap:60px;margin-bottom:140px}
+.process__layout{display:grid;grid-template-columns:minmax(350px,.9fr) 1.1fr;gap:clamp(70px,10vw,170px);align-items:start}
+.process-visual{position:sticky;top:18vh;height:64vh;min-height:540px;overflow:hidden;border-radius:var(--radius);color:white;background:radial-gradient(circle at center,rgba(216,255,69,.2),transparent 27%),linear-gradient(145deg,#111711,#263027)}
+.process-visual__grid{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:50px 50px}
+.process-core{position:absolute;top:50%;left:50%;display:grid;width:min(260px,55%);aspect-ratio:1;place-items:center;border:1px solid rgba(216,255,69,.6);border-radius:50%;transform:translate(-50%,-50%)}
+.process-core::before,.process-core::after{content:"";position:absolute;border:1px solid rgba(255,255,255,.15);border-radius:inherit}
+.process-core::before{inset:-44px}
+.process-core::after{inset:-88px;border-style:dashed;animation:rotate 18s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.process-core__inside{position:relative;z-index:2;text-align:center}
+.process-core__number{display:block;color:var(--acid);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.16em}
+.process-core__icon{display:block;margin:18px 0 12px;font-size:48px}
+.process-core__label{font-family:"Manrope",sans-serif;font-size:21px;font-weight:600;letter-spacing:-.04em}
+.process-visual__status{position:absolute;right:25px;bottom:25px;left:25px;display:flex;justify-content:space-between;color:rgba(255,255,255,.52);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.process-step{min-height:74vh;padding:50px 0;border-top:1px solid var(--line);opacity:.32;transition:opacity .6s var(--ease)}
+.process-step.is-active{opacity:1}
+.process-step__number{display:block;margin-bottom:80px;color:var(--orange);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.13em}
+.process-step h3{margin-bottom:24px;font-family:"Manrope",sans-serif;font-size:clamp(44px,5vw,76px);font-weight:500;letter-spacing:-.065em;line-height:.96}
+.process-step p{max-width:520px;color:var(--ink-soft);font-size:17px;line-height:1.65}
+.process-step__meta{display:inline-flex;gap:8px;margin-top:28px}
+.process-step__meta span{padding:8px 11px;border:1px solid var(--line);border-radius:100px;font-family:"Space Mono",monospace;font-size:9px;text-transform:uppercase}
+
+/* ── FUSION ── */
+.fusion{position:relative;overflow:hidden;padding:180px 0;color:white;background:#111511}
+.fusion::before{content:"";position:absolute;top:-20%;right:-10%;width:60vw;height:60vw;border-radius:50%;opacity:.16;background:radial-gradient(circle,var(--blue),transparent 65%)}
+.fusion__header{position:relative;z-index:2;display:grid;grid-template-columns:1.25fr .75fr;gap:60px;align-items:end;margin-bottom:100px}
+.fusion__header .section-copy{color:rgba(255,255,255,.58)}
+.fusion__stage{position:relative;min-height:760px;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:34px;background:radial-gradient(circle at 25% 50%,rgba(255,109,46,.13),transparent 28%),radial-gradient(circle at 75% 50%,rgba(77,125,255,.17),transparent 30%),#151a16}
+#fusionCanvas{position:absolute;inset:0;width:100%;height:100%}
+.fusion__labels{position:absolute;top:34px;right:34px;left:34px;z-index:2;display:flex;justify-content:space-between;pointer-events:none}
+.fusion__label{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase}
+.fusion__label--human{color:var(--orange)}
+.fusion__label--ai{color:#75a0ff}
+.fusion__center-label{position:absolute;top:50%;left:50%;z-index:2;width:180px;text-align:center;pointer-events:none;transform:translate(-50%,-50%)}
+.fusion__center-label strong{display:block;color:var(--acid);font-family:"Manrope",sans-serif;font-size:54px;font-weight:600;letter-spacing:-.07em}
+.fusion__center-label span{color:rgba(255,255,255,.48);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.architecture{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.architecture-card{min-height:230px;padding:25px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(255,255,255,.035);transition:transform .6s var(--ease),border-color .6s var(--ease),background .6s var(--ease)}
+.architecture-card:hover{z-index:2;border-color:rgba(216,255,69,.55);background:rgba(216,255,69,.06);transform:translateY(-10px)}
+.architecture-card__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:55px}
+.architecture-card__index{color:rgba(255,255,255,.42);font-family:"Space Mono",monospace;font-size:9px}
+.architecture-card__icon{font-size:22px}
+.architecture-card h3{margin-bottom:11px;font-family:"Manrope",sans-serif;font-size:21px;font-weight:600;letter-spacing:-.04em}
+.architecture-card p{color:rgba(255,255,255,.5);font-size:12px;line-height:1.6}
+.fusion__stats{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);margin-top:100px;border-top:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14)}
+.fusion-stat{padding:45px 28px;border-right:1px solid rgba(255,255,255,.14)}
+.fusion-stat:last-child{border-right:0}
+.fusion-stat strong{display:block;margin-bottom:15px;color:var(--acid);font-family:"Manrope",sans-serif;font-size:clamp(54px,7vw,105px);font-weight:500;letter-spacing:-.08em;line-height:.8}
+.fusion-stat span{color:rgba(255,255,255,.52);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+
+/* ── WHY ── */
+.why{padding:180px 0;background:var(--paper)}
+.why__header{display:grid;grid-template-columns:1.25fr .75fr;gap:70px;align-items:end;margin-bottom:100px}
+.why__list{border-top:1px solid var(--line)}
+.why-item{position:relative;display:grid;grid-template-columns:100px 1fr auto;gap:30px;align-items:center;min-height:145px;overflow:hidden;border-bottom:1px solid var(--line)}
+.why-item::before{content:"";position:absolute;inset:0;z-index:0;background:var(--acid);transform:scaleY(0);transform-origin:bottom;transition:transform .55s var(--ease)}
+.why-item:hover::before{transform:scaleY(1)}
+.why-item>*{position:relative;z-index:1}
+.why-item__index{font-family:"Space Mono",monospace;font-size:10px}
+.why-item h3{font-family:"Manrope",sans-serif;font-size:clamp(25px,3vw,45px);font-weight:500;letter-spacing:-.055em}
+.why-item__arrow{display:grid;width:46px;height:46px;place-items:center;border:1px solid var(--line);border-radius:50%;transition:transform .5s var(--ease)}
+.why-item:hover .why-item__arrow{transform:rotate(45deg)}
+
+/* ── ROADMAP ── */
+.roadmap{position:relative;overflow:hidden;padding:180px 0;color:white;background:#131814}
+.roadmap__glow{position:absolute;top:15%;left:50%;width:70vw;height:70vw;border-radius:50%;opacity:.2;pointer-events:none;background:radial-gradient(circle,var(--blue),transparent 65%);transform:translateX(-50%)}
+.roadmap__header{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:60px;margin-bottom:120px}
+.roadmap__header p{max-width:430px;color:rgba(255,255,255,.52);font-size:15px;line-height:1.65}
+.roadmap__timeline{position:relative;z-index:2;max-width:1100px;margin-inline:auto}
+.roadmap__line{position:absolute;top:0;bottom:0;left:50%;width:1px;overflow:hidden;background:rgba(255,255,255,.12)}
+.roadmap__line-fill{width:100%;height:100%;transform:scaleY(0);transform-origin:top;background:linear-gradient(var(--acid),var(--blue),var(--orange))}
+.roadmap-item{position:relative;width:50%;min-height:290px;padding:0 70px 75px 0}
+.roadmap-item:nth-child(even){margin-left:50%;padding:0 0 75px 70px}
+.roadmap-item__node{position:absolute;top:0;right:-8px;width:17px;height:17px;border:4px solid #131814;border-radius:50%;background:var(--acid);box-shadow:0 0 0 1px rgba(216,255,69,.6)}
+.roadmap-item:nth-child(even) .roadmap-item__node{right:auto;left:-9px}
+.roadmap-item__card{padding:27px;border:1px solid rgba(255,255,255,.13);border-radius:20px;background:rgba(255,255,255,.035);backdrop-filter:blur(16px);transition:transform .5s var(--ease),border-color .5s var(--ease)}
+.roadmap-item__card:hover{border-color:rgba(216,255,69,.5);transform:translateY(-8px)}
+.roadmap-item__status{display:flex;align-items:center;justify-content:space-between;margin-bottom:42px;color:var(--acid);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.roadmap-item h3{margin-bottom:12px;font-family:"Manrope",sans-serif;font-size:27px;font-weight:500;letter-spacing:-.05em}
+.roadmap-item p{color:rgba(255,255,255,.5);font-size:13px;line-height:1.6}
+
+/* ── FINAL CTA ── */
+.final{position:relative;min-height:110vh;overflow:hidden;display:grid;place-items:center;color:var(--ink);background:var(--acid)}
+.final__rings{position:absolute;top:50%;left:50%;width:84vmin;height:84vmin;border:1px solid rgba(18,23,17,.2);border-radius:50%;transform:translate(-50%,-50%)}
+.final__rings::before,.final__rings::after{content:"";position:absolute;border:1px solid rgba(18,23,17,.16);border-radius:inherit}
+.final__rings::before{inset:14%}
+.final__rings::after{inset:29%}
+.final__orbit-dot{position:absolute;top:50%;left:50%;width:20px;height:20px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 8px rgba(18,23,17,.1)}
+.final__content{position:relative;z-index:2;width:min(1200px,calc(100% - 48px));text-align:center}
+.final__label{margin-bottom:32px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase}
+.final h2{max-width:1150px;margin-inline:auto;font-family:"Manrope",sans-serif;font-size:clamp(70px,11vw,170px);font-weight:600;letter-spacing:-.09em;line-height:.78}
+.final p{max-width:550px;margin:38px auto;font-size:17px;line-height:1.6}
+.button{position:relative;display:inline-flex;align-items:center;gap:28px;padding:7px 7px 7px 27px;overflow:hidden;border:0;border-radius:100px;color:white;background:var(--ink);text-decoration:none;cursor:pointer}
+.button span{position:relative;z-index:2;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.button i{position:relative;z-index:2;display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:var(--ink);background:var(--acid);font-style:normal}
+
+/* ── FOOTER ── */
+.footer{padding:90px 0 30px;color:white;background:var(--ink)}
+.footer__top{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:50px;padding-bottom:90px}
+.footer__brand h3{margin-bottom:18px;font-family:"Manrope",sans-serif;font-size:40px;letter-spacing:-.06em}
+.footer__brand p{max-width:350px;color:rgba(255,255,255,.48);font-size:13px;line-height:1.6}
+.footer__column h4{margin-bottom:24px;color:rgba(255,255,255,.38);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase}
+.footer__column ul{list-style:none}
+.footer__column li+li{margin-top:13px}
+.footer__column a{color:rgba(255,255,255,.72);font-size:13px;text-decoration:none;transition:color .3s ease}
+.footer__column a:hover{color:var(--acid)}
+.footer__bottom{display:flex;align-items:center;justify-content:space-between;padding-top:28px;border-top:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.38);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+
+/* ── RESPONSIVE ── */
+@media(max-width:980px){
+  :root{--header-height:72px}
+  .container,.header__inner{width:min(100% - 36px,1440px)}
+  .nav{display:none}
+  .header__inner{grid-template-columns:1fr 1fr}
+  .hero-scroll{height:220vh}
+  .hero-side{width:220px;padding:15px}
+  .hero-side--a,.hero-side--c{left:2%}
+  .hero-side--b,.hero-side--d{right:2%}
+  .manifesto__grid,.process__layout,.fusion__header,.why__header{grid-template-columns:1fr}
+  .manifesto__aside{position:static}
+  .manifesto__facts,.architecture{grid-template-columns:repeat(2,1fr)}
+  .process__header,.roadmap__header{align-items:flex-start;flex-direction:column}
+  .process-visual{position:relative;top:auto;height:600px}
+  .process-step{min-height:auto;padding:100px 0}
+  .footer__top{grid-template-columns:2fr 1fr 1fr}
+  .footer__column:last-child{grid-column:2}
+}
+@media(max-width:700px){
+  .cursor{display:none}
+  .container,.header__inner{width:calc(100% - 28px)}
+  .section-title{font-size:clamp(48px,15vw,76px)}
+  .hero-scroll{height:190vh}
+  .hero-copy{padding-inline:18px}
+  .hero-title{font-size:clamp(62px,21vw,105px);line-height:.82}
+  .hero-intro{max-width:92%;margin-top:25px;font-size:14px}
+  .hero-bottom{right:18px;bottom:18px;left:18px}
+  .hero-bottom__index{display:none}
+  .hero-side{display:none}
+  .manifesto,.process,.fusion,.why,.roadmap{padding:110px 0}
+  .manifesto__facts,.architecture,.fusion__stats{grid-template-columns:1fr}
+  .fact{min-height:165px}
+  .modules__header{top:95px;display:block}
+  .modules__header h2{font-size:48px}
+  .modules__header p{margin-top:16px}
+  .modules__track{top:42%;padding-inline:20px}
+  .module-card{width:84vw;height:45vh;min-height:390px}
+  .process__header{margin-bottom:70px}
+  .process-visual{height:70vh;min-height:500px}
+  .process-step__number{margin-bottom:45px}
+  .fusion__stage{min-height:600px}
+  .fusion__center-label strong{font-size:42px}
+  .fusion-stat{border-right:0;border-bottom:1px solid rgba(255,255,255,.14)}
+  .fusion-stat:last-child{border-bottom:0}
+  .why-item{grid-template-columns:45px 1fr auto;gap:13px;min-height:120px}
+  .why-item h3{font-size:25px}
+  .roadmap__line{left:8px}
+  .roadmap-item,.roadmap-item:nth-child(even){width:100%;margin-left:0;padding:0 0 55px 45px}
+  .roadmap-item__node,.roadmap-item:nth-child(even) .roadmap-item__node{right:auto;left:0}
+  .final{min-height:100vh}
+  .final h2{font-size:clamp(68px,21vw,110px);line-height:.82}
+  .footer__top{grid-template-columns:1fr 1fr}
+  .footer__brand{grid-column:1/-1}
+  .footer__column:last-child{grid-column:auto}
+  .footer__bottom{align-items:flex-start;flex-direction:column;gap:14px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body class="is-loading">
+<div class="noise" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"></div>
+
+<div class="loader" aria-label="Loading Hanora AI">
+  <div class="loader__core">
+    <div class="loader__radar">
+      <span></span><span></span><span></span>
+      <div class="loader__sweep"></div>
+      <div class="loader__center">00</div>
+    </div>
+    <div class="loader__top"><span class="loader__mark">Hanora AI</span><span class="loader__percent">00%</span></div>
+    <div class="loader__readout">Initializing</div>
+    <div class="loader__line"><div class="loader__fill"></div></div>
+    <div class="loader__bottom"><span>Mapping cultural signals</span><span>Global system 01</span></div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header__inner">
+    <a href="#hero" class="logo magnetic">Hanora<span>AI</span></a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#modules">Intelligence</a><a href="#process">Process</a><a href="#fusion">Human + AI</a><a href="#roadmap">Roadmap</a>
+    </nav>
+    <button class="header__action magnetic" type="button" data-scroll-target="#contact">Start analysis <span>↗</span></button>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero-scroll" id="hero">
+  <div class="hero-stage">
+    <div class="hero-ambient"></div><div class="hero-grid"></div><div class="hero-orbit"></div>
+    <article class="hero-side hero-side--a"><div class="hero-side__top"><span class="hero-side__number">01 / 06</span><span class="hero-side__signal"></span></div><h3>Cultural context</h3><p>Detect regional values, communication styles and social expectations before your campaign enters a market.</p></article>
+    <article class="hero-side hero-side--b"><div class="hero-side__top"><span class="hero-side__number">02 / 06</span><span class="hero-side__signal"></span></div><h3>Political sensitivity</h3><p>Surface national identity concerns, current tensions and location-specific political risk.</p></article>
+    <article class="hero-side hero-side--c"><div class="hero-side__top"><span class="hero-side__number">03 / 06</span><span class="hero-side__signal"></span></div><h3>Verified intelligence</h3><p>Recommendations grounded in a human-researched and continuously validated cultural knowledge base.</p></article>
+    <article class="hero-side hero-side--d"><div class="hero-side__top"><span class="hero-side__number">04 / 06</span><span class="hero-side__signal"></span></div><h3>Launch confidence</h3><p>Turn every discovered risk into a clear, explainable and market-ready alternative.</p></article>
+    <div class="hero-coordinate">34.0479° N · 100.6197° W · Live intelligence</div>
+    <div class="hero-panel">
+      <img class="hero-image" src="https://images.unsplash.com/photo-1531219572328-a0171b4448a3?auto=format&fit=crop&w=2400&q=90" alt="Aerial view of a global city">
+      <canvas id="signalCanvas" aria-hidden="true"></canvas>
+      <div class="hero-copy">
+        <div class="hero-copy__label">Global campaign intelligence / 2026</div>
+        <h1 class="hero-title"><span class="hero-title__line"><span>Navigate</span></span><span class="hero-title__line"><span><em>cultures.</em></span></span><span class="hero-title__line"><span>Launch globally.</span></span></h1>
+        <p class="hero-intro">Hanora AI evaluates cultural, historical, religious, political and social risk before your campaign reaches the world.</p>
+      </div>
+      <div class="hero-bottom"><div class="hero-bottom__index">50+ target markets<br>06 intelligence systems</div><div class="scroll-cue">Scroll to explore<span class="scroll-cue__circle"></span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="container manifesto__grid">
+    <aside class="manifesto__aside"><span class="eyebrow">The challenge</span><p>A campaign can travel around the world in seconds. Its cultural context cannot.</p></aside>
+    <div>
+      <h2 class="manifesto__statement">Global marketing should not rely on <span class="muted">assumptions.</span> Hanora turns complex cultural signals into <span class="accent">launch confidence.</span></h2>
+      <div class="manifesto__facts reveal-stagger">
+        <article class="fact"><strong class="fact__number" data-count="50">0</strong><p class="fact__label">Countries supported by a continuously expanding intelligence network.</p></article>
+        <article class="fact"><strong class="fact__number" data-count="100" data-suffix="K+">0</strong><p class="fact__label">Campaign scenarios analyzed across multiple market contexts.</p></article>
+        <article class="fact"><strong class="fact__number" data-count="1" data-prefix="$" data-suffix="B+">0</strong><p class="fact__label">Potential reputation and PR risk identified before launch.</p></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="modules" id="modules">
+  <div class="modules__pin">
+    <header class="modules__header"><h2>Six lenses.<br>One global view.</h2><p>Each campaign is examined through interconnected cultural intelligence systems—not a generic AI checklist.</p></header>
+    <div class="modules__track">
+      <article class="module-card tilt" style="--card-color:#d8ff45"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">01 / Cultural</span><div class="module-card__icon">◎</div><div class="module-card__content"><h3>Cultural Intelligence</h3><p>Analyze traditions, social norms, values and communication styles across local markets.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#ff6d2e"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">02 / Historical</span><div class="module-card__icon">⌁</div><div class="module-card__content"><h3>Historical Intelligence</h3><p>Identify sensitive historical events, national memories and commemorative dates.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#4d7dff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">03 / Religious</span><div class="module-card__icon">✦</div><div class="module-card__content"><h3>Religious Intelligence</h3><p>Check symbols, practices, sacred periods and culturally sensitive references.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#e8382f"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">04 / Political</span><div class="module-card__icon">◇</div><div class="module-card__content"><h3>Political Intelligence</h3><p>Assess political sensitivity, regional issues and national identity concerns.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#ffc53d"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">05 / Social</span><div class="module-card__icon">◌</div><div class="module-card__content"><h3>Social Intelligence</h3><p>Evaluate gender sensitivity, inclusivity and rapidly changing social expectations.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#8b7cff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">06 / Localization</span><div class="module-card__icon">↗</div><div class="module-card__content"><h3>Localization Intelligence</h3><p>Review language fit, messaging, visual cues and cultural alignment.</p></div></article>
+    </div>
+    <div class="modules__counter">Drag with scroll / 01—06</div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="container">
+    <header class="process__header"><div><span class="eyebrow">How it works</span><h2 class="section-title" data-split>From campaign to confidence.</h2></div><p class="section-copy">Four connected stages turn your campaign materials into explainable, market-specific recommendations in minutes.</p></header>
+    <div class="process__layout">
+      <div class="process-visual"><div class="process-visual__grid"></div><div class="process-core"><div class="process-core__inside"><span class="process-core__number">STEP 01</span><span class="process-core__icon">↑</span><span class="process-core__label">Upload</span></div></div><div class="process-visual__status"><span>System active</span><span>Input → intelligence</span></div></div>
+      <div class="process-steps">
+        <article class="process-step is-active" data-step="01" data-icon="↑" data-label="Upload"><span class="process-step__number">01 / Campaign input</span><h3>Upload your campaign.</h3><p>Add copy, imagery, campaign context, business goals and your intended target markets through one focused workspace.</p><div class="process-step__meta"><span>Copy</span><span>Visuals</span><span>Markets</span></div></article>
+        <article class="process-step" data-step="02" data-icon="✣" data-label="Analyze"><span class="process-step__number">02 / Intelligence analysis</span><h3>Activate six intelligence systems.</h3><p>Hanora retrieves verified market context and analyzes your campaign across all six risk dimensions in parallel.</p><div class="process-step__meta"><span>Real time</span><span>Context aware</span></div></article>
+        <article class="process-step" data-step="03" data-icon="◫" data-label="Insights"><span class="process-step__number">03 / Explainable findings</span><h3>See risk—not just a score.</h3><p>Receive comprehensive risk levels, reasoning, confidence scores and the cultural evidence behind every finding.</p><div class="process-step__meta"><span>Traceable</span><span>Verified</span><span>Clear</span></div></article>
+        <article class="process-step" data-step="04" data-icon="↗" data-label="Launch"><span class="process-step__number">04 / Market ready</span><h3>Adapt and launch confidently.</h3><p>Apply safe alternatives and practical recommendations, then enter each market with stronger cultural fit.</p><div class="process-step__meta"><span>Optimized</span><span>Ready</span></div></article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUSION -->
+<section class="fusion" id="fusion">
+  <div class="container">
+    <header class="fusion__header"><div><span class="eyebrow">Intelligence architecture</span><h2 class="section-title" data-split>Human depth.<br>Machine scale.</h2></div><p class="section-copy">Hanora does not rely on AI alone. Human cultural research is validated, structured and retrieved before advanced models assess your campaign.</p></header>
+    <div class="fusion__stage">
+      <canvas id="fusionCanvas" aria-hidden="true"></canvas>
+      <div class="fusion__labels"><span class="fusion__label fusion__label--human">Human intelligence</span><span class="fusion__label fusion__label--ai">AI intelligence</span></div>
+      <div class="fusion__center-label"><strong>40%</strong><span>Higher accuracy</span></div>
+    </div>
+    <div class="architecture reveal-stagger">
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">01</span><span class="architecture-card__icon">⌘</span></div><h3>Human Research Team</h3><p>Cultural researchers collect nuanced, market-specific knowledge from credible primary and secondary sources.</p></article>
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">02</span><span class="architecture-card__icon">✓</span></div><h3>Expert Validation</h3><p>Regional specialists review sensitive findings, resolve ambiguity and validate cultural relevance.</p></article>
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">03</span><span class="architecture-card__icon">⌗</span></div><h3>Structured Knowledge</h3><p>Validated intelligence becomes a traceable, continuously maintained cultural knowledge system.</p></article>
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">04</span><span class="architecture-card__icon">⌕</span></div><h3>Context Retrieval</h3><p>The system retrieves only the market context relevant to your campaign, audience and launch conditions.</p></article>
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">05</span><span class="architecture-card__icon">✣</span></div><h3>AI Analysis</h3><p>Advanced models compare campaign assets with verified context across six interconnected intelligence lenses.</p></article>
+      <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">06</span><span class="architecture-card__icon">↗</span></div><h3>Actionable Output</h3><p>Teams receive explainable findings, confidence levels and safer alternatives—not unexplained warnings.</p></article>
+    </div>
+    <div class="fusion__stats">
+      <div class="fusion-stat"><strong data-count="6">0</strong><span>Connected intelligence lenses</span></div>
+      <div class="fusion-stat"><strong data-count="24" data-suffix="/7">0</strong><span>Continuous campaign assessment</span></div>
+      <div class="fusion-stat"><strong data-count="100" data-suffix="%">0</strong><span>Explainable recommendation paths</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why">
+  <div class="container">
+    <header class="why__header"><div><span class="eyebrow">Why Hanora</span><h2 class="section-title" data-split>Built for consequential global work.</h2></div><p class="section-copy">For teams that need more than translation, sentiment scoring or a generalized model response.</p></header>
+    <div class="why__list reveal-stagger">
+      <article class="why-item"><span class="why-item__index">01</span><h3>Market-specific, not generic</h3><span class="why-item__arrow">↗</span></article>
+      <article class="why-item"><span class="why-item__index">02</span><h3>Evidence behind every finding</h3><span class="why-item__arrow">↗</span></article>
+      <article class="why-item"><span class="why-item__index">03</span><h3>Multimodal campaign analysis</h3><span class="why-item__arrow">↗</span></article>
+      <article class="why-item"><span class="why-item__index">04</span><h3>Human-validated knowledge</h3><span class="why-item__arrow">↗</span></article>
+      <article class="why-item"><span class="why-item__index">05</span><h3>Practical, safer alternatives</h3><span class="why-item__arrow">↗</span></article>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap" id="roadmap">
+  <div class="roadmap__glow"></div>
+  <div class="container">
+    <header class="roadmap__header"><div><span class="eyebrow">Platform evolution</span><h2 class="section-title" data-split>Intelligence that keeps expanding.</h2></div><p>Hanora's roadmap grows from campaign analysis into a connected operating system for culturally intelligent global business.</p></header>
+    <div class="roadmap__timeline">
+      <div class="roadmap__line" aria-hidden="true"><div class="roadmap__line-fill"></div></div>
+      <article class="roadmap-item"><span class="roadmap-item__node"></span><div class="roadmap-item__card glass tilt"><div class="roadmap-item__status"><span>Phase 01</span><span>Available</span></div><h3>Campaign Intelligence</h3><p>Analyze copy, visuals and campaign strategy across six cultural risk dimensions and multiple markets.</p></div></article>
+      <article class="roadmap-item"><span class="roadmap-item__node"></span><div class="roadmap-item__card glass tilt"><div class="roadmap-item__status"><span>Phase 02</span><span>In development</span></div><h3>Real-time Collaboration</h3><p>Shared workspaces, review workflows and market-specific approvals for distributed teams.</p></div></article>
+      <article class="roadmap-item"><span class="roadmap-item__node"></span><div class="roadmap-item__card glass tilt"><div class="roadmap-item__status"><span>Phase 03</span><span>Planned</span></div><h3>Creative Co-pilot</h3><p>Generate culturally aligned messaging and visual directions using verified local context.</p></div></article>
+      <article class="roadmap-item"><span class="roadmap-item__node"></span><div class="roadmap-item__card glass tilt"><div class="roadmap-item__status"><span>Phase 04</span><span>Research</span></div><h3>Global Intelligence API</h3><p>Bring Hanora's cultural intelligence directly into enterprise content, commerce and product systems.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="contact">
+  <div class="final__rings" aria-hidden="true"><span class="final__orbit-dot"></span></div>
+  <div class="final__content"><div class="final__label">Your next market is waiting</div><h2>Launch without guessing.</h2><p>Analyze your next campaign with cultural intelligence built for the complexity of global markets.</p><a href="mailto:hello@hanora.ai" class="button magnetic"><span>Start your analysis</span><i>↗</i></a></div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand"><h3>Hanora AI</h3><p>Human-validated cultural intelligence for teams creating, adapting and launching campaigns around the world.</p></div>
+      <div class="footer__column"><h4>Platform</h4><ul><li><a href="#modules">Intelligence</a></li><li><a href="#process">How it works</a></li><li><a href="#fusion">Architecture</a></li><li><a href="#roadmap">Roadmap</a></li></ul></div>
+      <div class="footer__column"><h4>Company</h4><ul><li><a href="#contact">About</a></li><li><a href="#contact">Research</a></li><li><a href="#contact">Careers</a></li><li><a href="mailto:hello@hanora.ai">Contact</a></li></ul></div>
+      <div class="footer__column"><h4>Connect</h4><ul><li><a href="#contact">LinkedIn</a></li><li><a href="#contact">Instagram</a></li><li><a href="#contact">X / Twitter</a></li><li><a href="mailto:hello@hanora.ai">Email</a></li></ul></div>
+    </div>
+    <div class="footer__bottom"><span>© 2026 Hanora AI. All rights reserved.</span><span>Privacy · Terms · Responsible AI</span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const clamp = (v,min,max)=>Math.min(Math.max(v,min),max);
+
+/* ── LENIS SMOOTH SCROLL ── */
+let lenis=null;
+if(!reduceMotion&&window.Lenis){
+  lenis=new Lenis({duration:1.1,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)),smoothWheel:true});
+  lenis.on("scroll",ScrollTrigger.update);
+  gsap.ticker.add(time=>lenis.raf(time*1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* ── LOADER (signal-acquisition radar) ── */
+const loader=document.querySelector(".loader"),loaderFill=document.querySelector(".loader__fill"),loaderPercent=document.querySelector(".loader__percent"),loaderCenter=document.querySelector(".loader__center"),loaderReadout=document.querySelector(".loader__readout"),loaderRadar=document.querySelector(".loader__radar"),loaderState={value:0};
+
+// scatter market blips around the radar rings, tagged with the % they light up at
+const READOUTS=[[0,"Initializing"],[18,"Locating markets"],[38,"Mapping cultural signals"],[58,"Cross-referencing history"],[78,"Validating context"],[94,"Calibrating intelligence"]];
+if(loaderRadar&&!reduceMotion){
+  for(let i=0;i<9;i++){
+    const a=Math.random()*Math.PI*2,r=18+Math.random()*30;
+    const b=document.createElement("div");b.className="loader__blip";
+    b.style.left=(50+Math.cos(a)*r)+"%";b.style.top=(50+Math.sin(a)*r)+"%";
+    b.dataset.at=String(10+Math.round(Math.random()*80));
+    loaderRadar.appendChild(b);
+  }
+}
+const blips=[...document.querySelectorAll(".loader__blip")];
+let lastReadout="";
+function loaderPaint(){
+  const v=Math.round(loaderState.value);
+  loaderPercent.textContent=String(v).padStart(2,"0")+"%";
+  if(loaderCenter)loaderCenter.textContent=String(v).padStart(2,"0");
+  gsap.set(loaderFill,{scaleX:v/100});
+  blips.forEach(b=>{if(v>=+b.dataset.at)b.classList.add("lit")});
+  const r=READOUTS.filter(x=>v>=x[0]).pop();
+  if(r&&r[1]!==lastReadout){lastReadout=r[1];if(loaderReadout){loaderReadout.textContent=r[1];gsap.fromTo(loaderReadout,{y:12,opacity:0},{y:0,opacity:1,duration:.4,ease:"power3.out"})}}
+}
+const loaderTL=gsap.timeline({defaults:{ease:"power3.out"},onComplete:()=>{document.body.classList.remove("is-loading");ScrollTrigger.refresh()}});
+loaderTL.to(loaderState,{value:100,duration:reduceMotion?.1:2.2,ease:"power2.inOut",onUpdate:loaderPaint})
+.to(".loader__radar",{scale:.6,opacity:0,duration:reduceMotion?.01:.5,ease:"power2.in"},"-=.15")
+.to(".loader__core",{y:-25,opacity:0,duration:reduceMotion?.01:.4},"-=.35")
+.to(loader,{yPercent:-100,duration:reduceMotion?.01:.9,ease:"power4.inOut"})
+.set(loader,{display:"none"})
+.from(".hero-title__line span",{yPercent:110,duration:reduceMotion?.01:1.15,stagger:.09,ease:"power4.out"},"-=.35")
+.from([".hero-copy__label",".hero-intro",".hero-bottom"],{opacity:0,y:22,duration:reduceMotion?.01:.8,stagger:.08},"-=.75");
+
+/* ── CURSOR ── */
+const cursor=document.querySelector(".cursor");
+if(cursor&&window.matchMedia("(pointer: fine)").matches&&!reduceMotion){
+  const cX=gsap.quickTo(cursor,"x",{duration:.3,ease:"power3"}),cY=gsap.quickTo(cursor,"y",{duration:.3,ease:"power3"});
+  window.addEventListener("mousemove",e=>{cX(e.clientX);cY(e.clientY)});
+  document.querySelectorAll("a,button,.module-card,.why-item").forEach(el=>{el.addEventListener("mouseenter",()=>cursor.classList.add("is-active"));el.addEventListener("mouseleave",()=>cursor.classList.remove("is-active"))});
+}
+
+/* ── MAGNETIC ── */
+if(window.matchMedia("(pointer: fine)").matches&&!reduceMotion){
+  document.querySelectorAll(".magnetic").forEach(el=>{el.addEventListener("mousemove",e=>{const r=el.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;gsap.to(el,{x:x*.18,y:y*.18,duration:.5,ease:"power3.out"})});el.addEventListener("mouseleave",()=>gsap.to(el,{x:0,y:0,duration:.7,ease:"elastic.out(1,.45)"}))});
+}
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"], [data-scroll-target]').forEach(el=>{el.addEventListener("click",e=>{const sel=el.dataset.scrollTarget||el.getAttribute("href");if(!sel||sel==="#")return;const t=document.querySelector(sel);if(!t)return;e.preventDefault();if(lenis){lenis.scrollTo(t,{offset:-20})}else{t.scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"})}})});
+
+/* ── PROGRESS ── */
+gsap.to(".progress",{scaleX:1,ease:"none",scrollTrigger:{trigger:document.documentElement,start:"top top",end:"bottom bottom",scrub:.2}});
+
+/* ── HERO COMPRESSION ── */
+const heroMM=gsap.matchMedia();
+heroMM.add("(min-width: 701px)",()=>{
+  gsap.timeline({scrollTrigger:{trigger:".hero-scroll",start:"top top",end:"bottom bottom",scrub:reduceMotion?false:1,onUpdate:self=>{window.__heroProgress=self.progress}}})
+  .to(".hero-copy",{opacity:0,scale:.88,duration:.25},0)
+  .to(".hero-bottom",{opacity:0,duration:.18},0)
+  .to(".hero-image",{scale:1.16,duration:1},0)
+  .to(".hero-panel",{inset:"15% 25%",borderRadius:32,duration:.58,ease:"power2.inOut"},.15)
+  .to(".hero-orbit",{rotation:70,scale:1.13,duration:.8},.1)
+  .to(".hero-side",{opacity:1,x:0,stagger:.025,duration:.24},.47)
+  .to(".hero-coordinate",{opacity:1,duration:.2},.55)
+  .to(".hero-panel",{scale:.92,duration:.24},.76);
+});
+heroMM.add("(max-width: 700px)",()=>{
+  gsap.timeline({scrollTrigger:{trigger:".hero-scroll",start:"top top",end:"bottom bottom",scrub:reduceMotion?false:1,onUpdate:self=>{window.__heroProgress=self.progress}}})
+  .to(".hero-copy",{opacity:0,scale:.9},0).to(".hero-bottom",{opacity:0},0)
+  .to(".hero-panel",{inset:"17% 7%",borderRadius:24,duration:.75},.18)
+  .to(".hero-image",{scale:1.14},0);
+});
+
+/* ── HORIZONTAL MODULES SCROLL ── */
+const modulesTrack=document.querySelector(".modules__track");
+if(modulesTrack){
+  const modulesCounter=document.querySelector(".modules__counter");
+  gsap.to(modulesTrack,{x:()=>-(modulesTrack.scrollWidth-window.innerWidth+100),ease:"none",
+    scrollTrigger:{trigger:".modules__pin",start:"top top",end:"bottom bottom",scrub:1,
+      onUpdate:({progress})=>{if(modulesCounter){const idx=Math.min(6,Math.ceil(progress*6))||1;modulesCounter.textContent=`Drag with scroll / ${String(idx).padStart(2,"0")}—06`}}
+    }});
+}
+
+/* ── PROCESS STEPS ── */
+const processSteps=document.querySelectorAll(".process-step");
+const processCoreNum=document.querySelector(".process-core__number");
+const processCoreIcon=document.querySelector(".process-core__icon");
+const processCoreLabel=document.querySelector(".process-core__label");
+processSteps.forEach((step,i)=>{
+  ScrollTrigger.create({trigger:step,start:"top 65%",end:"bottom 35%",onEnter:()=>{processSteps.forEach(s=>s.classList.remove("is-active"));step.classList.add("is-active");if(processCoreNum)processCoreNum.textContent=`STEP ${step.dataset.step}`;if(processCoreIcon)processCoreIcon.textContent=step.dataset.icon;if(processCoreLabel)processCoreLabel.textContent=step.dataset.label},
+    onEnterBack:()=>{processSteps.forEach(s=>s.classList.remove("is-active"));step.classList.add("is-active");if(processCoreNum)processCoreNum.textContent=`STEP ${step.dataset.step}`;if(processCoreIcon)processCoreIcon.textContent=step.dataset.icon;if(processCoreLabel)processCoreLabel.textContent=step.dataset.label}});
+});
+
+/* ── COUNTERS ── */
+document.querySelectorAll("[data-count]").forEach(el=>{
+  const target=parseFloat(el.dataset.count),prefix=el.dataset.prefix||"",suffix=el.dataset.suffix||"";
+  const obj={v:0};
+  const fmt=v=>{const r=Math.round(v);return prefix+r+suffix};
+  gsap.to(obj,{v:target,duration:2,ease:"power2.out",
+    scrollTrigger:{trigger:el.closest("section"),start:"top 70%",toggleActions:"play none none none"},
+    onUpdate:()=>{el.textContent=fmt(obj.v)},onComplete:()=>{el.textContent=fmt(target)}
+  });
+});
+
+/* ── ROADMAP LINE FILL ── */
+gsap.to(".roadmap__line-fill",{scaleY:1,ease:"none",
+  scrollTrigger:{trigger:".roadmap__timeline",start:"top 80%",end:"bottom bottom",scrub:.5}
+});
+
+/* ── SCROLL-TRIGGERED: ambient glow parallax ── */
+if(!reduceMotion){
+  gsap.to(".roadmap__glow",{yPercent:-40,ease:"none",scrollTrigger:{trigger:".roadmap",start:"top bottom",end:"bottom top",scrub:1}});
+  // manifesto accent chip pops when it enters
+  gsap.from(".manifesto__statement .accent",{scale:.4,rotate:-14,opacity:0,duration:.9,ease:"back.out(2)",
+    scrollTrigger:{trigger:".manifesto__statement",start:"top 68%",toggleActions:"play none none none"}});
+  // fusion stage scales in from depth
+  gsap.from(".fusion__stage",{scale:.9,opacity:0,duration:1.1,ease:"power3.out",
+    scrollTrigger:{trigger:".fusion__stage",start:"top 80%",toggleActions:"play none none none"}});
+  // roadmap nodes pulse in one by one
+  gsap.utils.toArray(".roadmap-item__node").forEach(node=>{
+    gsap.from(node,{scale:0,duration:.5,ease:"back.out(3)",scrollTrigger:{trigger:node,start:"top 85%",toggleActions:"play none none none"}});
+  });
+}
+
+/* ── SCROLL-TRIGGERED: header contrast on dark sections ── */
+(function(){
+  const header=document.querySelector(".header");
+  if(!header)return;
+  document.querySelectorAll(".modules,.fusion,.roadmap,.footer,.hero-scroll").forEach(sec=>{
+    ScrollTrigger.create({trigger:sec,start:"top 12%",end:"bottom 12%",
+      onToggle:self=>header.classList.toggle("on-dark",self.isActive)});
+  });
+})();
+
+/* ── SPLIT-TEXT WORD REVEAL ── */
+(function(){
+  const titles=document.querySelectorAll("[data-split]");
+  titles.forEach(title=>{
+    // preserve <br> as line breaks; split text nodes into words
+    const parts=[];
+    title.childNodes.forEach(node=>{
+      if(node.nodeType===3){ // text
+        node.textContent.split(/(\s+)/).forEach(tok=>{if(tok.trim()){parts.push({w:tok})}else if(tok){parts.push({space:true})}});
+      }else if(node.nodeName==="BR"){parts.push({br:true});}
+      else{parts.push({html:node.outerHTML});}
+    });
+    title.innerHTML="";
+    let line=document.createElement("span");line.className="split-line";
+    const flush=()=>{if(line.childNodes.length){title.appendChild(line);}line=document.createElement("span");line.className="split-line";};
+    parts.forEach(p=>{
+      if(p.br){flush();return;}
+      if(p.space){line.appendChild(document.createTextNode(" "));return;}
+      const w=document.createElement("span");w.className="split-word";
+      w.innerHTML=p.html||p.w;
+      line.appendChild(w);
+    });
+    flush();
+    const words=title.querySelectorAll(".split-word");
+    if(reduceMotion){return;}
+    gsap.set(words,{yPercent:115});
+    gsap.to(words,{yPercent:0,duration:1,ease:"power4.out",stagger:.06,
+      scrollTrigger:{trigger:title,start:"top 82%",toggleActions:"play none none none"}});
+  });
+})();
+
+/* ── SCROLL REVEAL (IntersectionObserver, staggered) ── */
+(function(){
+  const items=document.querySelectorAll(".reveal, .reveal-stagger");
+  if(reduceMotion){items.forEach(el=>el.classList.add("is-in"));return;}
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target;
+      if(el.classList.contains("reveal-stagger")){
+        [...el.children].forEach((child,i)=>{child.style.transitionDelay=(i*90)+"ms"});
+      }
+      el.classList.add("is-in");
+      io.unobserve(el);
+    });
+  },{threshold:.16,rootMargin:"0px 0px -8% 0px"});
+  items.forEach(el=>io.observe(el));
+})();
+
+/* ── POINTER-DRIVEN 3D TILT ── */
+if(window.matchMedia("(pointer: fine)").matches&&!reduceMotion){
+  document.querySelectorAll(".tilt").forEach(el=>{
+    el.addEventListener("pointermove",e=>{
+      const r=el.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-.5, py=(e.clientY-r.top)/r.height-.5;
+      gsap.to(el,{rotateY:px*11,rotateX:-py*11,transformPerspective:900,transformOrigin:"center",duration:.5,ease:"power3.out"});
+    });
+    el.addEventListener("pointerleave",()=>gsap.to(el,{rotateY:0,rotateX:0,duration:.8,ease:"elastic.out(1,.5)"}));
+  });
+}
+
+/* ── THREE.JS: SIGNAL FIELD (wave-terrain of cultural signals) ── */
+(function(){
+  const c=document.getElementById("signalCanvas");
+  if(!c||reduceMotion)return;
+  const renderer=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(55,1,.1,100);
+  camera.position.set(0,3.4,7.2);camera.lookAt(0,-.2,0);
+
+  const field=new THREE.Group();scene.add(field);
+
+  // grid of points across a plane; y is displaced by layered sine waves each frame
+  const GX=90,GZ=64,SP=.34;                 // columns, rows, spacing
+  const COUNT=GX*GZ;
+  const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3);
+  const base=new Float32Array(COUNT*2);     // stored x,z so we only recompute y
+  const cBlue=new THREE.Color("#4d7dff"),cSage=new THREE.Color("#7f9c73"),cAcid=new THREE.Color("#d8ff45");
+  let n=0;
+  for(let ix=0;ix<GX;ix++)for(let iz=0;iz<GZ;iz++){
+    const x=(ix-GX/2)*SP, z=(iz-GZ/2)*SP;
+    base[n*2]=x;base[n*2+1]=z;
+    pos[n*3]=x;pos[n*3+1]=0;pos[n*3+2]=z;
+    // colour by depth: far = blue, mid = sage, near = acid
+    const t=iz/GZ, cc=t<.5?cBlue.clone().lerp(cSage,t*2):cSage.clone().lerp(cAcid,(t-.5)*2);
+    col[n*3]=cc.r;col[n*3+1]=cc.g;col[n*3+2]=cc.b;
+    n++;
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  geo.setAttribute("color",new THREE.BufferAttribute(col,3));
+
+  // soft round sprite
+  const sprC=document.createElement("canvas");sprC.width=sprC.height=32;
+  const sctx=sprC.getContext("2d");const sg=sctx.createRadialGradient(16,16,0,16,16,16);
+  sg.addColorStop(0,"rgba(255,255,255,1)");sg.addColorStop(.25,"rgba(255,255,255,.8)");sg.addColorStop(.6,"rgba(255,255,255,.18)");sg.addColorStop(1,"rgba(0,0,0,0)");
+  sctx.fillStyle=sg;sctx.fillRect(0,0,32,32);
+  const tex=new THREE.CanvasTexture(sprC);
+  const mat=new THREE.PointsMaterial({size:.11,map:tex,vertexColors:true,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false});
+  field.add(new THREE.Points(geo,mat));
+
+  // pointer parallax (subtle)
+  let pmx=0,pmy=0,tmx=0,tmy=0;
+  window.addEventListener("pointermove",e=>{tmx=(e.clientX/window.innerWidth-.5);tmy=(e.clientY/window.innerHeight-.5)},{passive:true});
+
+  function resize(){const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}
+  resize();window.addEventListener("resize",resize);
+
+  const arr=geo.attributes.position.array;
+  let amp=1,ampTarget=1;
+  // scroll flattens the field as the hero leaves — read shared progress
+  function wave(t){
+    requestAnimationFrame(wave);
+    const tm=t*.0011;
+    ampTarget=1-(window.__heroProgress||0)*.82;   // calm down on scroll
+    amp+=(ampTarget-amp)*.06;
+    for(let i=0;i<COUNT;i++){
+      const x=base[i*2],z=base[i*2+1];
+      arr[i*3+1]=(Math.sin(x*.55+tm)*.55+Math.cos(z*.6+tm*1.2)*.5+Math.sin((x+z)*.32+tm*.7)*.35)*amp;
+    }
+    geo.attributes.position.needsUpdate=true;
+    pmx+=(tmx-pmx)*.04;pmy+=(tmy-pmy)*.04;
+    field.rotation.y=pmx*.35;
+    field.rotation.x=pmy*.14+(window.__heroProgress||0)*.5; // tilt away as you leave
+    mat.opacity=.9-(window.__heroProgress||0)*.35;
+    renderer.render(scene,camera);
+  }
+  wave(0);
+})();
+
+/* ── THREE.JS: FUSION CANVAS ── */
+(function(){
+  const c2=document.getElementById("fusionCanvas");
+  if(!c2||reduceMotion)return;
+  const renderer2=new THREE.WebGLRenderer({canvas:c2,antialias:true,alpha:true});
+  renderer2.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene2=new THREE.Scene();
+  const camera2=new THREE.PerspectiveCamera(55,1,.1,50);
+  camera2.position.set(0,0,6);camera2.lookAt(0,0,0);
+  function makeCloud(count,color,xOff){
+    const g=new THREE.BufferGeometry();const p=new Float32Array(count*3);const v=[];
+    for(let i=0;i<count;i++){p[i*3]=xOff+(Math.random()-.5)*4;p[i*3+1]=(Math.random()-.5)*4;p[i*3+2]=(Math.random()-.5)*3;v.push({x:(Math.random()-.5)*.006,y:(Math.random()-.5)*.006,z:(Math.random()-.5)*.006})}
+    g.setAttribute("position",new THREE.BufferAttribute(p,3));
+    const m=new THREE.PointsMaterial({color,size:.06,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.6});
+    return{pts:new THREE.Points(g,m),vel:v};
+  }
+  const human=makeCloud(600,0xff6d2e,-2.5);
+  const ai=makeCloud(600,0x4d7dff,2.5);
+  const flash=new THREE.Mesh(new THREE.SphereGeometry(.06,16,16),new THREE.MeshBasicMaterial({color:0xd8ff45,transparent:true,opacity:0,depthWrite:false}));
+  scene2.add(human.pts,ai.pts,flash);
+  let merge=0;
+  function resize2(){const w=c2.clientWidth,h=c2.clientHeight;if(w===0||h===0)return;renderer2.setSize(w,h);camera2.aspect=w/h;camera2.updateProjectionMatrix()}
+  resize2();window.addEventListener("resize",resize2);
+  ScrollTrigger.create({trigger:".fusion__stage",start:"top 80%",end:"bottom 20%",onUpdate:({progress})=>{merge=clamp(progress*1.3,0,1)}});
+  function animFusion(t){requestAnimationFrame(animFusion);
+    [human,ai].forEach(cloud=>{const p=cloud.pts.geometry.attributes.position.array;
+      for(let i=0;i<cloud.vel.length;i++){p[i*3]+=cloud.vel[i].x;p[i*3+1]+=cloud.vel[i].y;p[i*3+2]+=cloud.vel[i].z;
+        p[i*3]+=(0-p[i*3])*merge*.012;if(Math.abs(p[i*3])>3.5)cloud.vel[i].x*=-1;if(Math.abs(p[i*3+1])>3.5)cloud.vel[i].y*=-1;if(Math.abs(p[i*3+2])>3)cloud.vel[i].z*=-1}
+      cloud.pts.geometry.attributes.position.needsUpdate=true});
+    flash.scale.setScalar(1+merge*18);flash.material.opacity=merge*.8;
+    renderer2.render(scene2,camera2);
+  }
+  animFusion(0);
+})();
+</script>
+</body>
+</html>
