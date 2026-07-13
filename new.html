@@ -41,24 +41,15 @@ img{max-width:100%;display:block}
 .cursor{position:fixed;top:0;left:0;z-index:10000;width:14px;height:14px;border-radius:50%;pointer-events:none;background:var(--acid);border:1px solid rgba(18,23,17,.7);transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .4s var(--ease),height .4s var(--ease),background .4s var(--ease)}
 .cursor.is-active{width:54px;height:54px;background:white}
 .progress{position:fixed;top:0;left:0;z-index:9998;width:100%;height:3px;transform-origin:left center;transform:scaleX(0);background:linear-gradient(90deg,var(--orange),var(--acid),var(--blue))}
-.loader{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#141b15,#0a0e0b 70%);color:white;overflow:hidden}
-.loader__core{width:min(440px,calc(100% - 48px));text-align:center}
-.loader__radar{position:relative;width:210px;height:210px;margin:0 auto 40px}
-.loader__radar span{position:absolute;inset:0;border:1px solid rgba(216,255,69,.16);border-radius:50%}
-.loader__radar span:nth-child(2){inset:26%}
-.loader__radar span:nth-child(3){inset:46%;border-color:rgba(216,255,69,.3)}
-.loader__sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,rgba(216,255,69,.02) 300deg,rgba(216,255,69,.28) 350deg,rgba(216,255,69,.6) 360deg);animation:sweep 1.7s linear infinite;-webkit-mask:radial-gradient(circle,transparent 12%,black 13%);mask:radial-gradient(circle,transparent 12%,black 13%)}
-@keyframes sweep{to{transform:rotate(360deg)}}
-.loader__blip{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--acid);box-shadow:0 0 0 5px rgba(216,255,69,.14);opacity:0;transform:translate(-50%,-50%) scale(.4)}
-.loader__blip.lit{opacity:1;transform:translate(-50%,-50%) scale(1);transition:opacity .3s var(--ease),transform .5s var(--ease)}
-.loader__center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--acid);font-family:"Space Mono",monospace;font-size:23px;letter-spacing:-.02em}
-.loader__top,.loader__bottom{display:flex;align-items:center;justify-content:space-between}
-.loader__mark{font-family:"Manrope",sans-serif;font-size:15px;font-weight:700;letter-spacing:-.04em}
-.loader__percent{color:var(--acid);font-family:"Space Mono",monospace;font-size:12px}
-.loader__readout{height:15px;margin:16px 0 12px;overflow:hidden;color:rgba(216,255,69,.85);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
-.loader__line{height:1px;overflow:hidden;background:rgba(255,255,255,.15)}
-.loader__fill{width:100%;height:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--blue),var(--acid))}
-.loader__bottom{margin-top:14px;color:rgba(255,255,255,.4);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+/* ── VIDEO LOADER ── */
+.loader{position:fixed;inset:0;z-index:20000;overflow:hidden;background:#0a0e0b;display:grid;place-items:center;will-change:transform}
+.loader__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.78) contrast(1.05) brightness(.55)}
+.loader::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(10,14,11,.2),rgba(10,14,11,.7)),linear-gradient(180deg,rgba(10,14,11,.55),transparent 35%,rgba(10,14,11,.65))}
+.loader__core{position:relative;z-index:2;width:min(900px,calc(100% - 48px));text-align:center;color:white}
+.loader__mark{font-family:"Manrope",sans-serif;font-weight:600;letter-spacing:-.05em;font-size:clamp(46px,10vw,120px);line-height:.9}
+.loader__mark em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
+.loader__cap{margin-top:22px;color:rgba(255,255,255,.6);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.loader__foot{position:absolute;right:42px;bottom:30px;left:42px;z-index:2;display:flex;justify-content:space-between;color:rgba(255,255,255,.42);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
 .header{position:fixed;top:0;left:0;z-index:5000;width:100%;height:var(--header-height);color:white;pointer-events:none;mix-blend-mode:difference;transition:height .4s var(--ease)}
 .header.on-dark{height:calc(var(--header-height) - 20px)}
 .header__inner{width:min(1440px,calc(100% - 64px));height:100%;margin-inline:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
@@ -232,6 +223,17 @@ img{max-width:100%;display:block}
 .roadmap-item h3{margin-bottom:12px;font-family:"Manrope",sans-serif;font-size:27px;font-weight:500;letter-spacing:-.05em}
 .roadmap-item p{color:rgba(255,255,255,.5);font-size:13px;line-height:1.6}
 
+/* ── SIGNAL BAND (video interstitial) ── */
+.band{position:relative;height:88vh;min-height:560px;overflow:hidden;display:grid;place-items:center;color:white;background:var(--ink)}
+.band__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.72) contrast(1.08) brightness(.62);transform:scale(1.06)}
+.band::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,14,11,.55),rgba(10,14,11,.25) 40%,rgba(10,14,11,.72)),radial-gradient(circle at center,transparent 30%,rgba(10,14,11,.5))}
+.band__content{position:relative;z-index:2;width:min(1200px,calc(100% - 48px));text-align:center}
+.band__label{margin-bottom:26px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.band__title{font-family:"Manrope",sans-serif;font-size:clamp(54px,9vw,150px);font-weight:600;letter-spacing:-.08em;line-height:.86}
+.band__title em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
+.band__coordinate{margin-top:30px;color:rgba(255,255,255,.5);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.band__foot{position:absolute;right:42px;bottom:30px;left:42px;z-index:2;display:flex;justify-content:space-between;color:rgba(255,255,255,.45);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+
 /* ── FINAL CTA ── */
 .final{position:relative;min-height:110vh;overflow:hidden;display:grid;place-items:center;color:var(--ink);background:var(--acid)}
 .final__rings{position:absolute;top:50%;left:50%;width:84vmin;height:84vmin;border:1px solid rgba(18,23,17,.2);border-radius:50%;transform:translate(-50%,-50%)}
@@ -309,6 +311,8 @@ img{max-width:100%;display:block}
   .roadmap__line{left:8px}
   .roadmap-item,.roadmap-item:nth-child(even){width:100%;margin-left:0;padding:0 0 55px 45px}
   .roadmap-item__node,.roadmap-item:nth-child(even) .roadmap-item__node{right:auto;left:0}
+  .band{height:70vh;min-height:440px}
+  .band__foot{right:18px;bottom:18px;left:18px}
   .final{min-height:100vh}
   .final h2{font-size:clamp(68px,21vw,110px);line-height:.82}
   .footer__top{grid-template-columns:1fr 1fr}
@@ -325,17 +329,14 @@ img{max-width:100%;display:block}
 <div class="progress" aria-hidden="true"></div>
 
 <div class="loader" aria-label="Loading Hanora AI">
+  <video class="loader__video" data-autoplay autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="assets/signal-band.mp4" type="video/mp4">
+  </video>
   <div class="loader__core">
-    <div class="loader__radar">
-      <span></span><span></span><span></span>
-      <div class="loader__sweep"></div>
-      <div class="loader__center">00</div>
-    </div>
-    <div class="loader__top"><span class="loader__mark">Hanora AI</span><span class="loader__percent">00%</span></div>
-    <div class="loader__readout">Initializing</div>
-    <div class="loader__line"><div class="loader__fill"></div></div>
-    <div class="loader__bottom"><span>Mapping cultural signals</span><span>Global system 01</span></div>
+    <div class="loader__mark">Hanora <em>AI</em></div>
+    <div class="loader__cap">Global campaign intelligence · 2026</div>
   </div>
+  <div class="loader__foot"><span>Hanora AI</span><span>Establishing signal</span></div>
 </div>
 
 <header class="header">
@@ -473,6 +474,19 @@ img{max-width:100%;display:block}
   </div>
 </section>
 
+<!-- SIGNAL BAND -->
+<section class="band" aria-label="Global signal intelligence">
+  <video class="band__video" data-autoplay autoplay muted loop playsinline preload="none" aria-hidden="true">
+    <source src="assets/signal-band.mp4" type="video/mp4">
+  </video>
+  <div class="band__content">
+    <div class="band__label">One signal network / 50+ markets</div>
+    <h2 class="band__title">Every market<br>speaks <em>differently.</em></h2>
+    <div class="band__coordinate">34.0479° N · 100.6197° W · Live intelligence</div>
+  </div>
+  <div class="band__foot"><span>Signal system 02</span><span>Cultural telemetry · Realtime</span></div>
+</section>
+
 <!-- FINAL CTA -->
 <section class="final" id="contact">
   <div class="final__rings" aria-hidden="true"><span class="final__orbit-dot"></span></div>
@@ -512,39 +526,22 @@ if(!reduceMotion&&window.Lenis){
   gsap.ticker.lagSmoothing(0);
 }
 
-/* ── LOADER (signal-acquisition radar) ── */
-const loader=document.querySelector(".loader"),loaderFill=document.querySelector(".loader__fill"),loaderPercent=document.querySelector(".loader__percent"),loaderCenter=document.querySelector(".loader__center"),loaderReadout=document.querySelector(".loader__readout"),loaderRadar=document.querySelector(".loader__radar"),loaderState={value:0};
-
-// scatter market blips around the radar rings, tagged with the % they light up at
-const READOUTS=[[0,"Initializing"],[18,"Locating markets"],[38,"Mapping cultural signals"],[58,"Cross-referencing history"],[78,"Validating context"],[94,"Calibrating intelligence"]];
-if(loaderRadar&&!reduceMotion){
-  for(let i=0;i<9;i++){
-    const a=Math.random()*Math.PI*2,r=18+Math.random()*30;
-    const b=document.createElement("div");b.className="loader__blip";
-    b.style.left=(50+Math.cos(a)*r)+"%";b.style.top=(50+Math.sin(a)*r)+"%";
-    b.dataset.at=String(10+Math.round(Math.random()*80));
-    loaderRadar.appendChild(b);
-  }
-}
-const blips=[...document.querySelectorAll(".loader__blip")];
-let lastReadout="";
-function loaderPaint(){
-  const v=Math.round(loaderState.value);
-  loaderPercent.textContent=String(v).padStart(2,"0")+"%";
-  if(loaderCenter)loaderCenter.textContent=String(v).padStart(2,"0");
-  gsap.set(loaderFill,{scaleX:v/100});
-  blips.forEach(b=>{if(v>=+b.dataset.at)b.classList.add("lit")});
-  const r=READOUTS.filter(x=>v>=x[0]).pop();
-  if(r&&r[1]!==lastReadout){lastReadout=r[1];if(loaderReadout){loaderReadout.textContent=r[1];gsap.fromTo(loaderReadout,{y:12,opacity:0},{y:0,opacity:1,duration:.4,ease:"power3.out"})}}
-}
+/* ── LOADER (full-screen video, then dissolve into hero) ── */
+const loader=document.querySelector(".loader");
 const loaderTL=gsap.timeline({defaults:{ease:"power3.out"},onComplete:()=>{document.body.classList.remove("is-loading");ScrollTrigger.refresh()}});
-loaderTL.to(loaderState,{value:100,duration:reduceMotion?.1:2.2,ease:"power2.inOut",onUpdate:loaderPaint})
-.to(".loader__radar",{scale:.6,opacity:0,duration:reduceMotion?.01:.5,ease:"power2.in"},"-=.15")
-.to(".loader__core",{y:-25,opacity:0,duration:reduceMotion?.01:.4},"-=.35")
-.to(loader,{yPercent:-100,duration:reduceMotion?.01:.9,ease:"power4.inOut"})
-.set(loader,{display:"none"})
-.from(".hero-title__line span",{yPercent:110,duration:reduceMotion?.01:1.15,stagger:.09,ease:"power4.out"},"-=.35")
-.from([".hero-copy__label",".hero-intro",".hero-bottom"],{opacity:0,y:22,duration:reduceMotion?.01:.8,stagger:.08},"-=.75");
+if(reduceMotion){
+  loaderTL.set(loader,{display:"none"});
+}else{
+  loaderTL
+  .from(".loader__mark",{yPercent:60,opacity:0,duration:1.1,ease:"power4.out"})
+  .from(".loader__cap",{opacity:0,y:14,duration:.6},"-=.6")
+  .to(".loader__foot",{opacity:1,duration:.5},"-=.4")
+  .to(".loader__core",{opacity:0,duration:.5,ease:"power2.in"},"+=.7")
+  .to(loader,{yPercent:-100,duration:1,ease:"power4.inOut"},"-=.1")
+  .set(loader,{display:"none"})
+  .from(".hero-title__line span",{yPercent:110,duration:1.1,stagger:.09,ease:"power4.out"},"-=.35")
+  .from([".hero-copy__label",".hero-intro",".hero-bottom"],{opacity:0,y:22,duration:.8,stagger:.08},"-=.75");
+}
 
 /* ── CURSOR ── */
 const cursor=document.querySelector(".cursor");
@@ -640,7 +637,7 @@ if(!reduceMotion){
 (function(){
   const header=document.querySelector(".header");
   if(!header)return;
-  document.querySelectorAll(".modules,.fusion,.roadmap,.footer,.hero-scroll").forEach(sec=>{
+  document.querySelectorAll(".modules,.fusion,.roadmap,.band,.footer,.hero-scroll").forEach(sec=>{
     ScrollTrigger.create({trigger:sec,start:"top 12%",end:"bottom 12%",
       onToggle:self=>header.classList.toggle("on-dark",self.isActive)});
   });
@@ -706,6 +703,24 @@ if(window.matchMedia("(pointer: fine)").matches&&!reduceMotion){
     el.addEventListener("pointerleave",()=>gsap.to(el,{rotateY:0,rotateX:0,duration:.8,ease:"elastic.out(1,.5)"}));
   });
 }
+
+/* ── VIDEO CONTROL (reduced-motion + play only when visible) ── */
+(function(){
+  const vids=[...document.querySelectorAll("video[data-autoplay]")];
+  if(!vids.length)return;
+  if(reduceMotion){ // show poster, never play
+    vids.forEach(v=>{try{v.removeAttribute("autoplay");v.pause();v.currentTime=0;}catch(e){}});
+    return;
+  }
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      const v=entry.target;
+      if(entry.isIntersecting){const p=v.play();if(p&&p.catch)p.catch(()=>{});}
+      else{v.pause();}
+    });
+  },{threshold:.15});
+  vids.forEach(v=>io.observe(v));
+})();
 
 /* ── THREE.JS: SIGNAL FIELD (wave-terrain of cultural signals) ── */
 (function(){
