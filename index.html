@@ -64,8 +64,8 @@ img{max-width:100%;display:block}
 .header__action span{display:inline-grid;width:25px;height:25px;margin-left:8px;place-items:center;border:1px solid currentColor;border-radius:50%}
 
 /* ── HERO ── */
-.hero-scroll{position:relative;height:300vh;color:white;background:var(--ink)}
-.hero-stage{position:sticky;top:0;width:100%;height:100vh;height:100svh;overflow:hidden;isolation:isolate;perspective:1600px}
+.hero-scroll{position:relative;width:100vw;height:300vh;color:white;background:var(--ink)}
+.hero-stage{position:sticky;top:0;width:100vw;height:100vh;height:100svh;overflow:hidden;isolation:isolate;perspective:1600px}
 .hero-panel,#signalCanvas{width:100%;height:100%}
 .hero-ambient{position:absolute;inset:0;z-index:-4;background:radial-gradient(circle at 20% 18%,rgba(216,255,69,.13),transparent 28%),radial-gradient(circle at 80% 72%,rgba(77,125,255,.15),transparent 30%),linear-gradient(140deg,#0a100c,#18221b 50%,#090d0b)}
 .hero-grid{position:absolute;inset:0;z-index:-3;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at center,black,transparent 78%)}
@@ -74,7 +74,7 @@ img{max-width:100%;display:block}
 .hero-orbit::after{inset:26%}
 .hero-panel{position:absolute;inset:0;z-index:1;overflow:hidden;transform-origin:center;background:#182019;box-shadow:0 40px 120px rgba(0,0,0,.48)}
 .hero-panel::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 30%,rgba(0,0,0,.42)),radial-gradient(circle at center,transparent 35%,rgba(0,0,0,.35))}
-.hero-image{position:absolute;inset:-7%;width:114%;height:114%;object-fit:cover;filter:saturate(.76) contrast(1.08) brightness(.72);transform:scale(1.02)}
+.hero-image{position:absolute;inset:-7%;width:114%;max-width:none;height:114%;object-fit:cover;filter:saturate(.76) contrast(1.08) brightness(.72);transform:scale(1.02)}
 #signalCanvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
 /* ── LIQUID GLASS ── */
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.02));backdrop-filter:blur(22px) saturate(1.2);-webkit-backdrop-filter:blur(22px) saturate(1.2);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 1px rgba(0,0,0,.28),0 22px 60px rgba(0,0,0,.34)}
@@ -138,6 +138,9 @@ img{max-width:100%;display:block}
 .module-card__content{position:absolute;right:32px;bottom:32px;left:32px;z-index:2}
 .module-card h3{max-width:370px;margin-bottom:18px;font-family:"Manrope",sans-serif;font-size:clamp(30px,3vw,48px);font-weight:500;letter-spacing:-.06em;line-height:.98}
 .module-card p{max-width:390px;color:rgba(255,255,255,.58);font-size:14px;line-height:1.55}
+.module-card__finding{margin-top:17px;padding:13px 14px;border-left:2px solid var(--card-color);background:rgba(0,0,0,.16)}
+.module-card__finding span{display:block;margin-bottom:6px;color:var(--card-color);font-family:"Space Mono",monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
+.module-card__finding p{font-size:12px;line-height:1.4;color:rgba(255,255,255,.82)}
 .modules__counter{position:absolute;right:5vw;bottom:36px;z-index:4;color:rgba(255,255,255,.54);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em}
 
 /* ── PROCESS ── */
@@ -169,15 +172,12 @@ img{max-width:100%;display:block}
 .fusion::before{content:"";position:absolute;top:-20%;right:-10%;width:60vw;height:60vw;border-radius:50%;opacity:.16;background:radial-gradient(circle,var(--blue),transparent 65%)}
 .fusion__header{position:relative;z-index:2;display:grid;grid-template-columns:1.25fr .75fr;gap:60px;align-items:end;margin-bottom:100px}
 .fusion__header .section-copy{color:rgba(255,255,255,.58)}
-.fusion__stage{position:relative;min-height:760px;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:34px;background:radial-gradient(circle at 25% 50%,rgba(255,109,46,.13),transparent 28%),radial-gradient(circle at 75% 50%,rgba(77,125,255,.17),transparent 30%),#151a16}
-#fusionCanvas{position:absolute;inset:0;width:100%;height:100%}
-.fusion__labels{position:absolute;top:34px;right:34px;left:34px;z-index:2;display:flex;justify-content:space-between;pointer-events:none}
-.fusion__label{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase}
-.fusion__label--human{color:var(--orange)}
-.fusion__label--ai{color:#75a0ff}
-.fusion__center-label{position:absolute;top:50%;left:50%;z-index:2;width:180px;text-align:center;pointer-events:none;transform:translate(-50%,-50%)}
-.fusion__center-label strong{display:block;color:var(--acid);font-family:"Manrope",sans-serif;font-size:54px;font-weight:600;letter-spacing:-.07em}
-.fusion__center-label span{color:rgba(255,255,255,.48);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.fusion__method{position:relative;z-index:2;display:grid;grid-template-columns:1fr auto 1fr;gap:30px;align-items:center;margin-bottom:18px;padding:35px 42px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:linear-gradient(100deg,rgba(255,109,46,.1),rgba(255,255,255,.025) 45%,rgba(77,125,255,.12))}
+.fusion__method-card span{display:block;margin-bottom:12px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.fusion__method-card:first-child span{color:var(--orange)}.fusion__method-card:last-child span{color:#75a0ff}
+.fusion__method-card strong{display:block;max-width:420px;font-family:"Manrope",sans-serif;font-size:clamp(26px,3vw,42px);font-weight:500;letter-spacing:-.06em;line-height:1}
+.fusion__method-card:last-child{text-align:right}.fusion__method-card:last-child strong{margin-left:auto}
+.fusion__method-mark{display:grid;width:72px;height:72px;place-items:center;border:1px solid rgba(216,255,69,.6);border-radius:50%;color:var(--acid);font-family:"Manrope",sans-serif;font-size:28px}
 .architecture{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
 .architecture-card{min-height:230px;padding:25px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(255,255,255,.035);transition:transform .6s var(--ease),border-color .6s var(--ease),background .6s var(--ease)}
 .architecture-card:hover{z-index:2;border-color:rgba(216,255,69,.55);background:rgba(216,255,69,.06);transform:translateY(-10px)}
@@ -205,6 +205,25 @@ img{max-width:100%;display:block}
 .why-item__arrow{display:grid;width:46px;height:46px;place-items:center;border:1px solid var(--line);border-radius:50%;transition:transform .5s var(--ease)}
 .why-item:hover .why-item__arrow{transform:rotate(45deg)}
 
+
+/* ── AUDIENCES ── */
+.audiences{padding:180px 0;background:var(--paper-light)}
+.audiences__header{display:flex;align-items:end;justify-content:space-between;gap:60px;margin-bottom:80px}.audiences__header .section-copy{padding-bottom:8px}
+.audiences__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.audience-card{min-height:340px;padding:30px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:22px;background:var(--paper);transition:transform .5s var(--ease),background .5s var(--ease)}
+.audience-card:hover{background:var(--acid);transform:translateY(-10px)}.audience-card__number{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.12em}.audience-card h3{max-width:250px;font-family:"Manrope",sans-serif;font-size:clamp(30px,3.4vw,50px);font-weight:500;letter-spacing:-.065em;line-height:.96}.audience-card p{max-width:280px;color:var(--ink-soft);font-size:14px;line-height:1.55}.audience-card:hover p{color:var(--ink)}
+
+/* ── MARKET MAP ── */
+.market-map{position:relative;overflow:hidden;padding:180px 0;color:white;background:#101610}.market-map::before{content:"";position:absolute;inset:0;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:58px 58px;mask-image:radial-gradient(ellipse at center,black,transparent 72%)}
+.market-map__header{position:relative;z-index:1;display:flex;align-items:end;justify-content:space-between;gap:60px;margin-bottom:80px}.market-map__header .section-copy{color:rgba(255,255,255,.58)}
+.market-map__board{position:relative;z-index:1;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;min-height:520px;padding:18px;border:1px solid rgba(255,255,255,.14);border-radius:28px;background:rgba(255,255,255,.035)}
+.market-map__globe{position:relative;min-height:480px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 45% 40%,rgba(77,125,255,.24),transparent 30%),radial-gradient(circle at 55% 62%,rgba(216,255,69,.12),transparent 23%),#18221b}.market-map__globe::before{content:"";position:absolute;top:50%;left:50%;width:min(65vw,440px);aspect-ratio:1;border:1px solid rgba(216,255,69,.5);border-radius:50%;box-shadow:0 0 0 48px rgba(216,255,69,.035),0 0 0 96px rgba(77,125,255,.025);transform:translate(-50%,-50%)}.market-map__globe::after{content:"";position:absolute;top:50%;left:50%;width:min(65vw,440px);aspect-ratio:1;border:1px dashed rgba(255,255,255,.25);border-radius:50%;transform:translate(-50%,-50%) rotate(22deg)}
+.market-dot{position:absolute;z-index:2;width:13px;height:13px;border:0;border-radius:50%;background:var(--acid);box-shadow:0 0 0 6px rgba(216,255,69,.13);cursor:pointer}.market-dot::after{content:attr(data-market);position:absolute;top:18px;left:10px;white-space:nowrap;color:rgba(255,255,255,.75);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.08em;opacity:0;transition:opacity .25s}.market-dot:hover::after,.market-dot.is-active::after{opacity:1}.market-dot.is-active{background:white;box-shadow:0 0 0 7px rgba(255,255,255,.15)}.market-dot--london{top:31%;left:43%}.market-dot--dubai{top:48%;left:56%}.market-dot--mumbai{top:57%;left:67%}.market-dot--singapore{top:67%;left:76%}.market-dot--tokyo{top:39%;left:84%}.market-dot--ny{top:38%;left:21%}.market-dot--sao{top:72%;left:31%}
+.market-map__detail{display:flex;flex-direction:column;justify-content:space-between;padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(0,0,0,.17)}.market-map__detail-label{color:var(--acid);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase}.market-map__detail h3{margin:18px 0 12px;font-family:"Manrope",sans-serif;font-size:clamp(35px,4vw,56px);font-weight:500;letter-spacing:-.07em}.market-map__detail p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.6}.market-map__signal{padding-top:25px;border-top:1px solid rgba(255,255,255,.13)}.market-map__signal span{display:block;color:rgba(255,255,255,.42);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.11em;text-transform:uppercase}.market-map__signal strong{display:block;margin-top:8px;color:white;font-family:"Manrope",sans-serif;font-size:22px;font-weight:500;letter-spacing:-.04em}
+
+/* ── PRICING ── */
+.pricing{position:relative;overflow:hidden;padding:180px 0;background:var(--acid)}.pricing::after{content:"";position:absolute;right:-18vw;bottom:-28vw;width:65vw;aspect-ratio:1;border:1px solid rgba(18,23,17,.22);border-radius:50%;box-shadow:0 0 0 50px rgba(18,23,17,.05),0 0 0 100px rgba(18,23,17,.04)}
+.pricing__wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr minmax(360px,.78fr);gap:70px;align-items:end}.pricing__intro p{max-width:520px;margin-top:30px;color:rgba(18,23,17,.7);font-size:17px;line-height:1.6}.pricing__card{padding:34px;border:1px solid rgba(18,23,17,.45);border-radius:24px;background:var(--ink);color:white;box-shadow:14px 14px 0 rgba(18,23,17,.14)}.pricing__badge{display:inline-block;padding:8px 11px;border-radius:100px;color:var(--ink);background:var(--acid);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}.pricing__name{margin-top:32px;color:rgba(255,255,255,.55);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase}.pricing__price{display:flex;align-items:baseline;gap:15px;margin:12px 0 18px;font-family:"Manrope",sans-serif;letter-spacing:-.08em}.pricing__old{color:rgba(255,255,255,.36);font-size:clamp(32px,4vw,52px);text-decoration:line-through;text-decoration-thickness:3px}.pricing__new{color:var(--acid);font-size:clamp(64px,8vw,105px);font-weight:500}.pricing__card p{padding-bottom:25px;border-bottom:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.63);font-size:14px;line-height:1.55}.pricing__includes{display:grid;gap:12px;margin:25px 0;list-style:none}.pricing__includes li::before{content:"✓";margin-right:10px;color:var(--acid)}.pricing__card .button{width:100%;justify-content:center;background:var(--acid);color:var(--ink)}
 /* ── ROADMAP ── */
 .roadmap{position:relative;overflow:hidden;padding:180px 0;color:white;background:#131814}
 .roadmap__glow{position:absolute;top:15%;left:50%;width:70vw;height:70vw;border-radius:50%;opacity:.2;pointer-events:none;background:radial-gradient(circle,var(--blue),transparent 65%);transform:translateX(-50%)}
@@ -274,6 +293,9 @@ img{max-width:100%;display:block}
   .manifesto__grid,.process__layout,.fusion__header,.why__header{grid-template-columns:1fr}
   .manifesto__aside{position:static}
   .manifesto__facts,.architecture{grid-template-columns:repeat(2,1fr)}
+  .audiences__header,.market-map__header{align-items:flex-start;flex-direction:column}
+  .market-map__board,.pricing__wrap{grid-template-columns:1fr}
+  .pricing__wrap{align-items:start}
   .process__header,.roadmap__header{align-items:flex-start;flex-direction:column}
   .process-visual{position:relative;top:auto;height:600px}
   .process-step{min-height:auto;padding:100px 0}
@@ -291,18 +313,20 @@ img{max-width:100%;display:block}
   .hero-bottom{right:18px;bottom:18px;left:18px}
   .hero-bottom__index{display:none}
   .hero-side{display:none}
-  .manifesto,.process,.fusion,.why,.roadmap{padding:110px 0}
+  .manifesto,.process,.fusion,.why,.audiences,.market-map,.pricing,.roadmap{padding:110px 0}
   .manifesto__facts,.architecture,.fusion__stats{grid-template-columns:1fr}
   .fact{min-height:165px}
   .modules__header{top:95px;display:block}
   .modules__header h2{font-size:48px;line-height:.98}
   .modules__header p{margin-top:16px}
-  .modules__track{top:42%;padding-inline:20px}
-  .module-card{width:84vw;height:45vh;min-height:390px}
+  .modules__pin{height:auto;overflow:visible;padding:220px 0 42px}
+  .modules__track{position:relative;top:auto;display:grid;gap:12px;width:auto;padding:0 14px}
+  .module-card{width:auto;height:auto;min-height:360px}
+  .modules__counter{display:none}
   .process__header{margin-bottom:70px}
   .process-visual{height:70vh;min-height:500px}
   .process-step__number{margin-bottom:45px}
-  .fusion__stage{min-height:600px}
+  .fusion__method{grid-template-columns:1fr;padding:26px;gap:20px}.fusion__method-card:last-child{text-align:left}.fusion__method-card:last-child strong{margin-left:0}.fusion__method-mark{width:52px;height:52px;font-size:23px}
   .fusion__center-label strong{font-size:42px}
   .fusion-stat{border-right:0;border-bottom:1px solid rgba(255,255,255,.14)}
   .fusion-stat:last-child{border-bottom:0}
@@ -311,6 +335,7 @@ img{max-width:100%;display:block}
   .roadmap__line{left:8px}
   .roadmap-item,.roadmap-item:nth-child(even){width:100%;margin-left:0;padding:0 0 55px 45px}
   .roadmap-item__node,.roadmap-item:nth-child(even) .roadmap-item__node{right:auto;left:0}
+  .audiences__header,.market-map__header{gap:22px;margin-bottom:48px}.audiences__grid{grid-template-columns:1fr}.audience-card{min-height:280px}.market-map__board{padding:10px}.market-map__globe{min-height:360px}.market-map__detail{min-height:260px}.pricing__wrap{gap:36px}.pricing__card{padding:24px}.pricing__price{gap:9px}.pricing__old{font-size:29px}
   .band{height:70vh;min-height:440px}
   .band__foot{right:18px;bottom:18px;left:18px}
   .final{min-height:100vh}
@@ -343,7 +368,7 @@ img{max-width:100%;display:block}
   <div class="header__inner">
     <a href="#hero" class="logo magnetic">Hanora<span>AI</span></a>
     <nav class="nav" aria-label="Primary navigation">
-      <a href="#modules">Intelligence</a><a href="#process">Process</a><a href="#fusion">Human + AI</a><a href="#roadmap">Roadmap</a>
+      <a href="#modules">Intelligence</a><a href="#process">Process</a><a href="#markets">Markets</a><a href="#pricing">Pricing</a>
     </nav>
     <button class="header__action magnetic" type="button" data-scroll-target="#contact">Start analysis <span>↗</span></button>
   </div>
@@ -393,12 +418,12 @@ img{max-width:100%;display:block}
   <div class="modules__pin">
     <header class="modules__header"><h2>Six lenses.<br>One global view.</h2><p>Each campaign is examined through interconnected cultural intelligence systems—not a generic AI checklist.</p></header>
     <div class="modules__track">
-      <article class="module-card tilt" style="--card-color:#d8ff45"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">01 / Cultural</span><div class="module-card__icon">◎</div><div class="module-card__content"><h3>Cultural Intelligence</h3><p>Analyze traditions, social norms, values and communication styles across local markets.</p></div></article>
-      <article class="module-card tilt" style="--card-color:#ff6d2e"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">02 / Historical</span><div class="module-card__icon">⌁</div><div class="module-card__content"><h3>Historical Intelligence</h3><p>Identify sensitive historical events, national memories and commemorative dates.</p></div></article>
-      <article class="module-card tilt" style="--card-color:#4d7dff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">03 / Religious</span><div class="module-card__icon">✦</div><div class="module-card__content"><h3>Religious Intelligence</h3><p>Check symbols, practices, sacred periods and culturally sensitive references.</p></div></article>
-      <article class="module-card tilt" style="--card-color:#e8382f"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">04 / Political</span><div class="module-card__icon">◇</div><div class="module-card__content"><h3>Political Intelligence</h3><p>Assess political sensitivity, regional issues and national identity concerns.</p></div></article>
-      <article class="module-card tilt" style="--card-color:#ffc53d"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">05 / Social</span><div class="module-card__icon">◌</div><div class="module-card__content"><h3>Social Intelligence</h3><p>Evaluate gender sensitivity, inclusivity and rapidly changing social expectations.</p></div></article>
-      <article class="module-card tilt" style="--card-color:#8b7cff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">06 / Localization</span><div class="module-card__icon">↗</div><div class="module-card__content"><h3>Localization Intelligence</h3><p>Review language fit, messaging, visual cues and cultural alignment.</p></div></article>
+      <article class="module-card tilt" style="--card-color:#d8ff45"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">01 / Cultural</span><div class="module-card__icon">◎</div><div class="module-card__content"><h3>Cultural Intelligence</h3><p>Analyze traditions, social norms, values and communication styles across local markets.</p><div class="module-card__finding"><span>Signal detected</span><p>Direct humour may read as disrespectful in this market.</p></div></div></article>
+      <article class="module-card tilt" style="--card-color:#ff6d2e"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">02 / Historical</span><div class="module-card__icon">⌁</div><div class="module-card__content"><h3>Historical Intelligence</h3><p>Identify sensitive historical events, national memories and commemorative dates.</p><div class="module-card__finding"><span>Signal detected</span><p>Launch date overlaps with a national day of remembrance.</p></div></div></article>
+      <article class="module-card tilt" style="--card-color:#4d7dff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">03 / Religious</span><div class="module-card__icon">✦</div><div class="module-card__content"><h3>Religious Intelligence</h3><p>Check symbols, practices, sacred periods and culturally sensitive references.</p><div class="module-card__finding"><span>Signal detected</span><p>Visual language conflicts with an upcoming sacred period.</p></div></div></article>
+      <article class="module-card tilt" style="--card-color:#e8382f"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">04 / Political</span><div class="module-card__icon">◇</div><div class="module-card__content"><h3>Political Intelligence</h3><p>Assess political sensitivity, regional issues and national identity concerns.</p><div class="module-card__finding"><span>Signal detected</span><p>Phrase carries an unintended political association locally.</p></div></div></article>
+      <article class="module-card tilt" style="--card-color:#ffc53d"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">05 / Social</span><div class="module-card__icon">◌</div><div class="module-card__content"><h3>Social Intelligence</h3><p>Evaluate gender sensitivity, inclusivity and rapidly changing social expectations.</p><div class="module-card__finding"><span>Signal detected</span><p>Cast representation may feel exclusionary to the intended audience.</p></div></div></article>
+      <article class="module-card tilt" style="--card-color:#8b7cff"><div class="module-card__gradient"></div><div class="module-card__grid"></div><span class="module-card__index">06 / Localization</span><div class="module-card__icon">↗</div><div class="module-card__content"><h3>Localization Intelligence</h3><p>Review language fit, messaging, visual cues and cultural alignment.</p><div class="module-card__finding"><span>Signal detected</span><p>Translation is accurate, but the call-to-action feels unnatural.</p></div></div></article>
     </div>
     <div class="modules__counter">Drag with scroll / 01—06</div>
   </div>
@@ -424,10 +449,10 @@ img{max-width:100%;display:block}
 <section class="fusion" id="fusion">
   <div class="container">
     <header class="fusion__header"><div><span class="eyebrow">Intelligence architecture</span><h2 class="section-title" data-split>Human depth.<br>Machine scale.</h2></div><p class="section-copy">Hanora does not rely on AI alone. Human cultural research is validated, structured and retrieved before advanced models assess your campaign.</p></header>
-    <div class="fusion__stage">
-      <canvas id="fusionCanvas" aria-hidden="true"></canvas>
-      <div class="fusion__labels"><span class="fusion__label fusion__label--human">Human intelligence</span><span class="fusion__label fusion__label--ai">AI intelligence</span></div>
-      <div class="fusion__center-label"><strong>40%</strong><span>Higher accuracy</span></div>
+    <div class="fusion__method">
+      <div class="fusion__method-card"><span>Human intelligence</span><strong>Local context<br>with judgement.</strong></div>
+      <div class="fusion__method-mark">+</div>
+      <div class="fusion__method-card"><span>AI intelligence</span><strong>Scale with<br>explainability.</strong></div>
     </div>
     <div class="architecture reveal-stagger">
       <article class="architecture-card glass tilt"><div class="architecture-card__top"><span class="architecture-card__index">01</span><span class="architecture-card__icon">⌘</span></div><h3>Human Research Team</h3><p>Cultural researchers collect nuanced, market-specific knowledge from credible primary and secondary sources.</p></article>
@@ -459,6 +484,37 @@ img{max-width:100%;display:block}
   </div>
 </section>
 
+
+<!-- AUDIENCES -->
+<section class="audiences" id="teams">
+  <div class="container">
+    <header class="audiences__header"><div><span class="eyebrow">Built for your team</span><h2 class="section-title" data-split>Global work.<br>Clear ownership.</h2></div><p class="section-copy">One intelligence layer for the people responsible for what a campaign says, means and risks in every market.</p></header>
+    <div class="audiences__grid reveal-stagger">
+      <article class="audience-card"><span class="audience-card__number">01 / Brand teams</span><h3>Launch with cultural confidence.</h3><p>Assess the work before it reaches a new audience, not after the conversation has started.</p></article>
+      <article class="audience-card"><span class="audience-card__number">02 / Agencies</span><h3>Protect every client market.</h3><p>Give strategists and creatives specific, defensible direction before the work leaves the studio.</p></article>
+      <article class="audience-card"><span class="audience-card__number">03 / Risk & legal</span><h3>Review with context, not guesswork.</h3><p>Trace every sensitive finding to relevant cultural evidence, market conditions and a clear recommendation.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET MAP -->
+<section class="market-map" id="markets">
+  <div class="container">
+    <header class="market-map__header"><div><span class="eyebrow">Live market coverage</span><h2 class="section-title" data-split>Context has<br>a location.</h2></div><p class="section-copy">Explore signals from an expanding network of local intelligence across the markets that matter to your next launch.</p></header>
+    <div class="market-map__board">
+      <div class="market-map__globe" aria-label="Select a market"><button class="market-dot market-dot--ny" type="button" data-market="New York" data-title="North America" data-copy="Messaging, representation and social context for a diverse, fast-moving audience." data-signal="Social expectations" aria-label="North America"></button><button class="market-dot market-dot--london" type="button" data-market="London" data-title="United Kingdom" data-copy="Local language, historical context and regional nuance for work travelling across the UK." data-signal="Language & history" aria-label="United Kingdom"></button><button class="market-dot market-dot--dubai" type="button" data-market="Dubai" data-title="Gulf region" data-copy="Campaign guidance calibrated to religious observance, local norms and business culture." data-signal="Religious context" aria-label="Gulf region"></button><button class="market-dot market-dot--mumbai is-active" type="button" data-market="Mumbai" data-title="India" data-copy="A multilingual, multi-faith market where timing, symbolism and local relevance can change the meaning of a campaign." data-signal="Cultural fit" aria-label="India"></button><button class="market-dot market-dot--singapore" type="button" data-market="Singapore" data-title="Southeast Asia" data-copy="Regional intelligence for multicultural audiences, language choices and cross-border campaign adaptation." data-signal="Regional nuance" aria-label="Southeast Asia"></button><button class="market-dot market-dot--tokyo" type="button" data-market="Tokyo" data-title="Japan" data-copy="Context for formality, visual codes and the precise social expectations that shape campaign reception." data-signal="Communication style" aria-label="Japan"></button><button class="market-dot market-dot--sao" type="button" data-market="São Paulo" data-title="Brazil" data-copy="Practical cultural signals for a highly social market with its own language, humour and regional identity." data-signal="Social resonance" aria-label="Brazil"></button></div>
+      <aside class="market-map__detail" aria-live="polite"><div><span class="market-map__detail-label">Active intelligence market</span><h3 data-market-title>India</h3><p data-market-copy>A multilingual, multi-faith market where timing, symbolism and local relevance can change the meaning of a campaign.</p></div><div class="market-map__signal"><span>Current signal focus</span><strong data-market-signal>Cultural fit</strong></div></aside>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container pricing__wrap">
+    <div class="pricing__intro"><span class="eyebrow">Founding launch offer</span><h2 class="section-title">The confidence<br>to launch.</h2><p>For a limited first cohort, get the complete campaign intelligence review at a founder-friendly price. One campaign. Multiple markets. No blind spots.</p></div>
+    <div class="pricing__card"><span class="pricing__badge">Save $2,500 / limited launch access</span><div class="pricing__name">Campaign intelligence review</div><div class="pricing__price"><span class="pricing__old">$3,500</span><span class="pricing__new">$1,000</span></div><p>One high-stakes campaign reviewed across Hanora's six connected intelligence lenses.</p><ul class="pricing__includes"><li>Copy, visual and strategy assessment</li><li>Up to three priority markets</li><li>Explainable findings and safer alternatives</li><li>Human-validated review summary</li></ul><a href="mailto:hello@hanora.ai?subject=Founding%20launch%20offer" class="button magnetic"><span>Claim launch access</span><i>↗</i></a></div>
+  </div>
+</section>
 <!-- ROADMAP -->
 <section class="roadmap" id="roadmap">
   <div class="roadmap__glow"></div>
@@ -499,7 +555,7 @@ img{max-width:100%;display:block}
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand"><h3>Hanora AI</h3><p>Human-validated cultural intelligence for teams creating, adapting and launching campaigns around the world.</p></div>
-      <div class="footer__column"><h4>Platform</h4><ul><li><a href="#modules">Intelligence</a></li><li><a href="#process">How it works</a></li><li><a href="#fusion">Architecture</a></li><li><a href="#roadmap">Roadmap</a></li></ul></div>
+      <div class="footer__column"><h4>Platform</h4><ul><li><a href="#modules">Intelligence</a></li><li><a href="#process">How it works</a></li><li><a href="#fusion">Architecture</a></li><li><a href="#markets">Markets</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#roadmap">Roadmap</a></li></ul></div>
       <div class="footer__column"><h4>Company</h4><ul><li><a href="#contact">About</a></li><li><a href="#contact">Research</a></li><li><a href="#contact">Careers</a></li><li><a href="mailto:hello@hanora.ai">Contact</a></li></ul></div>
       <div class="footer__column"><h4>Connect</h4><ul><li><a href="#contact">LinkedIn</a></li><li><a href="#contact">Instagram</a></li><li><a href="#contact">X / Twitter</a></li><li><a href="mailto:hello@hanora.ai">Email</a></li></ul></div>
     </div>
@@ -584,7 +640,7 @@ heroMM.add("(max-width: 700px)",()=>{
 
 /* ── HORIZONTAL MODULES SCROLL ── */
 const modulesTrack=document.querySelector(".modules__track");
-if(modulesTrack){
+if(modulesTrack&&!reduceMotion&&!window.matchMedia("(max-width: 700px)").matches){
   const modulesCounter=document.querySelector(".modules__counter");
   gsap.to(modulesTrack,{x:()=>-(modulesTrack.scrollWidth-window.innerWidth+100),ease:"none",
     scrollTrigger:{trigger:".modules__pin",start:"top top",end:"bottom bottom",scrub:1,
@@ -592,6 +648,13 @@ if(modulesTrack){
     }});
 }
 
+
+/* ── MARKET MAP ── */
+const marketDots=document.querySelectorAll(".market-dot");
+const marketTitle=document.querySelector("[data-market-title]");
+const marketCopy=document.querySelector("[data-market-copy]");
+const marketSignal=document.querySelector("[data-market-signal]");
+marketDots.forEach(dot=>{dot.addEventListener("click",()=>{marketDots.forEach(item=>item.classList.remove("is-active"));dot.classList.add("is-active");if(marketTitle)marketTitle.textContent=dot.dataset.title;if(marketCopy)marketCopy.textContent=dot.dataset.copy;if(marketSignal)marketSignal.textContent=dot.dataset.signal})});
 /* ── PROCESS STEPS ── */
 const processSteps=document.querySelectorAll(".process-step");
 const processCoreNum=document.querySelector(".process-core__number");
@@ -625,8 +688,8 @@ if(!reduceMotion){
   gsap.from(".manifesto__statement .accent",{scale:.4,rotate:-14,opacity:0,duration:.9,ease:"back.out(2)",
     scrollTrigger:{trigger:".manifesto__statement",start:"top 68%",toggleActions:"play none none none"}});
   // fusion stage scales in from depth
-  gsap.from(".fusion__stage",{scale:.9,opacity:0,duration:1.1,ease:"power3.out",
-    scrollTrigger:{trigger:".fusion__stage",start:"top 80%",toggleActions:"play none none none"}});
+  gsap.from(".fusion__method",{scale:.96,opacity:0,duration:.8,ease:"power3.out",
+    scrollTrigger:{trigger:".fusion__method",start:"top 80%",toggleActions:"play none none none"}});
   // roadmap nodes pulse in one by one
   gsap.utils.toArray(".roadmap-item__node").forEach(node=>{
     gsap.from(node,{scale:0,duration:.5,ease:"back.out(3)",scrollTrigger:{trigger:node,start:"top 85%",toggleActions:"play none none none"}});
