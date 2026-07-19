@@ -234,6 +234,67 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff;padding:12px;border-radi
 .verdict-banner.v-medium{background:var(--caution-bg);border-color:rgba(138,60,20,.25)}
 .verdict-banner.v-high,.verdict-banner.v-critical{background:var(--risk-bg);border-color:rgba(232,56,47,.3)}
 
+/* ══ INTERVIEW — split onboarding ══ */
+.iv{position:fixed;inset:0;z-index:800;display:grid;grid-template-columns:1fr 1fr;background:var(--paper)}
+.iv.gone{display:none}
+.iv__amb{position:relative;background:#0a0e0b;overflow:hidden}
+.iv__amb canvas{position:absolute;inset:0;width:100%;height:100%}
+.iv__phrase{position:absolute;inset:0;z-index:2;display:grid;place-items:center;padding:6vw;text-align:center;color:rgba(255,255,255,.55);font-family:"Manrope",sans-serif;font-weight:600;letter-spacing:-.06em;font-size:clamp(34px,3.6vw,58px);line-height:1.02}
+.iv__phrase span{display:inline-block;filter:blur(18px);opacity:0;transition:filter 1.5s var(--ease),opacity 1.5s var(--ease)}
+.iv__phrase span.in{filter:blur(0);opacity:1}
+.iv__phrase span.out{filter:blur(22px);opacity:0}
+.iv__main{position:relative;overflow-y:auto;padding:10vh 6vw 140px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.iv__main>*{width:100%;max-width:600px;margin-left:auto;margin-right:auto}
+.iv__tabs{display:flex;gap:18px;margin-bottom:30px;flex-wrap:wrap}
+.iv__tab{border:0;background:none;padding:0 0 5px;cursor:pointer;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(18,23,17,.32);border-bottom:2px solid transparent;transition:color .3s,border-color .3s}
+.iv__tab.on{color:var(--ink);border-color:var(--orange)}
+.iv__tab.done{color:var(--safe)}
+.ivset{display:none}
+.ivset.on{display:block;animation:panelIn .55s var(--ease)}
+.ivset h3{font-family:"Manrope",sans-serif;font-size:clamp(24px,2.4vw,32px);font-weight:600;letter-spacing:-.05em;line-height:1;margin-bottom:6px}
+.ivset h3 em{color:var(--orange);font-family:Georgia,serif;font-weight:400}
+.ivset .hint{color:var(--ink-soft);font-size:13px;margin-bottom:22px}
+.ivf{margin-bottom:18px}
+.ivf label{display:block;margin-bottom:7px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.ivf input{width:100%;border:0;border-bottom:1px solid rgba(18,23,17,.28);background:transparent;padding:8px 2px 10px;font:inherit;font-size:15px;color:var(--ink);outline:none;border-radius:0}
+.ivf input:focus{border-color:var(--ink)}
+.iv2{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid rgba(18,23,17,.3);background:transparent;border-radius:100px;padding:7px 15px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;transition:all .3s var(--ease)}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--acid);border-color:var(--ink)}
+.chipfield{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid rgba(18,23,17,.28);padding-bottom:9px}
+.chipfield input{flex:1;min-width:130px;border:0;background:transparent;font:inherit;font-size:14px;outline:none;padding:6px 2px}
+.chip--x{background:var(--ink);color:var(--acid);border-color:var(--ink)}
+.iv__nav{position:fixed;left:calc(50% + 6vw);right:6vw;bottom:28px;display:flex;justify-content:space-between;align-items:center;max-width:none;z-index:3}
+.iv__hintkey{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.drop{border:2px dashed rgba(18,23,17,.3);border-radius:var(--radius);background:var(--paper-light);padding:34px 20px;text-align:center;color:var(--ink-soft);font-size:13px;cursor:pointer;transition:border-color .3s,background .3s}
+.drop.hot{border-color:var(--orange);background:rgba(255,109,46,.06)}
+.drop b{display:block;font-family:"Manrope",sans-serif;font-size:16px;color:var(--ink);letter-spacing:-.02em;margin-bottom:4px}
+.drop input{display:none}
+.dfiles{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.dfile{font-family:"Space Mono",monospace;font-size:10px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.dfile.ok{background:var(--safe-bg);border-color:rgba(58,90,18,.3)}
+.dfile.bad{background:var(--risk-bg);border-color:rgba(232,56,47,.3);color:var(--risk)}
+
+/* deep analysis overlay */
+.deep{position:fixed;inset:0;z-index:900;background:#0a0e0b;display:none;overflow:hidden}
+.deep.on{display:block;animation:deepIn .6s var(--ease)}
+@keyframes deepIn{from{opacity:0}to{opacity:1}}
+.deep canvas{position:absolute;inset:0;width:100%;height:100%}
+.deep__stack{position:absolute;inset:0;display:grid;place-items:center;z-index:2}
+.deep__glass{padding:34px 46px;border-radius:22px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);backdrop-filter:blur(10px);text-align:center;max-width:min(620px,90vw);filter:blur(20px);opacity:0;transform:scale(.92);transition:filter 1s var(--ease),opacity 1s var(--ease),transform 1s var(--ease)}
+.deep__glass.in{filter:blur(0);opacity:1;transform:none}
+.deep__glass.out{filter:blur(24px);opacity:0;transform:scale(1.05)}
+.deep__glass b{display:block;font-family:"Manrope",sans-serif;font-size:clamp(26px,4vw,44px);font-weight:600;letter-spacing:-.05em;color:#fff;line-height:1.02}
+.deep__glass b em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
+.deep__glass span{display:block;margin-top:12px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.deep__foot{position:absolute;bottom:26px;left:36px;right:36px;z-index:2;display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.deep__wipe{position:absolute;inset:0;z-index:3;background:var(--acid);display:grid;place-items:center;clip-path:circle(0% at 50% 50%);transition:clip-path .9s var(--ease)}
+.deep__wipe.on{clip-path:circle(150% at 50% 50%)}
+.deep__wipe b{font-family:"Manrope",sans-serif;font-size:clamp(38px,6vw,84px);font-weight:600;letter-spacing:-.06em;color:var(--ink)}
+@media (max-width:860px){.iv{grid-template-columns:1fr;grid-template-rows:200px 1fr}.iv__phrase{font-size:28px}.iv2{grid-template-columns:1fr}.iv__main{padding:34px 22px 110px;justify-content:flex-start}.iv__nav{left:22px;right:22px}}
+
 /* ── responsive: rail becomes top progress ── */
 @media (max-width:920px){
   .shell{grid-template-columns:1fr;gap:26px}
@@ -291,24 +352,123 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff;padding:12px;border-radi
     <section class="panel" data-panel="0" id="sec-strategy">
       <div class="step">Step 01 / Strategy</div>
       <h2>Business &amp; <em class="accent">Strategy</em></h2>
-      <p class="sub">Feed in your business details — Hanora researches the market and produces a complete marketing strategy.</p>
-      <form id="form-strategy">
-        <div class="grid">
-          <div class="field"><label>Business name</label><input id="s-name" required></div>
-          <div class="field"><label>Industry</label><input id="s-industry" required></div>
-          <div class="field"><label>Target countries (comma separated)</label><input id="s-countries" placeholder="Japan, Germany, Brazil"></div>
-          <div class="field"><label>Budget</label><input id="s-budget" placeholder="$10,000 / month"></div>
+      <div class="iv" id="iv">
+        <aside class="iv__amb" aria-hidden="true">
+          <canvas id="amb"></canvas>
+          <div class="iv__phrase" id="amb-word"></div>
+        </aside>
+        <div class="iv__main" id="iv-main">
+          <div class="iv__tabs">
+            <button type="button" class="iv__tab on">Identity</button>
+            <button type="button" class="iv__tab">Socials</button>
+            <button type="button" class="iv__tab">Market</button>
+            <button type="button" class="iv__tab">Goals</button>
+            <button type="button" class="iv__tab">Data</button>
+          </div>
+
+          <div class="ivset on">
+            <h3>Who are you<em>?</em></h3>
+            <p class="hint">The basics — two lines and a tap.</p>
+            <div class="ivf"><label>Business name</label><input id="s-name" placeholder="Hanora Skincare"></div>
+            <div class="ivf"><label>What do you sell — one line</label><input id="s-products" placeholder="Vegan skincare for sensitive skin"></div>
+            <div class="ivf"><label>Industry</label>
+              <div class="chips" data-chipset="single" data-target="#s-industry">
+                <button type="button" class="chip" data-v="Skincare">Skincare</button>
+                <button type="button" class="chip" data-v="Fashion">Fashion</button>
+                <button type="button" class="chip" data-v="SaaS">SaaS</button>
+                <button type="button" class="chip" data-v="Food &amp; Beverage">Food</button>
+                <button type="button" class="chip" data-v="Fitness">Fitness</button>
+                <button type="button" class="chip" data-v="Education">Education</button>
+              </div>
+              <input id="s-industry" placeholder="…or type your own" style="margin-top:10px">
+            </div>
+          </div>
+
+          <div class="ivset">
+            <h3>Where do you live online<em>?</em></h3>
+            <p class="hint">All optional — paste what you have, skip the rest.</p>
+            <div class="iv2">
+              <div class="ivf"><label>Website</label><input id="s-web" placeholder="https://…"></div>
+              <div class="ivf"><label>Instagram</label><input id="so-ig" placeholder="@handle"></div>
+              <div class="ivf"><label>Facebook</label><input id="so-fb" placeholder="page name"></div>
+              <div class="ivf"><label>LinkedIn</label><input id="so-li" placeholder="company page"></div>
+              <div class="ivf"><label>X / Twitter</label><input id="so-x" placeholder="@handle"></div>
+              <div class="ivf"><label>YouTube</label><input id="so-yt" placeholder="channel"></div>
+            </div>
+          </div>
+
+          <div class="ivset">
+            <h3>Where are you going<em>?</em></h3>
+            <p class="hint">Type a country and hit Enter — add as many as you like.</p>
+            <div class="ivf"><label>Target countries</label>
+              <div class="chipfield" id="country-chips"><input id="country-input" placeholder="Japan ↵"></div>
+              <input type="hidden" id="s-countries">
+            </div>
+            <div class="iv2">
+              <div class="ivf"><label>Monthly budget</label><input id="s-budget" placeholder="$10,000 / month"></div>
+              <div class="ivf"><label>Competitors (comma separated)</label><input id="s-competitors" placeholder="Brand A, Brand B"></div>
+            </div>
+          </div>
+
+          <div class="ivset">
+            <h3>What does winning look like<em>?</em></h3>
+            <p class="hint">Tap everything that applies — no typing needed.</p>
+            <div class="ivf"><label>Goals</label>
+              <div class="chips" data-chipset="multi" data-target="#s-goals">
+                <button type="button" class="chip" data-v="Brand awareness">Awareness</button>
+                <button type="button" class="chip" data-v="More sales">Sales</button>
+                <button type="button" class="chip" data-v="Lead generation">Leads</button>
+                <button type="button" class="chip" data-v="Grow followers">Followers</button>
+                <button type="button" class="chip" data-v="Enter new markets">New markets</button>
+                <button type="button" class="chip" data-v="Launch a product">Product launch</button>
+              </div>
+              <input type="hidden" id="s-goals">
+            </div>
+            <div class="ivf"><label>Brand tone</label>
+              <div class="chips" data-chipset="multi" data-target="#s-brand">
+                <button type="button" class="chip" data-v="Premium">Premium</button>
+                <button type="button" class="chip" data-v="Playful">Playful</button>
+                <button type="button" class="chip" data-v="Minimal">Minimal</button>
+                <button type="button" class="chip" data-v="Bold">Bold</button>
+                <button type="button" class="chip" data-v="Trustworthy">Trustworthy</button>
+              </div>
+              <input type="hidden" id="s-brand">
+            </div>
+            <div class="ivf"><label>Who is it for — one line</label><input id="s-audience" placeholder="Women 20–35 who care about ingredients"></div>
+          </div>
+
+          <div class="ivset">
+            <h3>Feed the machine<em>.</em></h3>
+            <p class="hint">Drop anything — brand decks, product lists, past campaigns. Optional but powerful.</p>
+            <div class="drop" id="drop">
+              <b>Drag files here, or click</b>
+              PDF · Word · Excel · CSV · TXT — parsed right in your browser
+              <input type="file" id="drop-input" multiple accept=".pdf,.docx,.xlsx,.xls,.csv,.tsv,.txt,.md,.json">
+            </div>
+            <div class="dfiles" id="dfiles"></div>
+            <div class="pnav" style="margin-top:26px">
+              <button class="btn" id="btn-analyse" type="button">Run deep analysis</button>
+            </div>
+          </div>
+
+          <div class="iv__nav">
+            <button class="btn btn--ghost" id="iv-back" type="button" style="visibility:hidden">← Back</button>
+            <span class="iv__hintkey">Enter ↵ next</span>
+            <button class="btn" id="iv-next" type="button">Next →</button>
+          </div>
         </div>
-        <div class="field"><label>Goals</label><textarea id="s-goals"></textarea></div>
-        <div class="field"><label>Target audience</label><textarea id="s-audience"></textarea></div>
-        <div class="field"><label>Products / services</label><textarea id="s-products"></textarea></div>
-        <div class="field"><label>Competitors</label><textarea id="s-competitors"></textarea></div>
-        <div class="field"><label>Brand guidelines</label><textarea id="s-brand"></textarea></div>
-        <button class="btn" type="submit">Generate strategy</button>
-      </form>
+      </div>
       <div class="err" id="s-err"></div>
       <div class="result" id="s-result"></div>
     </section>
+
+    <!-- deep analysis overlay -->
+    <div class="deep" id="deep" aria-live="polite">
+      <canvas id="deep-cv"></canvas>
+      <div class="deep__stack"><div class="deep__glass" id="deep-glass"></div></div>
+      <div class="deep__foot"><span>Hanora strategy engine</span><span>Deep analysis in progress</span></div>
+      <div class="deep__wipe" id="deep-wipe"><b>Profile locked.</b></div>
+    </div>
 
     <!-- 2. CONTENT -->
     <section class="panel" data-panel="1" id="sec-content">
@@ -517,7 +677,7 @@ function completeStep(i) {
 }
 
 /* persistence — never lose a campaign on refresh */
-const FIELD_IDS = ["s-name","s-industry","s-countries","s-budget","s-goals","s-audience","s-products","s-competitors","s-brand","seo-site","v-country","v-budget","v-image"];
+const FIELD_IDS = ["s-name","s-industry","s-countries","s-budget","s-goals","s-audience","s-products","s-competitors","s-brand","s-web","so-ig","so-fb","so-li","so-x","so-yt","seo-site","v-country","v-budget","v-image"];
 let saveT = null;
 function saveFlow() {
   clearTimeout(saveT);
@@ -579,6 +739,7 @@ q("#cmdbar").addEventListener("submit", e => {
   if (filled.length) {
     note.innerHTML = `<b>✓ Directed:</b> prefilled ${filled.join(", ")} — review step 01 below`;
     saveFlow();
+    syncChipsFromHidden();
   } else {
     note.innerHTML = `Nothing matched yet — fill step 01 manually and the flow will guide you`;
   }
@@ -596,10 +757,16 @@ function flash(sel) {
   el.classList.add("flash");
 }
 
-/* ── 1. strategy ── */
-q("#form-strategy").addEventListener("submit", async e => {
-  e.preventDefault();
-  const btn = e.target.querySelector("button");
+/* ── 1. strategy (deep analysis) ── */
+q("#btn-analyse").addEventListener("click", async () => {
+  const btn = q("#btn-analyse");
+  if (!q("#s-name").value.trim() || !q("#s-industry").value.trim()) {
+    goSet(0);
+    q("#s-err").textContent = "Need at least your business name and industry — see the Identity set.";
+    q("#s-err").classList.add("on");
+    return;
+  }
+  q("#s-err").classList.remove("on");
   state.business = {
     businessName: q("#s-name").value,
     industry: q("#s-industry").value,
@@ -610,9 +777,15 @@ q("#form-strategy").addEventListener("submit", async e => {
     products: q("#s-products").value,
     competitors: q("#s-competitors").value,
     brandGuidelines: q("#s-brand").value,
+    socials: {
+      website: q("#s-web").value, instagram: q("#so-ig").value, facebook: q("#so-fb").value,
+      linkedin: q("#so-li").value, x: q("#so-x").value, youtube: q("#so-yt").value,
+    },
   };
-  const data = await callApi("/api/strategy", { ...state.business, keys }, btn, q("#s-err"));
-  if (!data) return;
+  deepOpen();
+  const data = await callApi("/api/strategy", { ...state.business, documents: docs.slice(0, 6), keys }, btn, q("#s-err"));
+  if (!data) { deepClose(false); return; }
+  deepClose(true);
   state.strategy = data.strategy;
   const s = data.strategy;
   const out = q("#s-result");
@@ -626,7 +799,10 @@ q("#form-strategy").addEventListener("submit", async e => {
     <h3>Platform recommendations</h3><ul>${(s.platformRecommendations || []).map(p => `<li>${esc(p.platform)} — ${esc(p.reason)}</li>`).join("")}</ul>
     <h3>Growth strategy</h3><p>${esc(s.growthStrategy)}</p>
   `;
+  out.insertAdjacentHTML("beforeend", `<div class="pnav"><button class="btn btn--ghost" id="iv-reopen" type="button">Edit profile</button></div>`);
   out.classList.add("on");
+  q("#iv").classList.add("gone");
+  q("#iv-reopen").addEventListener("click", () => { q("#iv").classList.remove("gone"); out.classList.remove("on"); goSet(0); });
   completeStep(0);
 });
 
@@ -893,6 +1069,233 @@ async function refreshMetrics() {
   out.classList.add("on");
 }
 q("#btn-refresh").addEventListener("click", refreshMetrics);
+
+/* ═══════════ INTERVIEW — split onboarding ═══════════ */
+const IV_COUNT = 5;
+let ivSet = 0;
+const ivTabs = qa(".iv__tab"), ivPanels = qa(".ivset");
+
+function goSet(i) {
+  ivSet = Math.max(0, Math.min(IV_COUNT - 1, i));
+  ivTabs.forEach((t, k) => { t.classList.toggle("on", k === ivSet); t.classList.toggle("done", k < ivSet); });
+  ivPanels.forEach((p, k) => p.classList.toggle("on", k === ivSet));
+  q("#iv-back").style.visibility = ivSet === 0 ? "hidden" : "visible";
+  q("#iv-next").style.display = ivSet === IV_COUNT - 1 ? "none" : "";
+}
+q("#iv-next").addEventListener("click", () => goSet(ivSet + 1));
+q("#iv-back").addEventListener("click", () => goSet(ivSet - 1));
+ivTabs.forEach((t, k) => t.addEventListener("click", () => goSet(k)));
+q("#iv-main").addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.tagName === "INPUT" && !e.target.closest(".chipfield")) {
+    e.preventDefault();
+    if (ivSet < IV_COUNT - 1) goSet(ivSet + 1);
+  }
+});
+
+/* chip groups → hidden inputs */
+qa("[data-chipset]").forEach(setEl => {
+  const target = q(setEl.dataset.target);
+  const multi = setEl.dataset.chipset === "multi";
+  setEl.addEventListener("click", e => {
+    const c = e.target.closest(".chip"); if (!c) return;
+    if (multi) c.classList.toggle("on");
+    else { setEl.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); c.classList.add("on"); }
+    target.value = [...setEl.querySelectorAll(".chip.on")].map(x => x.dataset.v).join(", ");
+    target.dispatchEvent(new Event("input"));
+  });
+});
+
+/* countries chip field */
+const cWrap = q("#country-chips"), cInput = q("#country-input"), cHidden = q("#s-countries");
+function renderCountryChips() {
+  cWrap.querySelectorAll(".chip--x").forEach(x => x.remove());
+  split(cHidden.value).forEach(name => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip chip--x"; b.textContent = name + " ×";
+    b.addEventListener("click", () => {
+      cHidden.value = split(cHidden.value).filter(n => n !== name).join(", ");
+      cHidden.dispatchEvent(new Event("input"));
+      renderCountryChips();
+    });
+    cWrap.insertBefore(b, cInput);
+  });
+}
+cInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === ",") {
+    e.preventDefault();
+    const v = cInput.value.trim().replace(/,$/, ""); if (!v) return;
+    const cur = split(cHidden.value);
+    if (!cur.some(n => n.toLowerCase() === v.toLowerCase())) {
+      cur.push(titleCase(v));
+      cHidden.value = cur.join(", ");
+      cHidden.dispatchEvent(new Event("input"));
+    }
+    cInput.value = ""; renderCountryChips();
+  } else if (e.key === "Backspace" && !cInput.value) {
+    const cur = split(cHidden.value); cur.pop();
+    cHidden.value = cur.join(", "); cHidden.dispatchEvent(new Event("input"));
+    renderCountryChips();
+  }
+});
+function syncChipsFromHidden() {
+  renderCountryChips();
+  qa("[data-chipset]").forEach(setEl => {
+    const target = q(setEl.dataset.target); if (!target) return;
+    const vals = split(target.value).map(v => v.toLowerCase());
+    setEl.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", vals.includes(c.dataset.v.toLowerCase())));
+  });
+}
+syncChipsFromHidden();
+goSet(0);
+
+/* ── drop box + in-browser parsers ── */
+const docs = [];
+const dz = q("#drop"), dzInput = q("#drop-input"), dfilesEl = q("#dfiles");
+dz.addEventListener("click", () => dzInput.click());
+["dragover", "dragenter"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("hot"); }));
+["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("hot"); }));
+dz.addEventListener("drop", e => handleFiles(e.dataTransfer.files));
+dzInput.addEventListener("change", () => handleFiles(dzInput.files));
+
+function loadScript(src) {
+  return new Promise((ok, no) => {
+    if (document.querySelector(`script[src="${src}"]`)) return ok();
+    const s = document.createElement("script");
+    s.src = src; s.onload = ok; s.onerror = no;
+    document.head.appendChild(s);
+  });
+}
+async function extractText(file) {
+  const ext = file.name.split(".").pop().toLowerCase();
+  if (["txt", "md", "csv", "tsv", "json"].includes(ext)) return file.text();
+  if (ext === "pdf") {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    let out = "";
+    for (let p = 1; p <= Math.min(pdf.numPages, 40); p++) {
+      const tc = await (await pdf.getPage(p)).getTextContent();
+      out += tc.items.map(i => i.str).join(" ") + "\n";
+    }
+    return out;
+  }
+  if (ext === "docx") {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js");
+    return (await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+  }
+  if (["xlsx", "xls"].includes(ext)) {
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+    const wb = XLSX.read(await file.arrayBuffer());
+    return wb.SheetNames.slice(0, 5).map(n => n + "\n" + XLSX.utils.sheet_to_csv(wb.Sheets[n])).join("\n\n");
+  }
+  throw new Error("unsupported");
+}
+async function handleFiles(list) {
+  for (const f of list) {
+    const chipEl = document.createElement("span");
+    chipEl.className = "dfile"; chipEl.textContent = f.name + " · parsing…";
+    dfilesEl.appendChild(chipEl);
+    try {
+      const text = (await extractText(f)).slice(0, 30000);
+      docs.push({ name: f.name, text });
+      chipEl.classList.add("ok"); chipEl.textContent = f.name + " ✓";
+    } catch {
+      chipEl.classList.add("bad"); chipEl.textContent = f.name + " · can't read";
+    }
+  }
+  dzInput.value = "";
+}
+
+/* ── ambient renderer: fluid blobs + drifting grid + scanline ── */
+function ambient(cv, intensity = 1) {
+  const cx2 = cv.getContext("2d");
+  let W, H, raf, t = 0;
+  const rs = () => { const r = cv.getBoundingClientRect(); W = cv.width = r.width * devicePixelRatio; H = cv.height = r.height * devicePixelRatio; };
+  rs(); addEventListener("resize", rs);
+  const blobs = [0, 1, 2].map(i => ({ a: Math.random() * 7, sp: .0016 + i * .0009, r: .34 + i * .13, col: i === 1 ? "77,125,255" : "216,255,69" }));
+  function frame() {
+    t += 1;
+    if (!W || !H) rs();
+    cx2.fillStyle = "#0a0e0b"; cx2.fillRect(0, 0, W, H);
+    blobs.forEach(b => {
+      b.a += b.sp;
+      const x = W * (.5 + .3 * Math.cos(b.a)), y = H * (.5 + .32 * Math.sin(b.a * 1.3));
+      const g = cx2.createRadialGradient(x, y, 0, x, y, Math.max(W, H) * b.r);
+      g.addColorStop(0, `rgba(${b.col},${.13 * intensity})`);
+      g.addColorStop(1, "rgba(10,14,11,0)");
+      cx2.fillStyle = g; cx2.fillRect(0, 0, W, H);
+    });
+    cx2.strokeStyle = `rgba(255,255,255,${.05 * intensity})`; cx2.lineWidth = 1;
+    const gp = 54 * devicePixelRatio, off = (t * .22 * devicePixelRatio) % gp;
+    for (let x = -off; x < W; x += gp) { cx2.beginPath(); cx2.moveTo(x, 0); cx2.lineTo(x, H); cx2.stroke(); }
+    for (let y = -off; y < H; y += gp) { cx2.beginPath(); cx2.moveTo(0, y); cx2.lineTo(W, y); cx2.stroke(); }
+    const sy = (t * 1.1 * devicePixelRatio) % (H + 200) - 100;
+    const sg = cx2.createLinearGradient(0, sy - 60, 0, sy + 60);
+    sg.addColorStop(0, "rgba(216,255,69,0)"); sg.addColorStop(.5, `rgba(216,255,69,${.07 * intensity})`); sg.addColorStop(1, "rgba(216,255,69,0)");
+    cx2.fillStyle = sg; cx2.fillRect(0, sy - 60, W, 120);
+    raf = requestAnimationFrame(frame);
+  }
+  frame();
+  return () => cancelAnimationFrame(raf);
+}
+ambient(q("#amb"));
+
+/* left-panel phrase cycler: blur in → hold → blur out */
+const PHRASES = ["The signal sharpens.", "142 markets. One brain.", "Culture is context.", "Nothing ships blind.", "Every market speaks.", "Listen, then launch."];
+(function cyclePhrase() {
+  const el = q("#amb-word"); let i = 0;
+  const spin = () => {
+    el.innerHTML = `<span>${PHRASES[i]}</span>`;
+    const s = el.firstChild;
+    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add("in")));
+    setTimeout(() => { s.classList.remove("in"); s.classList.add("out"); }, 3400);
+    i = (i + 1) % PHRASES.length;
+    setTimeout(spin, 4700);
+  };
+  spin();
+})();
+
+/* ── deep analysis overlay: glass phrases emerging + vanishing ── */
+let deepStopFn = null, deepTimer = null;
+function deepOpen() {
+  q("#deep").classList.add("on");
+  document.body.style.overflow = "hidden";
+  deepStopFn = ambient(q("#deep-cv"), 1.6);
+  const lines = [
+    [`Reading your <em>business</em>`, "profile intake"],
+    ...docs.slice(0, 3).map(d => [`Parsing <em>${esc(d.name)}</em>`, "document analysis"]),
+    [`Mapping the <em>competitors</em>`, "live market research"],
+    ...split(cHidden.value).slice(0, 3).map(c => [`Cultural fit — <em>${esc(c)}</em>`, "six-lens preview"]),
+    [`Building <em>go-to-market</em> angles`, "strategy engine"],
+    [`Allocating <em>budget</em>`, "channel modelling"],
+    [`Sharpening the <em>funnel</em>`, "conversion design"],
+  ];
+  const g = q("#deep-glass");
+  let i = 0;
+  g.classList.remove("in", "out");
+  g.innerHTML = `<b>Going <em>deep</em>.</b><span>hold on</span>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => g.classList.add("in")));
+  deepTimer = setInterval(() => {
+    g.classList.remove("in"); g.classList.add("out");
+    setTimeout(() => {
+      const [b, s] = lines[i % lines.length]; i++;
+      g.innerHTML = `<b>${b}</b><span>${s}</span>`;
+      g.classList.remove("out");
+      requestAnimationFrame(() => requestAnimationFrame(() => g.classList.add("in")));
+    }, 1000);
+  }, 3400);
+}
+function deepClose(ok) {
+  clearInterval(deepTimer);
+  const done = () => {
+    q("#deep").classList.remove("on");
+    q("#deep-wipe").classList.remove("on");
+    document.body.style.overflow = "";
+    if (deepStopFn) { deepStopFn(); deepStopFn = null; }
+  };
+  if (ok) { q("#deep-wipe").classList.add("on"); setTimeout(done, 1700); }
+  else done();
+}
 
 /* ═══════════ AMBIENT SIGNAL-FIELD BACKGROUND ═══════════ */
 (function signalField() {

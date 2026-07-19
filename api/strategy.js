@@ -27,10 +27,14 @@ Budget: ${b.budget || "n/a"}
 Target countries: ${countries || "n/a"}
 Products/services: ${b.products || "n/a"}
 Competitors: ${b.competitors || "n/a"}
-Brand guidelines: ${b.brandGuidelines || "n/a"}
+Brand guidelines / tone: ${b.brandGuidelines || "n/a"}
+Social presence: ${b.socials ? Object.entries(b.socials).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(", ") || "n/a" : "n/a"}
 
 MARKET RESEARCH
 ${research || "n/a"}
+
+BUSINESS DOCUMENTS (provided by the user — treat as ground truth about their business)
+${(b.documents || []).map(d => `--- ${d.name} ---\n${String(d.text || "").slice(0, 12000)}`).join("\n\n").slice(0, 50000) || "none provided"}
 
 Respond with ONLY valid JSON, no markdown fences, matching this shape:
 {
