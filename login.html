@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ede8df">
+<title>Hanora AI — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0}
+html,body{height:100%}
+body{overflow:hidden;color:var(--ink);background:var(--paper);font-family:"DM Sans",sans-serif}
+a{color:inherit}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}
+::selection{background:var(--ink);color:var(--acid)}
+.mono{font-family:"Space Mono",monospace}
+.noise{position:fixed;inset:0;z-index:9990;opacity:.055;pointer-events:none;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E")}
+.cursor{position:fixed;top:0;left:0;z-index:10000;width:14px;height:14px;border-radius:50%;pointer-events:none;background:var(--acid);border:1px solid rgba(18,23,17,.7);transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .4s var(--ease),height .4s var(--ease),background .4s var(--ease)}
+.cursor.is-active{width:54px;height:54px;background:white}
+@media (pointer:coarse){.cursor{display:none}}
+
+.auth{display:grid;grid-template-columns:1.05fr 1fr;height:100vh;height:100dvh}
+
+/* ── LEFT: SIGNAL STAGE ── */
+.stage{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:34px 40px;color:white;background:#0a0e0b}
+.stage__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.72) contrast(1.08) brightness(.55);transform:scale(1.05)}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,11,.6),rgba(10,14,11,.22) 40%,rgba(10,14,11,.75)),radial-gradient(circle at 30% 60%,transparent 25%,rgba(10,14,11,.45))}
+.stage>*{position:relative;z-index:2}
+.stage__top{display:flex;align-items:center;justify-content:space-between}
+.stage__logo{text-decoration:none;font-family:"Manrope",sans-serif;font-size:20px;font-weight:700;letter-spacing:-.05em}
+.stage__logo span{font-size:9px;vertical-align:top;margin-left:4px;font-family:"Space Mono",monospace;letter-spacing:0}
+.stage__secure{display:flex;align-items:center;gap:9px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.stage__secure i{width:7px;height:7px;border-radius:50%;background:var(--acid);box-shadow:0 0 0 4px rgba(216,255,69,.14);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(216,255,69,.14)}50%{box-shadow:0 0 0 8px rgba(216,255,69,.05)}}
+.stage__mid h1{font-family:"Manrope",sans-serif;font-size:clamp(42px,4.6vw,76px);font-weight:600;letter-spacing:-.07em;line-height:.9}
+.stage__mid h1 em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
+.stage__mid p{max-width:400px;margin-top:22px;color:rgba(255,255,255,.55);font-size:14px;line-height:1.65}
+.ticker{display:flex;align-items:center;gap:12px;margin-top:34px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--acid)}
+.ticker::before{content:"";width:26px;height:1px;background:var(--acid)}
+.ticker span{display:inline-block;animation:tickIn .6s var(--ease)}
+@keyframes tickIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stage__foot{display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.42)}
+
+/* ── RIGHT: PAPER SHEET ── */
+.sheet{position:relative;overflow-y:auto;display:flex;flex-direction:column;background:radial-gradient(circle at 80% 8%,rgba(216,255,69,.18),transparent 24rem),radial-gradient(circle at 8% 90%,rgba(77,125,255,.08),transparent 22rem),var(--paper)}
+.sheet__inner{width:min(480px,calc(100% - 56px));margin:auto;padding:56px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(255,109,46,.12)}
+.sheet h2{margin:20px 0 8px;font-family:"Manrope",sans-serif;font-size:clamp(40px,4.2vw,58px);font-weight:600;letter-spacing:-.06em;line-height:.94}
+.sheet h2 em{color:var(--orange);font-family:Georgia,serif;font-weight:400}
+.sheet__sub{color:var(--ink-soft);font-size:15px;line-height:1.6;margin-bottom:36px}
+.panel{display:none}
+.panel.is-on{display:block;animation:panelIn .55s var(--ease)}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.field{position:relative;margin-bottom:26px}
+.field label{display:block;margin-bottom:8px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.field input{width:100%;padding:10px 34px 12px 2px;border:0;border-bottom:1px solid rgba(18,23,17,.3);border-radius:0;background:transparent;color:var(--ink);font-family:"DM Sans",sans-serif;font-size:16px;outline:none}
+.field input::placeholder{color:rgba(86,96,86,.55)}
+.field::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:2px;transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease);background:var(--ink)}
+.field:focus-within::after{transform:scaleX(1)}
+.field:focus-within label{color:var(--ink)}
+.field__eye{position:absolute;right:0;bottom:10px;border:0;background:transparent;cursor:pointer;color:var(--ink-soft);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.field__eye:hover{color:var(--ink)}
+.row{display:flex;align-items:center;justify-content:space-between;margin:-8px 0 30px}
+.linklet{border:0;background:transparent;cursor:pointer;color:var(--ink-soft);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;text-decoration:none;position:relative;padding:0}
+.linklet::after{content:"";position:absolute;right:0;bottom:-4px;left:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.linklet:hover{color:var(--ink)}.linklet:hover::after{transform:scaleX(1);transform-origin:left}
+.button{position:relative;width:100%;display:inline-flex;align-items:center;justify-content:space-between;gap:28px;padding:7px 7px 7px 27px;overflow:hidden;border:0;border-radius:100px;color:white;background:var(--ink);text-decoration:none;cursor:pointer;transition:transform .4s var(--ease)}
+.button:hover{transform:translateY(-2px)}
+.button:active{transform:scale(.985)}
+.button span{position:relative;z-index:2;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.button i{position:relative;z-index:2;display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:var(--ink);background:var(--acid);font-style:normal;transition:transform .5s var(--ease)}
+.button:hover i{transform:rotate(45deg)}
+.button.is-busy{pointer-events:none}
+.button.is-busy i{animation:spin 1s linear infinite}
+.button.is-ok{background:var(--acid);color:var(--ink)}
+.button.is-ok i{background:var(--ink);color:var(--acid)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:16px;margin:26px 0;color:var(--ink-soft);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:rgba(18,23,17,.18)}
+.g-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:16px;border:1px solid rgba(18,23,17,.35);border-radius:100px;background:transparent;cursor:pointer;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);transition:background .4s var(--ease),transform .4s var(--ease)}
+.g-btn:hover{background:var(--paper-light);transform:translateY(-2px)}
+.g-btn svg{width:16px;height:16px}
+.msg{display:none;margin:0 0 24px;padding:13px 16px;border-radius:12px;font-family:"Space Mono",monospace;font-size:11px;line-height:1.55}
+.msg.is-err{display:block;background:rgba(232,56,47,.09);border:1px solid rgba(232,56,47,.35);color:var(--red);animation:shake .45s var(--ease)}
+.msg.is-good{display:block;background:rgba(166,255,77,.14);border:1px solid rgba(18,23,17,.25);color:var(--ink)}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}60%{transform:translateX(5px)}}
+.swap{margin-top:34px;text-align:center;color:var(--ink-soft);font-size:13px}
+.swap .linklet{margin-left:8px;color:var(--ink)}
+.sheet__foot{display:flex;justify-content:space-between;padding:0 40px 24px;font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(18,23,17,.4)}
+.granted{position:fixed;inset:0;z-index:15000;display:grid;place-items:center;background:var(--acid);clip-path:circle(0% at 75% 50%);transition:clip-path .9s var(--ease);pointer-events:none}
+.granted.is-on{clip-path:circle(150% at 75% 50%)}
+.granted b{font-family:"Manrope",sans-serif;font-size:clamp(40px,7vw,110px);font-weight:600;letter-spacing:-.07em;color:var(--ink)}
+.granted p{position:absolute;bottom:36px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(18,23,17,.6)}
+
+@media (max-width:920px){
+  body{overflow:auto}
+  .auth{grid-template-columns:1fr;height:auto;min-height:100dvh;grid-template-rows:34vh 1fr}
+  .stage{padding:22px 24px}
+  .stage__mid p,.stage__foot{display:none}
+  .stage__mid h1{font-size:clamp(34px,9vw,52px)}
+  .ticker{margin-top:16px}
+  .sheet__inner{padding:44px 0 30px}
+}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="cursor" aria-hidden="true"></div>
+
+<main class="auth">
+
+  <!-- LEFT — SIGNAL STAGE -->
+  <section class="stage" aria-label="Hanora signal feed">
+    <video class="stage__video" autoplay muted loop playsinline>
+      <source src="assets/hero-aerial.mp4" type="video/mp4">
+    </video>
+    <div class="stage__top">
+      <a class="stage__logo" href="index.html">Hanora<span>AI</span></a>
+      <div class="stage__secure"><i></i>Secure channel</div>
+    </div>
+    <div class="stage__mid">
+      <h1>Intelligence<br>for <em>every</em><br>market.</h1>
+      <p>One login. 142 markets of cultural, historical, religious, political and social signal — before your campaign goes live.</p>
+      <div class="ticker mono"><span id="tickerText">Scanning — Tokyo 04:12</span></div>
+    </div>
+    <div class="stage__foot"><span>Hanora access node 01</span><span id="utcClock">UTC --:--:--</span><span>Cultural telemetry · Realtime</span></div>
+  </section>
+
+  <!-- RIGHT — PAPER SHEET -->
+  <section class="sheet">
+    <div class="sheet__inner">
+
+      <!-- LOGIN -->
+      <div class="panel is-on" id="panel-login">
+        <span class="eyebrow">Welcome back</span>
+        <h2>Sign in to your<br>command center<em>.</em></h2>
+        <p class="sheet__sub">Pick up where your last campaign left off.</p>
+        <div class="msg" id="msg-login" role="alert"></div>
+        <form id="form-login" novalidate>
+          <div class="field">
+            <label for="li-email">Email</label>
+            <input id="li-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+          <div class="field">
+            <label for="li-pass">Password</label>
+            <input id="li-pass" type="password" autocomplete="current-password" placeholder="••••••••" required>
+            <button class="field__eye" type="button" data-eye="li-pass" aria-label="Show password">Show</button>
+          </div>
+          <div class="row">
+            <span></span>
+            <button class="linklet" type="button" data-goto="forgot">Forgot password?</button>
+          </div>
+          <button class="button" id="btn-login" type="submit"><span>Sign in</span><i>↗</i></button>
+        </form>
+        <div class="divider">or</div>
+        <button class="g-btn" type="button" data-google>
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A11 11 0 0 0 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Continue with Google
+        </button>
+        <p class="swap">New to Hanora?<button class="linklet" type="button" data-goto="signup">Create account</button></p>
+      </div>
+
+      <!-- SIGNUP -->
+      <div class="panel" id="panel-signup">
+        <span class="eyebrow">Get started</span>
+        <h2>Create your<br>account<em>.</em></h2>
+        <p class="sheet__sub">Launch culturally intelligent campaigns in minutes.</p>
+        <div class="msg" id="msg-signup" role="alert"></div>
+        <form id="form-signup" novalidate>
+          <div class="field">
+            <label for="su-name">Full name</label>
+            <input id="su-name" type="text" autocomplete="name" placeholder="Neeraj Maddula" required>
+          </div>
+          <div class="field">
+            <label for="su-email">Work email</label>
+            <input id="su-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+          <div class="field">
+            <label for="su-pass">Password</label>
+            <input id="su-pass" type="password" autocomplete="new-password" placeholder="Min. 8 characters" required>
+            <button class="field__eye" type="button" data-eye="su-pass" aria-label="Show password">Show</button>
+          </div>
+          <button class="button" id="btn-signup" type="submit"><span>Create account</span><i>↗</i></button>
+        </form>
+        <div class="divider">or</div>
+        <button class="g-btn" type="button" data-google>
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A11 11 0 0 0 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Sign up with Google
+        </button>
+        <p class="swap">Already have an account?<button class="linklet" type="button" data-goto="login">Sign in</button></p>
+      </div>
+
+      <!-- FORGOT -->
+      <div class="panel" id="panel-forgot">
+        <span class="eyebrow">Recovery</span>
+        <h2>Reset your<br>password<em>.</em></h2>
+        <p class="sheet__sub">We'll send a reset link to your inbox.</p>
+        <div class="msg" id="msg-forgot" role="alert"></div>
+        <form id="form-forgot" novalidate>
+          <div class="field">
+            <label for="fp-email">Email</label>
+            <input id="fp-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+          <button class="button" id="btn-forgot" type="submit"><span>Send reset link</span><i>↗</i></button>
+        </form>
+        <p class="swap">Remembered it?<button class="linklet" type="button" data-goto="login">Back to sign in</button></p>
+      </div>
+
+    </div>
+    <div class="sheet__foot"><span>© 2026 Hanora AI</span><a class="linklet" href="index.html">← Back to site</a></div>
+  </section>
+</main>
+
+<!-- ACCESS GRANTED -->
+<div class="granted" id="granted" aria-hidden="true">
+  <b>Access granted<em style="font-family:Georgia,serif;font-weight:400">.</em></b>
+  <p id="grantedSub">Opening your command center</p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
+  authDomain: "hanora-ai-5f1c6.firebaseapp.com",
+  projectId: "hanora-ai-5f1c6",
+  storageBucket: "hanora-ai-5f1c6.firebasestorage.app",
+  messagingSenderId: "88327882894",
+  appId: "1:88327882894:web:213fb6c4fd7f57228e61df",
+  measurementId: "G-7L6C5QNZVJ"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const REDIRECT = "app.html";
+
+/* ── panel switching ── */
+function q(s){ return document.querySelector(s); }
+function qa(s){ return [...document.querySelectorAll(s)]; }
+const panels = { login: q("#panel-login"), signup: q("#panel-signup"), forgot: q("#panel-forgot") };
+qa("[data-goto]").forEach(b => b.addEventListener("click", () => show(b.dataset.goto)));
+function show(name){
+  Object.values(panels).forEach(p => p.classList.remove("is-on"));
+  panels[name].classList.add("is-on");
+  qa(".msg").forEach(m => m.className = "msg");
+}
+
+/* ── password eyes ── */
+qa("[data-eye]").forEach(b => b.addEventListener("click", () => {
+  const inp = document.getElementById(b.dataset.eye);
+  const showPw = inp.type === "password";
+  inp.type = showPw ? "text" : "password";
+  b.textContent = showPw ? "Hide" : "Show";
+}));
+
+/* ── button states ── */
+function busy(btn, on, label){
+  btn.classList.toggle("is-busy", on);
+  btn.querySelector("span").textContent = on ? "Authenticating…" : label;
+  btn.querySelector("i").textContent = on ? "◌" : "↗";
+}
+function fail(msgEl, text){
+  msgEl.className = "msg";
+  void msgEl.offsetWidth;
+  msgEl.classList.add("is-err");
+  msgEl.textContent = text;
+}
+function good(msgEl, text){ msgEl.className = "msg is-good"; msgEl.textContent = text; }
+
+const ERRORS = {
+  "auth/invalid-credential": "Wrong email or password. Try again.",
+  "auth/wrong-password": "Wrong email or password. Try again.",
+  "auth/user-not-found": "No account with that email. Create one?",
+  "auth/email-already-in-use": "That email already has an account. Sign in instead.",
+  "auth/invalid-email": "That email doesn't look right.",
+  "auth/weak-password": "Password needs at least 6 characters.",
+  "auth/too-many-requests": "Too many attempts. Wait a moment and retry.",
+  "auth/popup-closed-by-user": "Google sign-in was closed before finishing.",
+  "auth/network-request-failed": "Network error. Check your connection."
+};
+const errText = e => ERRORS[e.code] || "Something went wrong. Try again.";
+
+/* ── access granted → redirect ── */
+function grant(name){
+  const g = q("#granted");
+  if (name) q("#grantedSub").textContent = "Welcome, " + name.split(" ")[0] + " — opening your command center";
+  g.classList.add("is-on");
+  setTimeout(() => location.href = REDIRECT, 1400);
+}
+
+/* ── login ── */
+q("#form-login").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = q("#btn-login"), msg = q("#msg-login");
+  busy(btn, true, "Sign in");
+  try {
+    const cred = await signInWithEmailAndPassword(auth, q("#li-email").value.trim(), q("#li-pass").value);
+    btn.classList.add("is-ok");
+    grant(cred.user.displayName || "");
+  } catch (err) { fail(msg, errText(err)); }
+  finally { busy(btn, false, "Sign in"); }
+});
+
+/* ── signup ── */
+q("#form-signup").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = q("#btn-signup"), msg = q("#msg-signup");
+  const name = q("#su-name").value.trim();
+  if (!name) return fail(msg, "Enter your name.");
+  busy(btn, true, "Create account");
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, q("#su-email").value.trim(), q("#su-pass").value);
+    await updateProfile(cred.user, { displayName: name });
+    btn.classList.add("is-ok");
+    grant(name);
+  } catch (err) { fail(msg, errText(err)); }
+  finally { busy(btn, false, "Create account"); }
+});
+
+/* ── forgot ── */
+q("#form-forgot").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = q("#btn-forgot"), msg = q("#msg-forgot");
+  busy(btn, true, "Send reset link");
+  try {
+    await sendPasswordResetEmail(auth, q("#fp-email").value.trim());
+    good(msg, "Reset link sent. Check your inbox (and spam).");
+  } catch (err) { fail(msg, errText(err)); }
+  finally { busy(btn, false, "Send reset link"); }
+});
+
+/* ── google ── */
+qa("[data-google]").forEach(b => b.addEventListener("click", async () => {
+  const msg = q(".panel.is-on .msg");
+  try {
+    const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+    grant(cred.user.displayName || "");
+  } catch (err) { if (err.code !== "auth/cancelled-popup-request") fail(msg, errText(err)); }
+}));
+</script>
+
+<script>
+/* ── ticker ── */
+const LINES = [
+  "Scanning — Tokyo 04:12","Risk check — Dubai 08:12","Signal clear — London 04:12",
+  "Localizing — São Paulo 01:12","Festival watch — Mumbai 09:42","Sentiment read — New York 23:12",
+  "142 markets online","Cultural telemetry · live"
+];
+let ti = 0;
+const tickerText = document.getElementById("tickerText");
+setInterval(() => {
+  ti = (ti + 1) % LINES.length;
+  tickerText.style.animation = "none";
+  void tickerText.offsetWidth;
+  tickerText.style.animation = "";
+  tickerText.textContent = LINES[ti];
+}, 2600);
+
+/* ── utc clock ── */
+const clock = document.getElementById("utcClock");
+setInterval(() => {
+  const d = new Date();
+  clock.textContent = "UTC " + String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + ":" + String(d.getUTCSeconds()).padStart(2,"0");
+}, 1000);
+
+/* ── cursor ── */
+const cursor = document.querySelector(".cursor");
+if (matchMedia("(pointer:fine)").matches) {
+  addEventListener("mousemove", e => { cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`; });
+  document.querySelectorAll("a,button,input").forEach(el => {
+    el.addEventListener("mouseenter", () => cursor.classList.add("is-active"));
+    el.addEventListener("mouseleave", () => cursor.classList.remove("is-active"));
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hanora AI — API Keys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(216,255,69,.14),transparent 26rem),
+    var(--paper);
+  color:var(--ink);font-family:"DM Sans",sans-serif;min-height:100vh;
+}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);background:rgba(247,243,235,.82);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10}
+header .logo{font-family:"Manrope",sans-serif;font-weight:700;font-size:18px;letter-spacing:-.04em}
+header a{font-family:"Space Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);text-decoration:none;transition:color .3s}
+header a:hover{color:var(--ink)}
+main{max-width:720px;margin:0 auto;padding:48px 24px 100px}
+h1{font-family:"Manrope",sans-serif;font-size:clamp(28px,3vw,36px);font-weight:600;letter-spacing:-.045em;margin-bottom:8px}
+main>.sub{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-bottom:32px}
+fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:22px;background:var(--paper-light)}
+legend{font-family:"Space Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:0 8px;color:var(--ink-soft)}
+.hint{font-size:12px;color:var(--ink-soft);margin:-8px 0 14px;line-height:1.55}
+.field input{background:#fff}
+.save{margin-top:8px}
+.status{margin-top:14px;font-size:13px;display:none}
+.status.on{display:block;animation:rise .4s var(--ease)}
+.status.ok{color:var(--safe)}
+.status.err{color:var(--risk)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">HANORA API KEYS</div>
+  <a href="app.html">&larr; Back to dashboard</a>
+</header>
+<main>
+  <h1>API <em class="accent">Keys</em></h1>
+  <p class="sub">Stored under your account only — used to power your own AI calls, searches, and platform launches. Nothing here is shared.</p>
+
+  <form id="form">
+    <fieldset>
+      <legend>LLM (any OpenAI-compatible endpoint)</legend>
+      <p class="hint">Default works with OpenRouter — put your own key, or point at Anthropic, DeepSeek, Groq, a local model, anything with an OpenAI-compatible /chat/completions endpoint.</p>
+      <div class="field"><label>Base URL</label><input id="llm-base" placeholder="https://openrouter.ai/api/v1"></div>
+      <div class="field"><label>API Key</label><input id="llm-key" type="password"></div>
+      <div class="field"><label>Model</label><input id="llm-model" placeholder="anthropic/claude-sonnet-4.5 or deepseek/deepseek-chat"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Web search</legend>
+      <p class="hint">Tavily free tier — app.tavily.com</p>
+      <div class="field"><label>Tavily API Key</label><input id="tavily-key" type="password"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Meta (Instagram + Facebook)</legend>
+      <p class="hint">developers.facebook.com — a Page access token with pages_manage_posts + instagram_content_publish</p>
+      <div class="field"><label>Page ID</label><input id="meta-page"></div>
+      <div class="field"><label>Instagram Business Account ID</label><input id="meta-ig"></div>
+      <div class="field"><label>Page Access Token</label><input id="meta-token" type="password"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>LinkedIn</legend>
+      <p class="hint">developer.linkedin.com — a Community Management API access token for your organization page</p>
+      <div class="field"><label>Organization URN</label><input id="li-org" placeholder="urn:li:organization:12345"></div>
+      <div class="field"><label>Access Token</label><input id="li-token" type="password"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Google Ads (also covers YouTube ads)</legend>
+      <p class="hint">ads.google.com/aw/apicenter — needs an approved developer token + an OAuth client with a refresh token</p>
+      <div class="field"><label>Developer Token</label><input id="g-dev" type="password"></div>
+      <div class="field"><label>Customer ID</label><input id="g-cust" placeholder="123-456-7890"></div>
+      <div class="field"><label>OAuth Client ID</label><input id="g-cid"></div>
+      <div class="field"><label>OAuth Client Secret</label><input id="g-csecret" type="password"></div>
+      <div class="field"><label>Refresh Token</label><input id="g-refresh" type="password"></div>
+      <div class="field"><label>Login Customer ID (only if using a manager account)</label><input id="g-login-cust"></div>
+    </fieldset>
+
+    <button class="btn save" type="submit">Save keys</button>
+    <div class="status" id="status"></div>
+  </form>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
+  authDomain: "hanora-ai-5f1c6.firebaseapp.com",
+  projectId: "hanora-ai-5f1c6",
+  storageBucket: "hanora-ai-5f1c6.firebasestorage.app",
+  messagingSenderId: "88327882894",
+  appId: "1:88327882894:web:213fb6c4fd7f57228e61df",
+  measurementId: "G-7L6C5QNZVJ"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const q = s => document.querySelector(s);
+
+let uid = null;
+onAuthStateChanged(auth, async user => {
+  if (!user) return location.href = "login.html";
+  uid = user.uid;
+  const snap = await getDoc(doc(db, "settings", uid));
+  if (!snap.exists()) return;
+  const k = snap.data();
+  q("#llm-base").value = k.llm?.baseURL || "";
+  q("#llm-key").value = k.llm?.apiKey || "";
+  q("#llm-model").value = k.llm?.model || "";
+  q("#tavily-key").value = k.tavilyKey || "";
+  q("#meta-page").value = k.meta?.pageId || "";
+  q("#meta-ig").value = k.meta?.igUserId || "";
+  q("#meta-token").value = k.meta?.pageAccessToken || "";
+  q("#li-org").value = k.linkedin?.orgUrn || "";
+  q("#li-token").value = k.linkedin?.accessToken || "";
+  q("#g-dev").value = k.google?.developerToken || "";
+  q("#g-cust").value = k.google?.customerId || "";
+  q("#g-cid").value = k.google?.clientId || "";
+  q("#g-csecret").value = k.google?.clientSecret || "";
+  q("#g-refresh").value = k.google?.refreshToken || "";
+  q("#g-login-cust").value = k.google?.loginCustomerId || "";
+});
+
+q("#form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button");
+  const status = q("#status");
+  btn.disabled = true;
+  const keys = {
+    llm: { baseURL: q("#llm-base").value.trim(), apiKey: q("#llm-key").value.trim(), model: q("#llm-model").value.trim() },
+    tavilyKey: q("#tavily-key").value.trim(),
+    meta: { pageId: q("#meta-page").value.trim(), igUserId: q("#meta-ig").value.trim(), pageAccessToken: q("#meta-token").value.trim() },
+    linkedin: { orgUrn: q("#li-org").value.trim(), accessToken: q("#li-token").value.trim() },
+    google: {
+      developerToken: q("#g-dev").value.trim(),
+      customerId: q("#g-cust").value.trim(),
+      clientId: q("#g-cid").value.trim(),
+      clientSecret: q("#g-csecret").value.trim(),
+      refreshToken: q("#g-refresh").value.trim(),
+      loginCustomerId: q("#g-login-cust").value.trim(),
+    },
+  };
+  try {
+    await setDoc(doc(db, "settings", uid), keys, { merge: true });
+    status.textContent = "Saved.";
+    status.className = "status on ok";
+  } catch (err) {
+    status.textContent = err.message;
+    status.className = "status on err";
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ede8df">
+<title>Hanora AI — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+body{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(216,255,69,.14),transparent 26rem),
+    radial-gradient(circle at 95% 60%,rgba(77,125,255,.06),transparent 30rem),
+    var(--paper);
+  color:var(--ink); font-family:"DM Sans",sans-serif; min-height:100vh;
+}
+
+/* ── ambient signal-field background ── */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── header ── */
+header{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 32px; border-bottom:1px solid var(--line);
+  background:rgba(247,243,235,.82); backdrop-filter:blur(10px);
+}
+header .logo{font-family:"Manrope",sans-serif;font-weight:700;font-size:18px;letter-spacing:-.04em}
+header .logo span{font-size:9px;vertical-align:top;margin-left:4px;font-family:"Space Mono",monospace}
+header .who{display:flex;align-items:center;gap:14px;font-family:"Space Mono",monospace;font-size:11px;color:var(--ink-soft)}
+header .who span{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── shell: rail + stage ── */
+.shell{
+  position:relative; z-index:1;
+  max-width:1240px; margin:0 auto; padding:40px 24px 120px;
+  display:grid; grid-template-columns:230px 1fr; gap:48px; align-items:start;
+}
+
+/* ── mission rail ── */
+.rail{position:sticky;top:110px;display:flex;flex-direction:column}
+.rail__label{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px}
+.rail__item{
+  position:relative;display:flex;gap:14px;padding:12px 0;cursor:default;
+  opacity:.38;transition:opacity .4s;border:0;background:none;text-align:left;font:inherit;color:inherit;
+}
+.rail__item.unlocked{opacity:1;cursor:pointer}
+.rail__item::before{ /* connector line */
+  content:"";position:absolute;left:13px;top:38px;bottom:-6px;width:1px;background:var(--line);
+}
+.rail__item:last-child::before{display:none}
+.rail__item.done::before{background:var(--safe)}
+.rail__node{
+  width:27px;height:27px;flex:none;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid var(--line);background:var(--paper-light);
+  font-family:"Space Mono",monospace;font-size:9px;
+  transition:background .4s,border-color .4s,color .4s,box-shadow .4s;
+}
+.rail__item.active .rail__node{
+  background:var(--ink);color:var(--acid);border-color:var(--ink);
+  box-shadow:0 0 0 5px rgba(18,23,17,.07);
+}
+.rail__item.done .rail__node{background:var(--safe-bg);border-color:rgba(58,90,18,.35);color:var(--safe)}
+.rail__meta{display:flex;flex-direction:column;gap:3px;padding-top:4px}
+.rail__name{font-family:"Manrope",sans-serif;font-weight:600;font-size:14px;letter-spacing:-.02em}
+.rail__state{font-family:"Space Mono",monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.rail__item.done .rail__state{color:var(--safe)}
+.rail__item.active .rail__state{color:var(--caution)}
+
+/* ── stage ── */
+.stage{min-width:0}
+
+/* command bar */
+.cmdbar{
+  margin-bottom:34px;padding:10px 10px 10px 22px;
+  display:flex;align-items:center;gap:14px;
+  border:1px solid var(--line);border-radius:100px;
+  background:rgba(247,243,235,.9);backdrop-filter:blur(8px);
+  box-shadow:0 10px 30px rgba(18,23,17,.06);
+}
+.cmdbar__icon{font-family:"Space Mono",monospace;font-size:12px;color:var(--orange);flex:none}
+.cmdbar input{
+  flex:1;min-width:0;border:0;background:transparent;outline:none;
+  font-family:"DM Sans",sans-serif;font-size:15px;color:var(--ink);padding:10px 0;
+}
+.cmdbar input::placeholder{color:rgba(86,96,86,.55)}
+.cmdbar button{flex:none}
+.cmdbar__note{
+  margin:10px 4px 0;font-family:"Space Mono",monospace;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  display:none;
+}
+.cmdbar__note.on{display:block;animation:rise .4s var(--ease)}
+.cmdbar__note b{color:var(--safe);font-weight:400}
+
+/* panels */
+.panel{display:none}
+.panel.active{display:block;animation:panelIn .6s var(--ease)}
+@keyframes panelIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.panel h2{font-family:"Manrope",sans-serif;font-size:clamp(28px,3.2vw,40px);font-weight:600;letter-spacing:-.05em;line-height:1;margin-bottom:10px}
+.panel .sub{color:var(--ink-soft);font-size:14px;line-height:1.6;max-width:620px;margin-bottom:30px}
+.step{font-family:"Space Mono",monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--orange);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.step::after{content:"";width:34px;height:1px;background:var(--orange);opacity:.5}
+
+/* panel navigation */
+.pnav{display:flex;gap:12px;margin-top:34px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* field prefill flash */
+.field input.flash,.field textarea.flash{animation:flash 1.6s var(--ease)}
+@keyframes flash{
+  0%{box-shadow:0 0 0 0 rgba(216,255,69,0)}
+  25%{box-shadow:0 0 0 5px rgba(216,255,69,.75);border-color:var(--safe)}
+  100%{box-shadow:0 0 0 0 rgba(216,255,69,0)}
+}
+
+.err{margin-top:14px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--risk-bg);border:1px solid rgba(232,56,47,.3);color:var(--risk);font-size:13px;display:none}
+.err.on{display:block;animation:rise .4s var(--ease)}
+
+/* result cards */
+.result{margin-top:30px;padding:26px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(247,243,235,.92);backdrop-filter:blur(6px);display:none}
+.result.on{display:block}
+.result.on>*{animation:rise .7s var(--ease) backwards}
+.result.on>*:nth-child(2){animation-delay:.06s}
+.result.on>*:nth-child(3){animation-delay:.12s}
+.result.on>*:nth-child(4){animation-delay:.18s}
+.result.on>*:nth-child(5){animation-delay:.24s}
+.result.on>*:nth-child(6){animation-delay:.3s}
+.result.on>*:nth-child(7){animation-delay:.36s}
+.result.on>*:nth-child(8){animation-delay:.42s}
+.result h3{
+  font-family:"Space Mono",monospace;font-size:10px;font-weight:400;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+  margin:24px 0 8px;display:flex;align-items:center;gap:10px;
+}
+.result h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.result h3:first-child{margin-top:0}
+.result p,.result li{font-size:14px;line-height:1.65;color:var(--ink)}
+.result ul{padding-left:18px}
+.result li{margin-bottom:4px}
+.result li::marker{color:var(--orange)}
+
+/* launch rows light up one by one */
+.plat-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;animation:rise .6s var(--ease) backwards}
+.plat-row:last-child{border-bottom:0}
+pre{white-space:pre-wrap;font-size:12px;background:#fff;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--line);max-height:220px;overflow:auto}
+
+/* ══ CAMPAIGN INTELLIGENCE — signature visuals ══ */
+
+/* lens scanner */
+.scanner{
+  margin-top:30px;padding:24px 26px;display:none;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(160deg,rgba(216,255,69,.07),transparent 40%),rgba(247,243,235,.94);
+}
+.scanner.on{display:block;animation:rise .4s var(--ease)}
+.scanner__head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.scanner__status{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.scanner__lens{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);opacity:.38;transition:opacity .4s}
+.scanner__lens:last-child{border-bottom:0}
+.scanner__lens.active,.scanner__lens.done{opacity:1}
+.scanner__dot{width:9px;height:9px;border-radius:50%;flex:none;background:rgba(18,23,17,.18);transition:background .3s}
+.scanner__lens.active .scanner__dot{background:var(--orange);animation:lenspulse 1.1s infinite}
+.scanner__lens.done .scanner__dot{background:var(--safe)}
+@keyframes lenspulse{0%,100%{box-shadow:0 0 0 3px rgba(255,109,46,.16)}50%{box-shadow:0 0 0 7px rgba(255,109,46,.05)}}
+.scanner__name{font-family:"Manrope",sans-serif;font-weight:600;font-size:14px;letter-spacing:-.01em;flex:1}
+.scanner__state{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.scanner__lens.active .scanner__state{color:var(--caution)}
+.scanner__lens.done .scanner__state{color:var(--safe)}
+
+/* verdict hero */
+.analysis__top{
+  display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;
+  padding:26px;margin:-6px -6px 18px;border-radius:var(--radius);
+  background:linear-gradient(150deg,rgba(216,255,69,.12),transparent 55%),#fff;
+  border:1px solid var(--line);
+}
+.gauge{position:relative;width:168px;height:168px;flex:none}
+.gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+.gauge circle{fill:none;stroke-width:9;stroke-linecap:round}
+.gauge__track{stroke:rgba(18,23,17,.09)}
+.gauge__fill{stroke:var(--safe);stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke .5s}
+.gauge.g-medium .gauge__fill{stroke:var(--orange)}
+.gauge.g-high .gauge__fill,.gauge.g-critical .gauge__fill{stroke:var(--red)}
+.gauge__num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.gauge__num b{font-family:"Manrope",sans-serif;font-size:50px;font-weight:700;letter-spacing:-.05em;line-height:1}
+.gauge__num span{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.analysis__verdict{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.analysis__verdict .badge{font-size:11px;padding:6px 16px}
+.analysis__stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{padding:10px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--paper-light);display:flex;flex-direction:column;gap:2px;min-width:118px}
+.stat b{font-family:"Manrope",sans-serif;font-size:22px;font-weight:700;letter-spacing:-.03em}
+.stat span{font-family:"Space Mono",monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* six lens cards */
+.lenses{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 4px}
+.lens{padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;display:flex;flex-direction:column;gap:8px;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.lens:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(18,23,17,.08)}
+.lens__top{display:flex;align-items:center;justify-content:space-between}
+.lens__name{font-family:"Manrope",sans-serif;font-weight:600;font-size:13px;letter-spacing:-.01em}
+.lens__dot{width:8px;height:8px;border-radius:50%;background:var(--safe)}
+.lens.l-medium .lens__dot{background:var(--orange)}
+.lens.l-high .lens__dot,.lens.l-critical .lens__dot{background:var(--red)}
+.lens__state{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.lens.l-medium .lens__state{color:var(--caution)}
+.lens.l-high .lens__state,.lens.l-critical .lens__state{color:var(--risk)}
+
+/* issues */
+.issue{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.55}
+.issue:last-child{border-bottom:0}
+.issue .badge{flex:none;margin-top:2px}
+.issue__lens{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:2px}
+
+/* coach */
+.coach{padding:16px 18px;border-left:3px solid var(--orange);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--caution-bg);font-size:14px;line-height:1.65}
+
+/* before / after */
+.rewrite{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rewrite__col{padding:16px 18px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#fff}
+.rewrite__col.after{background:linear-gradient(160deg,rgba(216,255,69,.22),rgba(166,255,77,.1)),#fff;border-color:rgba(58,90,18,.3)}
+.rewrite__tag{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:8px}
+.rewrite__col.after .rewrite__tag{color:var(--safe)}
+.rewrite__col p{font-size:13px;line-height:1.65;white-space:pre-wrap}
+
+/* recommendation banner */
+.verdict-banner{margin-top:24px;padding:18px 20px;border-radius:var(--radius-sm);font-size:14px;line-height:1.6;border:1px solid var(--line);background:#fff}
+.verdict-banner.v-low{background:var(--safe-bg);border-color:rgba(58,90,18,.25)}
+.verdict-banner.v-medium{background:var(--caution-bg);border-color:rgba(138,60,20,.25)}
+.verdict-banner.v-high,.verdict-banner.v-critical{background:var(--risk-bg);border-color:rgba(232,56,47,.3)}
+
+/* ── responsive: rail becomes top progress ── */
+@media (max-width:920px){
+  .shell{grid-template-columns:1fr;gap:26px}
+  .rail{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px;gap:4px}
+  .rail__label{display:none}
+  .rail__item{padding:6px 10px 6px 6px;border:1px solid var(--line);border-radius:100px;background:rgba(247,243,235,.8)}
+  .rail__item::before{display:none}
+  .rail__node{width:22px;height:22px;font-size:8px}
+  .rail__meta{padding-top:2px}
+  .rail__state{display:none}
+  .rail__name{font-size:11px;white-space:nowrap}
+}
+@media (max-width:820px){
+  .grid,.grid3{grid-template-columns:1fr}
+  .analysis__top{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .analysis__verdict{align-items:center}
+  .lenses{grid-template-columns:1fr 1fr}
+  .rewrite{grid-template-columns:1fr}
+  header .who span{display:none}
+}
+@media (max-width:520px){.lenses{grid-template-columns:1fr}.cmdbar{padding-left:16px}}
+</style>
+</head>
+<body>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+
+<header>
+  <div class="logo">HANORA<span>AI</span></div>
+  <div class="who">
+    <span id="whoami">…</span>
+    <a class="btn btn--ghost" href="settings.html" style="padding:8px 16px;font-size:10px">API Keys</a>
+    <button class="btn btn--ghost" id="signout" style="padding:8px 16px;font-size:10px">Sign out</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- mission rail -->
+  <nav class="rail" id="rail" aria-label="Campaign progress">
+    <div class="rail__label">Mission flow</div>
+  </nav>
+
+  <div class="stage">
+
+    <!-- command bar -->
+    <form class="cmdbar" id="cmdbar">
+      <span class="cmdbar__icon">⌁</span>
+      <input id="cmd-input" placeholder='Try: "Launch my skincare campaign in Japan"' autocomplete="off">
+      <button class="btn" type="submit" style="padding:10px 20px">Direct</button>
+    </form>
+    <div class="cmdbar__note" id="cmd-note"></div>
+
+    <!-- 1. STRATEGY -->
+    <section class="panel" data-panel="0" id="sec-strategy">
+      <div class="step">Step 01 / Strategy</div>
+      <h2>Business &amp; <em class="accent">Strategy</em></h2>
+      <p class="sub">Feed in your business details — Hanora researches the market and produces a complete marketing strategy.</p>
+      <form id="form-strategy">
+        <div class="grid">
+          <div class="field"><label>Business name</label><input id="s-name" required></div>
+          <div class="field"><label>Industry</label><input id="s-industry" required></div>
+          <div class="field"><label>Target countries (comma separated)</label><input id="s-countries" placeholder="Japan, Germany, Brazil"></div>
+          <div class="field"><label>Budget</label><input id="s-budget" placeholder="$10,000 / month"></div>
+        </div>
+        <div class="field"><label>Goals</label><textarea id="s-goals"></textarea></div>
+        <div class="field"><label>Target audience</label><textarea id="s-audience"></textarea></div>
+        <div class="field"><label>Products / services</label><textarea id="s-products"></textarea></div>
+        <div class="field"><label>Competitors</label><textarea id="s-competitors"></textarea></div>
+        <div class="field"><label>Brand guidelines</label><textarea id="s-brand"></textarea></div>
+        <button class="btn" type="submit">Generate strategy</button>
+      </form>
+      <div class="err" id="s-err"></div>
+      <div class="result" id="s-result"></div>
+    </section>
+
+    <!-- 2. CONTENT -->
+    <section class="panel" data-panel="1" id="sec-content">
+      <div class="step">Step 02 / Content</div>
+      <h2>Content <em class="accent">Studio</em></h2>
+      <p class="sub">Generate the text content for your campaign. (Images/video generation isn't wired up yet — text only.)</p>
+      <form id="form-content">
+        <div class="checks" id="content-types">
+          <label><input type="checkbox" value="instagram_post" checked> Instagram posts</label>
+          <label><input type="checkbox" value="facebook_post" checked> Facebook posts</label>
+          <label><input type="checkbox" value="linkedin_post" checked> LinkedIn posts</label>
+          <label><input type="checkbox" value="x_post"> X posts</label>
+          <label><input type="checkbox" value="ad_copy" checked> Ad copy</label>
+          <label><input type="checkbox" value="blog"> Blog</label>
+          <label><input type="checkbox" value="email"> Email</label>
+          <label><input type="checkbox" value="press_release"> Press release</label>
+          <label><input type="checkbox" value="hashtags"> Hashtags</label>
+        </div>
+        <button class="btn" type="submit">Generate content</button>
+      </form>
+      <div class="err" id="c-err"></div>
+      <div class="result" id="c-result"></div>
+      <div class="pnav"><button class="btn btn--ghost" data-goto="0">← Strategy</button></div>
+    </section>
+
+    <!-- 3. SEO -->
+    <section class="panel" data-panel="2" id="sec-seo">
+      <div class="step">Step 03 / SEO</div>
+      <h2>SEO &amp; <em class="accent">Website</em></h2>
+      <p class="sub">Keyword research, meta tags, and website suggestions grounded in live search.</p>
+      <form id="form-seo">
+        <div class="field"><label>Website (optional)</label><input id="seo-site" placeholder="https://yourbusiness.com"></div>
+        <button class="btn" type="submit">Generate SEO plan</button>
+      </form>
+      <div class="err" id="seo-err"></div>
+      <div class="result" id="seo-result"></div>
+      <div class="pnav"><button class="btn btn--ghost" data-goto="1">← Content</button></div>
+    </section>
+
+    <!-- 4. VALIDATE -->
+    <section class="panel" data-panel="3" id="sec-validate">
+      <div class="step">Step 04 / Intelligence</div>
+      <h2>Campaign <em class="accent">Intelligence</em></h2>
+      <p class="sub">Assemble the campaign and run it through six lenses of cultural, historical, political, religious, social and localization analysis before anything launches.</p>
+      <form id="form-validate">
+        <div class="checks" id="platform-picks">
+          <label><input type="checkbox" value="Instagram" checked> Instagram</label>
+          <label><input type="checkbox" value="Facebook" checked> Facebook</label>
+          <label><input type="checkbox" value="LinkedIn"> LinkedIn</label>
+          <label><input type="checkbox" value="Google Ads"> Google Ads</label>
+          <label><input type="checkbox" value="YouTube"> YouTube</label>
+        </div>
+        <div class="grid3">
+          <div class="field"><label>Target country</label><input id="v-country" required placeholder="Japan"></div>
+          <div class="field"><label>Daily ad budget (USD)</label><input id="v-budget" type="number" value="10"></div>
+          <div class="field"><label>Instagram image URL (optional)</label><input id="v-image" placeholder="https://…"></div>
+        </div>
+        <button class="btn" type="submit">Validate with Campaign Intelligence</button>
+      </form>
+      <div class="err" id="v-err"></div>
+
+      <div class="scanner" id="v-scanner" aria-live="polite">
+        <div class="scanner__head">
+          <span class="eyebrow">Six-lens scan</span>
+          <span class="scanner__status" id="v-scanner-status">Preparing…</span>
+        </div>
+        <div id="v-scanner-lenses">
+          <div class="scanner__lens" data-lens="cultural"><span class="scanner__dot"></span><span class="scanner__name">Cultural intelligence</span><span class="scanner__state">Queued</span></div>
+          <div class="scanner__lens" data-lens="historical"><span class="scanner__dot"></span><span class="scanner__name">Historical intelligence</span><span class="scanner__state">Queued</span></div>
+          <div class="scanner__lens" data-lens="religious"><span class="scanner__dot"></span><span class="scanner__name">Religious intelligence</span><span class="scanner__state">Queued</span></div>
+          <div class="scanner__lens" data-lens="political"><span class="scanner__dot"></span><span class="scanner__name">Political intelligence</span><span class="scanner__state">Queued</span></div>
+          <div class="scanner__lens" data-lens="social"><span class="scanner__dot"></span><span class="scanner__name">Social intelligence</span><span class="scanner__state">Queued</span></div>
+          <div class="scanner__lens" data-lens="localization"><span class="scanner__dot"></span><span class="scanner__name">Localization intelligence</span><span class="scanner__state">Queued</span></div>
+        </div>
+      </div>
+
+      <div class="result" id="v-result"></div>
+      <div class="pnav"><button class="btn btn--ghost" data-goto="2">← SEO</button></div>
+    </section>
+
+    <!-- 5. LAUNCH -->
+    <section class="panel" data-panel="4" id="sec-launch">
+      <div class="step">Step 05 / Launch</div>
+      <h2>Approve &amp; <em class="accent">Launch</em></h2>
+      <p class="sub">Review the risk analysis from step 04, then launch to the platforms you selected. Google Ads / YouTube campaigns are created <strong>paused</strong> — you enable spend yourself.</p>
+      <button class="btn" id="btn-launch">Approve &amp; launch</button>
+      <div class="err" id="l-err"></div>
+      <div class="result" id="l-result"></div>
+      <div class="pnav"><button class="btn btn--ghost" data-goto="3">← Intelligence</button></div>
+    </section>
+
+    <!-- 6. ANALYTICS -->
+    <section class="panel" data-panel="5" id="sec-analytics">
+      <div class="step">Step 06 / Live</div>
+      <h2>Live <em class="accent">Analytics</em></h2>
+      <p class="sub">Pulls fresh metrics from each platform every 60s once something is live.</p>
+      <button class="btn" id="btn-refresh">Refresh now</button>
+      <div class="err" id="m-err"></div>
+      <div class="result" id="m-result"></div>
+      <div class="pnav"><button class="btn btn--ghost" data-goto="4">← Launch</button></div>
+    </section>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
+  authDomain: "hanora-ai-5f1c6.firebaseapp.com",
+  projectId: "hanora-ai-5f1c6",
+  storageBucket: "hanora-ai-5f1c6.firebasestorage.app",
+  messagingSenderId: "88327882894",
+  appId: "1:88327882894:web:213fb6c4fd7f57228e61df",
+  measurementId: "G-7L6C5QNZVJ"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const q = s => document.querySelector(s);
+const qa = s => [...document.querySelectorAll(s)];
+const split = s => s.split(",").map(x => x.trim()).filter(Boolean);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+let keys = {};
+const state = { business: {}, strategy: null, content: null, seo: null, analysis: null, targets: [] };
+
+onAuthStateChanged(auth, async user => {
+  if (!user) return location.href = "login.html";
+  q("#whoami").textContent = user.email;
+  const snap = await getDoc(doc(db, "settings", user.uid));
+  if (snap.exists()) keys = snap.data();
+});
+q("#signout").addEventListener("click", () => signOut(auth).then(() => location.href = "login.html"));
+
+async function callApi(url, body, btn, errEl) {
+  errEl.classList.remove("on");
+  btn.disabled = true;
+  const label = btn.textContent;
+  btn.textContent = "Working…";
+  try {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Request failed");
+    return data;
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.add("on");
+    return null;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+/* ═══════════ MISSION FLOW — rail, panels, persistence ═══════════ */
+const STEPS = ["Strategy", "Content", "SEO", "Intelligence", "Launch", "Live"];
+const flow = { step: 0, max: 0, done: new Set() };
+const rail = q("#rail");
+
+STEPS.forEach((name, i) => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "rail__item";
+  b.dataset.step = i;
+  b.innerHTML = `<span class="rail__node">${String(i + 1).padStart(2, "0")}</span>
+    <span class="rail__meta"><span class="rail__name">${name}</span><span class="rail__state">Locked</span></span>`;
+  b.addEventListener("click", () => { if (i <= flow.max) goStep(i); });
+  rail.appendChild(b);
+});
+
+function renderRail() {
+  qa(".rail__item").forEach((el, i) => {
+    el.classList.toggle("active", i === flow.step);
+    el.classList.toggle("done", flow.done.has(i));
+    el.classList.toggle("unlocked", i <= flow.max);
+    const node = el.querySelector(".rail__node");
+    const st = el.querySelector(".rail__state");
+    node.textContent = flow.done.has(i) ? "✓" : String(i + 1).padStart(2, "0");
+    st.textContent = flow.done.has(i) ? "Complete" : i === flow.step ? "In progress" : i <= flow.max ? "Ready" : "Locked";
+  });
+}
+
+function goStep(i) {
+  flow.step = i;
+  qa(".panel").forEach(p => p.classList.toggle("active", +p.dataset.panel === i));
+  renderRail();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  saveFlow();
+}
+
+function completeStep(i) {
+  flow.done.add(i);
+  if (i + 1 < STEPS.length) {
+    flow.max = Math.max(flow.max, i + 1);
+    renderRail();
+    saveFlow();
+    setTimeout(() => goStep(i + 1), 900);   // let the result land, then advance
+  } else {
+    renderRail(); saveFlow();
+  }
+}
+
+/* persistence — never lose a campaign on refresh */
+const FIELD_IDS = ["s-name","s-industry","s-countries","s-budget","s-goals","s-audience","s-products","s-competitors","s-brand","seo-site","v-country","v-budget","v-image"];
+let saveT = null;
+function saveFlow() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    const values = {};
+    FIELD_IDS.forEach(id => { const el = q("#" + id); if (el) values[id] = el.value; });
+    const checks = {};
+    qa(".checks input").forEach(c => checks[c.value] = c.checked);
+    localStorage.setItem("hanora-flow", JSON.stringify({ values, checks, max: flow.max, done: [...flow.done] }));
+  }, 250);
+}
+FIELD_IDS.forEach(id => { const el = q("#" + id); if (el) el.addEventListener("input", saveFlow); });
+qa(".checks input").forEach(c => c.addEventListener("change", saveFlow));
+qa("[data-goto]").forEach(b => b.addEventListener("click", () => goStep(+b.dataset.goto)));
+
+(function restore() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("hanora-flow") || "null");
+    if (!saved) { goStep(0); return; }
+    Object.entries(saved.values || {}).forEach(([id, v]) => { const el = q("#" + id); if (el) el.value = v; });
+    Object.entries(saved.checks || {}).forEach(([v, on]) => { qa(`.checks input`).forEach(c => { if (c.value === v) c.checked = on; }); });
+    flow.max = Math.min(saved.max || 0, STEPS.length - 1);
+    (saved.done || []).forEach(i => flow.done.add(i));
+    goStep(flow.max);
+  } catch { goStep(0); }
+})();
+
+/* ═══════════ COMMAND BAR — type a mission, prefill the flow ═══════════ */
+const COUNTRIES = ["Japan","Germany","Brazil","France","India","United States","USA","United Kingdom","UK","China","South Korea","Korea","UAE","Saudi Arabia","Australia","Canada","Mexico","Spain","Italy","Netherlands","Singapore","Indonesia","Thailand","Vietnam","Egypt","Nigeria","South Africa","Sweden","Norway","Denmark","Finland","Poland","Turkey","Argentina","Chile","Colombia","Philippines","Malaysia","New Zealand","Ireland","Portugal","Greece","Israel","Pakistan","Bangladesh","Switzerland","Austria","Belgium"];
+
+const titleCase = s => s.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+
+q("#cmdbar").addEventListener("submit", e => {
+  e.preventDefault();
+  const text = q("#cmd-input").value.trim();
+  if (!text) return;
+  const filled = [];
+
+  // country: "in Japan" / "to Japan"
+  const low = " " + text.toLowerCase() + " ";
+  const country = COUNTRIES.find(c => low.includes(" in " + c.toLowerCase()) || low.includes(" to " + c.toLowerCase()) || low.endsWith(" " + c.toLowerCase() + " "));
+  if (country) {
+    const nice = country === "USA" ? "United States" : country === "UK" ? "United Kingdom" : country === "UAE" ? "United Arab Emirates" : titleCase(country);
+    if (!q("#v-country").value) { q("#v-country").value = nice; flash("#v-country"); filled.push("country"); }
+    if (!q("#s-countries").value) { q("#s-countries").value = nice; flash("#s-countries"); filled.push("target countries"); }
+  }
+
+  // business / industry: "my skincare campaign" → skincare
+  const m = text.match(/(?:launch|promote|market|grow|advertise|build|create|run)\s+(?:my\s+|a\s+|an\s+|the\s+)?([a-z0-9 '&-]+?)(?:\s+(?:campaign|brand|product|products|business|startup|store|ads?|company))?(?:\s+(?:in|to|for|across)\b|$)/i);
+  if (m && m[1]) {
+    const thing = titleCase(m[1].trim());
+    if (thing.length > 1) {
+      if (!q("#s-industry").value) { q("#s-industry").value = thing; flash("#s-industry"); filled.push("industry"); }
+      if (!q("#s-name").value) { q("#s-name").value = thing; flash("#s-name"); filled.push("business name"); }
+    }
+  }
+
+  const note = q("#cmd-note");
+  if (filled.length) {
+    note.innerHTML = `<b>✓ Directed:</b> prefilled ${filled.join(", ")} — review step 01 below`;
+    saveFlow();
+  } else {
+    note.innerHTML = `Nothing matched yet — fill step 01 manually and the flow will guide you`;
+  }
+  note.classList.add("on");
+  clearTimeout(note.__t);
+  note.__t = setTimeout(() => note.classList.remove("on"), 6000);
+  q("#cmd-input").value = "";
+  goStep(0);
+});
+
+function flash(sel) {
+  const el = q(sel);
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
+}
+
+/* ── 1. strategy ── */
+q("#form-strategy").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button");
+  state.business = {
+    businessName: q("#s-name").value,
+    industry: q("#s-industry").value,
+    goals: q("#s-goals").value,
+    targetAudience: q("#s-audience").value,
+    budget: q("#s-budget").value,
+    targetCountries: split(q("#s-countries").value),
+    products: q("#s-products").value,
+    competitors: q("#s-competitors").value,
+    brandGuidelines: q("#s-brand").value,
+  };
+  const data = await callApi("/api/strategy", { ...state.business, keys }, btn, q("#s-err"));
+  if (!data) return;
+  state.strategy = data.strategy;
+  const s = data.strategy;
+  const out = q("#s-result");
+  out.innerHTML = `
+    <h3>Summary</h3><p>${esc(s.summary)}</p>
+    <h3>Go-to-market plan</h3><p>${esc(s.goToMarketPlan)}</p>
+    <h3>Sales funnel</h3><p>${esc(s.salesFunnel)}</p>
+    <h3>Marketing funnel</h3><p>${esc(s.marketingFunnel)}</p>
+    <h3>Budget allocation</h3><ul>${(s.budgetAllocation || []).map(b => `<li>${esc(b.channel)} — ${esc(b.percent)}% — ${esc(b.reason)}</li>`).join("")}</ul>
+    <h3>Campaign timeline</h3><ul>${(s.campaignTimeline || []).map(t => `<li>${esc(t.phase)} (${esc(t.duration)}) — ${esc(t.focus)}</li>`).join("")}</ul>
+    <h3>Platform recommendations</h3><ul>${(s.platformRecommendations || []).map(p => `<li>${esc(p.platform)} — ${esc(p.reason)}</li>`).join("")}</ul>
+    <h3>Growth strategy</h3><p>${esc(s.growthStrategy)}</p>
+  `;
+  out.classList.add("on");
+  completeStep(0);
+});
+
+/* ── 2. content ── */
+q("#form-content").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button");
+  const types = qa("#content-types input:checked").map(i => i.value);
+  const data = await callApi("/api/content", {
+    businessName: state.business.businessName || q("#s-name").value,
+    strategySummary: state.strategy?.summary,
+    targetAudience: state.business.targetAudience || q("#s-audience").value,
+    brandGuidelines: state.business.brandGuidelines || q("#s-brand").value,
+    types, keys,
+  }, btn, q("#c-err"));
+  if (!data) return;
+  state.content = data.content;
+  const out = q("#c-result");
+  out.innerHTML = Object.entries(data.content).map(([type, items]) => `
+    <h3>${esc(type.replace(/_/g, " "))}</h3><ul>${(items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>
+  `).join("");
+  out.classList.add("on");
+  completeStep(1);
+});
+
+/* ── 3. seo ── */
+q("#form-seo").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button");
+  const data = await callApi("/api/seo", {
+    businessName: state.business.businessName || q("#s-name").value,
+    industry: state.business.industry || q("#s-industry").value,
+    products: state.business.products || q("#s-products").value,
+    competitors: state.business.competitors || q("#s-competitors").value,
+    targetCountries: state.business.targetCountries?.length ? state.business.targetCountries : split(q("#s-countries").value),
+    website: q("#seo-site").value, keys,
+  }, btn, q("#seo-err"));
+  if (!data) return;
+  state.seo = data.seo;
+  const s = data.seo;
+  const out = q("#seo-result");
+  out.innerHTML = `
+    <h3>Keywords</h3><ul>${(s.keywords || []).map(k => `<li>${esc(k.term)} — ${esc(k.intent)}</li>`).join("")}</ul>
+    <h3>Competitor keywords</h3><ul>${(s.competitorKeywords || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Meta titles</h3><ul>${(s.metaTitles || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Meta descriptions</h3><ul>${(s.metaDescriptions || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Blog topics</h3><ul>${(s.blogTopics || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Technical SEO</h3><ul>${(s.technicalSeoTips || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Internal linking</h3><ul>${(s.internalLinkingTips || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+    <h3>Website suggestions</h3><ul>${(s.websiteSuggestions || []).map(k => `<li>${esc(k)}</li>`).join("")}</ul>
+  `;
+  out.classList.add("on");
+  completeStep(2);
+});
+
+/* ── 4. assemble + validate ── */
+function assembleCampaign() {
+  const c = state.content || {};
+  return {
+    businessName: state.business.businessName || q("#s-name").value,
+    summary: state.strategy?.summary,
+    facebookCopy: c.facebook_post?.[0],
+    instagramCopy: c.instagram_post?.[0],
+    linkedinCopy: c.linkedin_post?.[0],
+    adCopy: c.ad_copy,
+    blog: c.blog,
+    email: c.email,
+    imageUrl: q("#v-image").value.trim() || undefined,
+    dailyBudgetUsd: parseFloat(q("#v-budget").value) || 10,
+    targetCountries: state.business.targetCountries?.length ? state.business.targetCountries : split(q("#s-countries").value),
+  };
+}
+
+const LENSES = ["cultural", "historical", "religious", "political", "social", "localization"];
+let scanTimer = null;
+
+function startScanner() {
+  const box = q("#v-scanner"), status = q("#v-scanner-status");
+  q("#v-result").classList.remove("on");
+  box.classList.add("on");
+  const rows = qa("#v-scanner-lenses .scanner__lens");
+  rows.forEach(r => { r.classList.remove("active", "done"); r.querySelector(".scanner__state").textContent = "Queued"; });
+  let i = 0;
+  const advance = () => {
+    if (i > 0) {
+      const prev = rows[i - 1];
+      prev.classList.remove("active"); prev.classList.add("done");
+      prev.querySelector(".scanner__state").textContent = "Scanned";
+    }
+    if (i < rows.length) {
+      rows[i].classList.add("active");
+      rows[i].querySelector(".scanner__state").textContent = "Scanning…";
+      status.textContent = `Scanning ${LENSES[i]} signals…`;
+      i++;
+      scanTimer = setTimeout(advance, 850);
+    } else {
+      status.textContent = "Composing verdict…";
+    }
+  };
+  advance();
+}
+
+function stopScanner() {
+  clearTimeout(scanTimer);
+  const status = q("#v-scanner-status");
+  qa("#v-scanner-lenses .scanner__lens").forEach(r => {
+    r.classList.remove("active"); r.classList.add("done");
+    r.querySelector(".scanner__state").textContent = "Scanned";
+  });
+  status.textContent = "Scan complete";
+  setTimeout(() => q("#v-scanner").classList.remove("on"), 900);
+}
+
+function gaugeHtml(level) {
+  const cls = (level || "").toLowerCase();
+  return `
+    <div class="gauge g-${esc(cls)}">
+      <svg viewBox="0 0 120 120">
+        <circle class="gauge__track" cx="60" cy="60" r="52"></circle>
+        <circle class="gauge__fill" cx="60" cy="60" r="52"></circle>
+      </svg>
+      <div class="gauge__num"><b>0</b><span>Risk score</span></div>
+    </div>`;
+}
+
+function animateGauge(el, target) {
+  const C = 326.7;
+  const fill = el.querySelector(".gauge__fill");
+  const num = el.querySelector(".gauge__num b");
+  const t0 = performance.now(), dur = 1200;
+  const tick = now => {
+    const p = Math.min((now - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const v = Math.round(target * eased);
+    num.textContent = v;
+    fill.style.strokeDashoffset = C * (1 - (target / 100) * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderAnalysis(a, campaign) {
+  const level = (a.riskLevel || "").toLowerCase();
+  const issues = a.detectedIssues || [];
+
+  const sevRank = { critical: 4, high: 3, medium: 2, low: 1 };
+  const lensCards = LENSES.map(lens => {
+    const hits = issues.filter(i => (i.lens || "").toLowerCase().includes(lens));
+    let worst = null;
+    hits.forEach(h => {
+      const s = (h.severity || "").toLowerCase();
+      if (!worst || (sevRank[s] || 0) > (sevRank[worst] || 0)) worst = s;
+    });
+    const cls = worst ? `l-${worst}` : "";
+    const stateTxt = hits.length ? `${hits.length} flag${hits.length > 1 ? "s" : ""}` : "Clear";
+    return `
+      <div class="lens ${cls}">
+        <div class="lens__top"><span class="lens__name">${lens[0].toUpperCase() + lens.slice(1)}</span><span class="lens__dot"></span></div>
+        <span class="lens__state">${stateTxt}</span>
+      </div>`;
+  }).join("");
+
+  const original = campaign.instagramCopy || campaign.facebookCopy ||
+    (Array.isArray(campaign.adCopy) ? campaign.adCopy[0] : campaign.adCopy) || campaign.linkedinCopy || "";
+
+  const rewriteBlock = a.aiRewrite ? `
+    <h3>AI rewrite — before / after</h3>
+    <div class="rewrite">
+      <div class="rewrite__col before"><span class="rewrite__tag">Current copy</span><p>${esc(original || "—")}</p></div>
+      <div class="rewrite__col after"><span class="rewrite__tag">Hanora rewrite</span><p>${esc(a.aiRewrite)}</p></div>
+    </div>` : "";
+
+  return `
+    <div class="analysis__top">
+      ${gaugeHtml(level)}
+      <div class="analysis__verdict">
+        <span class="badge ${esc(level)}">${esc(a.riskLevel || "—")} risk</span>
+        <div class="analysis__stats">
+          <div class="stat"><b>${a.localizationScore ?? "—"}</b><span>Localization</span></div>
+          <div class="stat"><b>${a.marketReadinessScore ?? "—"}</b><span>Market readiness</span></div>
+          <div class="stat"><b>${issues.length}</b><span>Issues flagged</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Six-lens scan</h3>
+    <div class="lenses">${lensCards}</div>
+
+    <h3>Why this score</h3><p>${esc(a.whyScore)}</p>
+
+    <h3>Detected issues</h3>
+    ${issues.length ? issues.map(i => `
+      <div class="issue">
+        <span class="badge ${esc((i.severity || "").toLowerCase())}">${esc(i.severity)}</span>
+        <div><span class="issue__lens">${esc(i.lens)}</span>${esc(i.issue)}</div>
+      </div>`).join("") : "<p>None detected — clean across all six lenses.</p>"}
+
+    <h3>Audience prediction</h3><p>${esc(a.audiencePrediction)}</p>
+
+    ${a.improvementCoach ? `<h3>Improvement coach</h3><div class="coach">${esc(a.improvementCoach)}</div>` : ""}
+
+    ${rewriteBlock}
+
+    <div class="verdict-banner v-${esc(level)}"><strong>Recommendation — </strong>${esc(a.recommendation)}</div>
+  `;
+}
+
+q("#form-validate").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button");
+  const campaign = assembleCampaign();
+  const platforms = qa("#platform-picks input:checked").map(i => i.value);
+  startScanner();
+  const data = await callApi("/api/analyze", { campaign, targetCountry: q("#v-country").value, platform: platforms.join(", "), keys }, btn, q("#v-err"));
+  if (!data) { stopScanner(); return; }
+  state.analysis = data.analysis;
+  state.campaign = campaign;
+  state.selectedPlatforms = platforms;
+  const out = q("#v-result");
+  out.innerHTML = renderAnalysis(data.analysis, campaign);
+  stopScanner();
+  out.classList.add("on");
+  animateGauge(out.querySelector(".gauge"), Math.max(0, Math.min(100, data.analysis.riskScore ?? 0)));
+  completeStep(3);
+});
+
+/* ── 5. approve + launch ── */
+q("#btn-launch").addEventListener("click", async () => {
+  const btn = q("#btn-launch");
+  const data = await callApi("/api/launch", { campaign: state.campaign, platforms: state.selectedPlatforms, keys }, btn, q("#l-err"));
+  if (!data) return;
+  const out = q("#l-result");
+  out.innerHTML = data.results.map((r, idx) => `
+    <div class="plat-row" style="animation-delay:${idx * 0.28}s">
+      <span>${esc(r.platform)} ${r.note ? `<br><span style="color:var(--ink-soft);font-size:11px">${esc(r.note)}</span>` : ""}</span>
+      <span class="badge ${esc(r.status)}">${esc(r.status)}</span>
+    </div>
+    ${r.status === "error" ? `<p style="color:var(--risk);font-size:12px">${esc(r.detail)}</p>` : ""}
+  `).join("");
+  out.classList.add("on");
+
+  state.targets = data.results
+    .filter(r => r.status === "success")
+    .map(r => ({ platform: r.platform, id: r.detail?.id }));
+  if (state.targets.length) {
+    completeStep(4);
+    refreshMetrics();
+    clearInterval(window.__metricsTimer);
+    window.__metricsTimer = setInterval(refreshMetrics, 60000);
+  }
+});
+
+/* ── 6. live analytics ── */
+async function refreshMetrics() {
+  if (!state.targets.length) return;
+  const btn = q("#btn-refresh");
+  const data = await callApi("/api/metrics", { keys, targets: state.targets }, btn, q("#m-err"));
+  if (!data) return;
+  const out = q("#m-result");
+  out.innerHTML = data.results.map(r => `
+    <h3>${esc(r.platform)}${r.id ? ` — ${esc(r.id)}` : ""}</h3>
+    ${r.error ? `<p style="color:var(--risk)">${esc(r.error)}</p>` : `<pre>${esc(JSON.stringify(r.data, null, 2))}</pre>`}
+  `).join("");
+  out.classList.add("on");
+}
+q("#btn-refresh").addEventListener("click", refreshMetrics);
+
+/* ═══════════ AMBIENT SIGNAL-FIELD BACKGROUND ═══════════ */
+(function signalField() {
+  const cv = document.getElementById("bg");
+  const cx = cv.getContext("2d");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, dpr, running = true, last = 0;
+
+  function resize() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * dpr;
+    H = cv.height = innerHeight * dpr;
+    cv.style.width = innerWidth + "px";
+    cv.style.height = innerHeight + "px";
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  // two radar emitters + a pool of signal blips
+  const emitters = [
+    { x: 0.10, y: 0.28, period: 5200, offset: 0 },
+    { x: 0.88, y: 0.74, period: 6800, offset: 2600 },
+  ];
+  const blips = Array.from({ length: 7 }, () => spawnBlip());
+  function spawnBlip() {
+    return {
+      x: 0.06 + Math.random() * 0.88,
+      y: 0.08 + Math.random() * 0.84,
+      t: Math.random() * 6000,
+      dur: 2600 + Math.random() * 2200,
+      warm: Math.random() < 0.35,   // some blips orange, most ink/acid
+    };
+  }
+
+  function grid() {
+    const gap = 92 * dpr;
+    cx.fillStyle = "rgba(18,23,17,.045)";
+    for (let x = gap; x < W; x += gap)
+      for (let y = gap; y < H; y += gap) {
+        cx.beginPath(); cx.arc(x, y, 1.1 * dpr, 0, 7); cx.fill();
+      }
+  }
+
+  function frame(now) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    if (now - last < 33) return;   // ~30fps is plenty for ambience
+    last = now;
+    cx.clearRect(0, 0, W, H);
+    grid();
+
+    // radar rings
+    emitters.forEach(e => {
+      const p = ((now + e.offset) % e.period) / e.period;
+      const r = p * Math.max(W, H) * 0.45;
+      const a = (1 - p) * 0.055;
+      cx.strokeStyle = `rgba(18,23,17,${a.toFixed(3)})`;
+      cx.lineWidth = 1 * dpr;
+      cx.beginPath(); cx.arc(e.x * W, e.y * H, r, 0, 7); cx.stroke();
+    });
+
+    // signal blips
+    blips.forEach((b, i) => {
+      b.t += 34;
+      if (b.t > b.dur) { blips[i] = spawnBlip(); return; }
+      const p = b.t / b.dur;
+      const fade = p < 0.25 ? p / 0.25 : 1 - (p - 0.25) / 0.75;
+      const col = b.warm ? "255,109,46" : "58,90,18";
+      const x = b.x * W, y = b.y * H;
+      cx.fillStyle = `rgba(${col},${(fade * 0.35).toFixed(3)})`;
+      cx.beginPath(); cx.arc(x, y, 2.2 * dpr, 0, 7); cx.fill();
+      cx.strokeStyle = `rgba(${col},${(fade * 0.16).toFixed(3)})`;
+      cx.lineWidth = 1 * dpr;
+      cx.beginPath(); cx.arc(x, y, (4 + p * 16) * dpr, 0, 7); cx.stroke();
+    });
+  }
+
+  if (reduced) {
+    // one static frame: grid + a single quiet ring set
+    grid();
+    emitters.forEach(e => {
+      cx.strokeStyle = "rgba(18,23,17,.05)";
+      cx.lineWidth = 1 * dpr;
+      [0.12, 0.24].forEach(k => { cx.beginPath(); cx.arc(e.x * W, e.y * H, k * Math.max(W, H), 0, 7); cx.stroke(); });
+    });
+  } else {
+    document.addEventListener("visibilitychange", () => {
+      running = !document.hidden;
+      if (running) requestAnimationFrame(frame);
+    });
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
