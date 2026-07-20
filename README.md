@@ -52,21 +52,7 @@ These areas are still partial or future work:
 - Daily, weekly and monthly report exports.
 - Tavily research is optional. Without a Tavily key, the AI still works but live web research is skipped.
 
-## Setup
-
-### Vercel environment variable
-
-Add this required server variable:
-
-```text
-FIREBASE_SERVICE_ACCOUNT_JSON=<complete new Firebase service-account JSON>
-```
-
-The value must be the complete JSON in one variable. Never commit the JSON or private key to Git.
-
-Optional global LLM fallback variables:
-
-```text
+LLM API KEYS VERCEL ENV LO ADD CHESUKOVACHU AKKA 
 LLM_BASE_URL=https://openrouter.ai/api/v1
 LLM_API_KEY=<your LLM key>
 LLM_MODEL=anthropic/claude-sonnet-4.5
