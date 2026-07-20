@@ -1,16 +1,19 @@
 const { chat } = require("../lib/llm");
 const { webSearch } = require("../lib/search");
 const { parseJSON } = require("../lib/json");
+const { getSettings, requireUser } = require("../lib/firebase");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const b = req.body || {};
+  const user = await requireUser(req, res);
+  if (!user) return;
   const content = b.content || (b.campaign ? JSON.stringify(b.campaign, null, 2) : null);
   if (!content || !b.targetCountry) {
     return res.status(400).json({ error: "content (or campaign) and targetCountry are required" });
   }
 
-  const keys = b.keys || {};
+  const keys = await getSettings(user.uid);
   const research = await webSearch(
     `current events sensitive dates religious festivals political climate ${b.targetCountry} ${new Date().getFullYear()}`,
     keys.tavilyKey

@@ -1,13 +1,16 @@
 const { chat } = require("../lib/llm");
 const { parseJSON } = require("../lib/json");
+const { getSettings, requireUser } = require("../lib/firebase");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const b = req.body || {};
-  if (!b.businessName || !b.types?.length) {
+  const user = await requireUser(req, res);
+  if (!user) return;
+  if (typeof b.businessName !== "string" || !b.businessName.trim() || !Array.isArray(b.types) || !b.types.length || b.types.length > 20 || b.types.some(t => typeof t !== "string" || !t.trim())) {
     return res.status(400).json({ error: "businessName and types[] are required" });
   }
-  const keys = b.keys || {};
+  const keys = await getSettings(user.uid);
 
   const prompt = `You are Hanora AI's content engine. Write on-brand marketing content for this business.
 

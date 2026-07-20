@@ -1,11 +1,15 @@
 const meta = require("../lib/platforms/meta");
 const linkedin = require("../lib/platforms/linkedin");
 const google = require("../lib/platforms/google");
+const { getSettings, requireUser } = require("../lib/firebase");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-  const { keys, targets } = req.body || {};
-  if (!keys || !targets?.length) return res.status(400).json({ error: "keys and targets are required" });
+  const user = await requireUser(req, res);
+  if (!user) return;
+  const { targets } = req.body || {};
+  if (!Array.isArray(targets) || !targets.length || targets.length > 20 || targets.some(t => !t || typeof t.platform !== "string")) return res.status(400).json({ error: "targets are required" });
+  const keys = await getSettings(user.uid);
 
   const results = [];
 

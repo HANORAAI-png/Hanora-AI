@@ -577,7 +577,6 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff;padding:12px;border-radi
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
@@ -590,7 +589,6 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
 const q = s => document.querySelector(s);
 const qa = s => [...document.querySelectorAll(s)];
@@ -598,13 +596,18 @@ const split = s => s.split(",").map(x => x.trim()).filter(Boolean);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
 let keys = {};
-const state = { business: {}, strategy: null, content: null, seo: null, analysis: null, targets: [] };
+const state = { business: {}, strategy: null, content: null, seo: null, analysis: null, campaign: null, selectedPlatforms: [], targets: [], metrics: [], documents: [] };
+let docs = [];
+let workspaceHydrating = false;
+let workspaceSaveTimer = null;
+let workspaceSaveChain = Promise.resolve();
 
 onAuthStateChanged(auth, async user => {
   if (!user) return location.href = "login.html";
   q("#whoami").textContent = user.email;
-  const snap = await getDoc(doc(db, "settings", user.uid));
-  if (snap.exists()) keys = snap.data();
+  keys = {};
+  restoreFlow();
+  await restoreWorkspace();
 });
 q("#signout").addEventListener("click", () => signOut(auth).then(() => location.href = "login.html"));
 
@@ -614,7 +617,7 @@ async function callApi(url, body, btn, errEl) {
   const label = btn.textContent;
   btn.textContent = "Working…";
   try {
-    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${await auth.currentUser.getIdToken()}` }, body: JSON.stringify(body) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Request failed");
     return data;
@@ -676,35 +679,76 @@ function completeStep(i) {
   }
 }
 
-/* persistence — never lose a campaign on refresh */
+/* persistence — Firestore is authoritative; local storage is only an offline draft fallback */
 const FIELD_IDS = ["s-name","s-industry","s-countries","s-budget","s-goals","s-audience","s-products","s-competitors","s-brand","s-web","so-ig","so-fb","so-li","so-x","so-yt","seo-site","v-country","v-budget","v-image"];
 let saveT = null;
+function workspacePayload() {
+  const values = {};
+  FIELD_IDS.forEach(id => { const el = q("#" + id); if (el) values[id] = el.value; });
+  const checks = {};
+  qa(".checks input").forEach(c => checks[c.value] = c.checked);
+  return { flow: { values, checks, max: flow.max, done: [...flow.done] }, state };
+}
+function queueWorkspaceSave() {
+  if (!auth.currentUser || workspaceHydrating) return;
+  clearTimeout(workspaceSaveTimer);
+  workspaceSaveTimer = setTimeout(() => {
+    const snapshot = workspacePayload();
+    workspaceSaveChain = workspaceSaveChain.then(async () => {
+      try {
+        await fetch("/api/workspace", { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${await auth.currentUser.getIdToken()}` }, body: JSON.stringify(snapshot) });
+      } catch { /* local draft remains available if the database is temporarily unreachable */ }
+    });
+  }, 300);
+}
 function saveFlow() {
   clearTimeout(saveT);
   saveT = setTimeout(() => {
-    const values = {};
-    FIELD_IDS.forEach(id => { const el = q("#" + id); if (el) values[id] = el.value; });
-    const checks = {};
-    qa(".checks input").forEach(c => checks[c.value] = c.checked);
-    localStorage.setItem("hanora-flow", JSON.stringify({ values, checks, max: flow.max, done: [...flow.done] }));
+    const draft = workspacePayload().flow;
+    if (auth.currentUser) localStorage.setItem(`hanora-flow:${auth.currentUser.uid}`, JSON.stringify(draft));
+    queueWorkspaceSave();
   }, 250);
 }
 FIELD_IDS.forEach(id => { const el = q("#" + id); if (el) el.addEventListener("input", saveFlow); });
 qa(".checks input").forEach(c => c.addEventListener("change", saveFlow));
 qa("[data-goto]").forEach(b => b.addEventListener("click", () => goStep(+b.dataset.goto)));
 
-(function restore() {
+function applyFlow(saved) {
+  if (!saved) return;
+  Object.entries(saved.values || {}).forEach(([id, value]) => { const el = q("#" + id); if (el) el.value = value; });
+  Object.entries(saved.checks || {}).forEach(([value, on]) => qa(".checks input").forEach(c => { if (c.value === value) c.checked = Boolean(on); }));
+  flow.max = Math.min(Number(saved.max) || 0, STEPS.length - 1);
+  flow.done.clear();
+  (saved.done || []).filter(Number.isInteger).forEach(i => flow.done.add(i));
+}
+function restoreFlow() {
+  try { applyFlow(JSON.parse(localStorage.getItem(`hanora-flow:${auth.currentUser?.uid}`) || "null")); } catch {}
+  goStep(flow.max);
+}
+async function restoreWorkspace() {
+  workspaceHydrating = true;
   try {
-    const saved = JSON.parse(localStorage.getItem("hanora-flow") || "null");
-    if (!saved) { goStep(0); return; }
-    Object.entries(saved.values || {}).forEach(([id, v]) => { const el = q("#" + id); if (el) el.value = v; });
-    Object.entries(saved.checks || {}).forEach(([v, on]) => { qa(`.checks input`).forEach(c => { if (c.value === v) c.checked = on; }); });
-    flow.max = Math.min(saved.max || 0, STEPS.length - 1);
-    (saved.done || []).forEach(i => flow.done.add(i));
-    goStep(flow.max);
-  } catch { goStep(0); }
-})();
-
+    const res = await fetch("/api/workspace", { headers: { Authorization: `Bearer ${await auth.currentUser.getIdToken()}` } });
+    if (!res.ok) throw new Error("workspace unavailable");
+    const { workspace } = await res.json();
+    if (workspace) {
+      applyFlow(workspace.flow);
+      if (workspace.state && typeof workspace.state === "object") Object.assign(state, workspace.state);
+      docs.length = 0;
+      docs.push(...(Array.isArray(state.documents) ? state.documents : []));
+      renderSavedResults();
+      goStep(flow.max);
+    }
+  } catch { /* local draft is the safe fallback for a temporary database outage */ }
+  finally { workspaceHydrating = false; }
+}
+function renderSavedResults() {
+  if (state.strategy) { q("#s-result").innerHTML = `<h3>Saved strategy</h3><pre>${esc(JSON.stringify(state.strategy, null, 2))}</pre>`; q("#s-result").classList.add("on"); }
+  if (state.content) { q("#c-result").innerHTML = `<pre>${esc(JSON.stringify(state.content, null, 2))}</pre>`; q("#c-result").classList.add("on"); }
+  if (state.seo) { q("#seo-result").innerHTML = `<pre>${esc(JSON.stringify(state.seo, null, 2))}</pre>`; q("#seo-result").classList.add("on"); }
+  if (state.analysis) { q("#v-result").innerHTML = renderAnalysis(state.analysis, state.campaign || {}); q("#v-result").classList.add("on"); }
+  if (state.metrics?.length) { q("#m-result").innerHTML = state.metrics.map(r => `<h3>${esc(r.platform)}${r.id ? ` — ${esc(r.id)}` : ""}</h3><pre>${esc(JSON.stringify(r.data || r.error, null, 2))}</pre>`).join(""); q("#m-result").classList.add("on"); }
+}
 /* ═══════════ COMMAND BAR — type a mission, prefill the flow ═══════════ */
 const COUNTRIES = ["Japan","Germany","Brazil","France","India","United States","USA","United Kingdom","UK","China","South Korea","Korea","UAE","Saudi Arabia","Australia","Canada","Mexico","Spain","Italy","Netherlands","Singapore","Indonesia","Thailand","Vietnam","Egypt","Nigeria","South Africa","Sweden","Norway","Denmark","Finland","Poland","Turkey","Argentina","Chile","Colombia","Philippines","Malaysia","New Zealand","Ireland","Portugal","Greece","Israel","Pakistan","Bangladesh","Switzerland","Austria","Belgium"];
 
@@ -783,7 +827,7 @@ q("#btn-analyse").addEventListener("click", async () => {
     },
   };
   deepOpen();
-  const data = await callApi("/api/strategy", { ...state.business, documents: docs.slice(0, 6), keys }, btn, q("#s-err"));
+  const data = await callApi("/api/strategy", { ...state.business, documents: docs.slice(0, 6) }, btn, q("#s-err"));
   if (!data) { deepClose(false); return; }
   deepClose(true);
   state.strategy = data.strategy;
@@ -816,7 +860,7 @@ q("#form-content").addEventListener("submit", async e => {
     strategySummary: state.strategy?.summary,
     targetAudience: state.business.targetAudience || q("#s-audience").value,
     brandGuidelines: state.business.brandGuidelines || q("#s-brand").value,
-    types, keys,
+    types,
   }, btn, q("#c-err"));
   if (!data) return;
   state.content = data.content;
@@ -838,7 +882,7 @@ q("#form-seo").addEventListener("submit", async e => {
     products: state.business.products || q("#s-products").value,
     competitors: state.business.competitors || q("#s-competitors").value,
     targetCountries: state.business.targetCountries?.length ? state.business.targetCountries : split(q("#s-countries").value),
-    website: q("#seo-site").value, keys,
+    website: q("#seo-site").value,
   }, btn, q("#seo-err"));
   if (!data) return;
   state.seo = data.seo;
@@ -1016,7 +1060,7 @@ q("#form-validate").addEventListener("submit", async e => {
   const campaign = assembleCampaign();
   const platforms = qa("#platform-picks input:checked").map(i => i.value);
   startScanner();
-  const data = await callApi("/api/analyze", { campaign, targetCountry: q("#v-country").value, platform: platforms.join(", "), keys }, btn, q("#v-err"));
+  const data = await callApi("/api/analyze", { campaign, targetCountry: q("#v-country").value, platform: platforms.join(", ") }, btn, q("#v-err"));
   if (!data) { stopScanner(); return; }
   state.analysis = data.analysis;
   state.campaign = campaign;
@@ -1032,7 +1076,7 @@ q("#form-validate").addEventListener("submit", async e => {
 /* ── 5. approve + launch ── */
 q("#btn-launch").addEventListener("click", async () => {
   const btn = q("#btn-launch");
-  const data = await callApi("/api/launch", { campaign: state.campaign, platforms: state.selectedPlatforms, keys }, btn, q("#l-err"));
+  const data = await callApi("/api/launch", { campaign: state.campaign, platforms: state.selectedPlatforms }, btn, q("#l-err"));
   if (!data) return;
   const out = q("#l-result");
   out.innerHTML = data.results.map((r, idx) => `
@@ -1044,6 +1088,8 @@ q("#btn-launch").addEventListener("click", async () => {
   `).join("");
   out.classList.add("on");
 
+  state.metrics = [];
+  saveFlow();
   state.targets = data.results
     .filter(r => r.status === "success")
     .map(r => ({ platform: r.platform, id: r.detail?.id }));
@@ -1059,7 +1105,7 @@ q("#btn-launch").addEventListener("click", async () => {
 async function refreshMetrics() {
   if (!state.targets.length) return;
   const btn = q("#btn-refresh");
-  const data = await callApi("/api/metrics", { keys, targets: state.targets }, btn, q("#m-err"));
+  const data = await callApi("/api/metrics", { targets: state.targets }, btn, q("#m-err"));
   if (!data) return;
   const out = q("#m-result");
   out.innerHTML = data.results.map(r => `
@@ -1067,6 +1113,8 @@ async function refreshMetrics() {
     ${r.error ? `<p style="color:var(--risk)">${esc(r.error)}</p>` : `<pre>${esc(JSON.stringify(r.data, null, 2))}</pre>`}
   `).join("");
   out.classList.add("on");
+  state.metrics = data.results;
+  saveFlow();
 }
 q("#btn-refresh").addEventListener("click", refreshMetrics);
 
@@ -1149,7 +1197,7 @@ syncChipsFromHidden();
 goSet(0);
 
 /* ── drop box + in-browser parsers ── */
-const docs = [];
+
 const dz = q("#drop"), dzInput = q("#drop-input"), dfilesEl = q("#dfiles");
 dz.addEventListener("click", () => dzInput.click());
 ["dragover", "dragenter"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("hot"); }));
@@ -1198,6 +1246,8 @@ async function handleFiles(list) {
     try {
       const text = (await extractText(f)).slice(0, 30000);
       docs.push({ name: f.name, text });
+      state.documents = docs;
+      saveFlow();
       chipEl.classList.add("ok"); chipEl.textContent = f.name + " ✓";
     } catch {
       chipEl.classList.add("bad"); chipEl.textContent = f.name + " · can't read";

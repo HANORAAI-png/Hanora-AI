@@ -92,7 +92,6 @@ legend{font-family:"Space Mono",monospace;font-size:11px;text-transform:uppercas
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
@@ -105,30 +104,29 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 const q = s => document.querySelector(s);
 
 let uid = null;
 onAuthStateChanged(auth, async user => {
   if (!user) return location.href = "login.html";
   uid = user.uid;
-  const snap = await getDoc(doc(db, "settings", uid));
-  if (!snap.exists()) return;
-  const k = snap.data();
+  const response = await fetch("/api/settings", { headers: { Authorization: `Bearer ${await user.getIdToken()}` } });
+  if (!response.ok) throw new Error("Could not load settings");
+  const k = (await response.json()).settings;
   q("#llm-base").value = k.llm?.baseURL || "";
   q("#llm-key").value = k.llm?.apiKey || "";
   q("#llm-model").value = k.llm?.model || "";
-  q("#tavily-key").value = k.tavilyKey || "";
+  q("#tavily-key").placeholder = k.tavilyConfigured ? "Configured — enter a new key to replace" : "";
   q("#meta-page").value = k.meta?.pageId || "";
   q("#meta-ig").value = k.meta?.igUserId || "";
-  q("#meta-token").value = k.meta?.pageAccessToken || "";
+  q("#meta-token").placeholder = k.meta?.configured ? "Configured — enter a new token to replace" : "";
   q("#li-org").value = k.linkedin?.orgUrn || "";
-  q("#li-token").value = k.linkedin?.accessToken || "";
-  q("#g-dev").value = k.google?.developerToken || "";
+  q("#li-token").placeholder = k.linkedin?.configured ? "Configured — enter a new token to replace" : "";
+  q("#g-dev").placeholder = k.google?.configured ? "Configured — enter a new token to replace" : "";
   q("#g-cust").value = k.google?.customerId || "";
   q("#g-cid").value = k.google?.clientId || "";
-  q("#g-csecret").value = k.google?.clientSecret || "";
-  q("#g-refresh").value = k.google?.refreshToken || "";
+  q("#g-csecret").placeholder = k.google?.configured ? "Configured — enter a new secret to replace" : "";
+  q("#g-refresh").placeholder = k.google?.configured ? "Configured — enter a new token to replace" : "";
   q("#g-login-cust").value = k.google?.loginCustomerId || "";
 });
 
@@ -152,7 +150,8 @@ q("#form").addEventListener("submit", async e => {
     },
   };
   try {
-    await setDoc(doc(db, "settings", uid), keys, { merge: true });
+    const response = await fetch("/api/settings", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${await auth.currentUser.getIdToken()}` }, body: JSON.stringify(keys) });
+    if (!response.ok) throw new Error((await response.json()).error || "Could not save settings");
     status.textContent = "Saved.";
     status.className = "status on ok";
   } catch (err) {

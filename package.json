@@ -2,5 +2,10 @@
   "name": "hanora-ai",
   "version": "1.0.0",
   "description": "Hanora AI — Global Campaign Intelligence",
-  "private": true
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node tests/core.test.js", "check": "node --check lib/json.js && node --check lib/llm.js && node --check lib/search.js && node --check lib/validation.js && node --check api/workspace.js && node --check api/launch.js" },
+  "dependencies": {
+    "firebase-admin": "^14.2.0"
+  }
 }

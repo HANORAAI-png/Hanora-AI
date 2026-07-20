@@ -1,20 +1,22 @@
 const { chat } = require("../lib/llm");
 const { webSearch } = require("../lib/search");
 const { parseJSON } = require("../lib/json");
+const { getSettings, requireUser } = require("../lib/firebase");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const b = req.body || {};
+  const user = await requireUser(req, res);
+  if (!user) return;
   if (!b.businessName || !b.industry) {
     return res.status(400).json({ error: "businessName and industry are required" });
   }
 
-  const keys = b.keys || {};
-  const countries = (b.targetCountries || []).join(", ");
-  const research = await webSearch(
-    `${b.industry} market trends competitors ${b.competitors || ""} ${countries}`.trim(),
-    keys.tavilyKey
-  );
+  const keys = await getSettings(user.uid);
+  const countries = (Array.isArray(b.targetCountries) ? b.targetCountries : []).filter(c => typeof c === "string").slice(0, 50).join(", ");
+  let research = "";
+  try { research = await webSearch(`${b.industry} market trends competitors ${b.competitors || ""} ${countries}`.trim(), keys.tavilyKey); }
+  catch (e) { return res.status(502).json({ error: `Research unavailable: ${e.message}` }); }
 
   const prompt = `You are Hanora AI's strategy engine. Given this business, produce a complete marketing strategy.
 

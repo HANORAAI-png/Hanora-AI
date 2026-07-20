@@ -1,17 +1,20 @@
 const { chat } = require("../lib/llm");
 const { webSearch } = require("../lib/search");
 const { parseJSON } = require("../lib/json");
+const { getSettings, requireUser } = require("../lib/firebase");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   const b = req.body || {};
+  const user = await requireUser(req, res);
+  if (!user) return;
   if (!b.businessName || !b.industry) {
     return res.status(400).json({ error: "businessName and industry are required" });
   }
-  const keys = b.keys || {};
+  const keys = await getSettings(user.uid);
 
   const research = await webSearch(
-    `${b.industry} SEO keywords ${b.competitors || ""} ${(b.targetCountries || []).join(" ")}`.trim(),
+    `${b.industry} SEO keywords ${b.competitors || ""} ${(Array.isArray(b.targetCountries) ? b.targetCountries : []).join(" ")}`.trim(),
     keys.tavilyKey
   );
 
@@ -21,7 +24,7 @@ BUSINESS: ${b.businessName}
 INDUSTRY: ${b.industry}
 PRODUCTS/SERVICES: ${b.products || "n/a"}
 COMPETITORS: ${b.competitors || "n/a"}
-TARGET COUNTRIES: ${(b.targetCountries || []).join(", ") || "n/a"}
+TARGET COUNTRIES: ${(Array.isArray(b.targetCountries) ? b.targetCountries : []).join(", ") || "n/a"}
 WEBSITE: ${b.website || "n/a"}
 
 RESEARCH
