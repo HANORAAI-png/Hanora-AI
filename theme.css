@@ -1,150 +1,230 @@
 /* ============================================================
-   HANORA AI — Design System · v1
-   Single token sheet shared by index / login / app / settings.
-   Palette, semantic intelligence colors, type, shape, motion.
+   HANORA AI — Design System · v2
+   Spacing / type / radii use rem (html root = 16px).
+   Borders / hairlines may stay in px for crispness.
    ============================================================ */
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
 
 :root {
   /* ── core palette ── */
-  --ink:#121711;
-  --ink-soft:#566056;
-  --paper:#ede8df;
-  --paper-light:#f7f3eb;
-  --paper-dark:#d8d1c4;
-  --acid:#d8ff45;
-  --lime:#a6ff4d;
-  --orange:#ff6d2e;
-  --blue:#4d7dff;
-  --red:#e8382f;
-  --line:rgba(18,23,17,.14);
-  --line-light:rgba(255,255,255,.18);
+  --ink: #121711;
+  --ink-soft: #566056;
+  --paper: #ede8df;
+  --paper-light: #f7f3eb;
+  --paper-dark: #d8d1c4;
+  --acid: #d8ff45;
+  --lime: #a6ff4d;
+  --orange: #ff6d2e;
+  --blue: #4d7dff;
+  --red: #e8382f;
+  --line: rgba(18, 23, 17, 0.14);
+  --line-light: rgba(255, 255, 255, 0.18);
 
-  /* ── semantic intelligence colors ──
-     color = meaning, everywhere in the product:
-     acid/green = launch-ready · orange = caution · red = risk · blue = information */
-  --safe:#3a5a12;
-  --safe-bg:rgba(166,255,77,.28);
-  --caution:#8a3c14;
-  --caution-bg:rgba(255,109,46,.18);
-  --risk:#e8382f;
-  --risk-bg:rgba(232,56,47,.13);
-  --info:#2f5cd6;
-  --info-bg:rgba(77,125,255,.12);
+  /* ── semantic intelligence colors ── */
+  --safe: #3a5a12;
+  --safe-bg: rgba(166, 255, 77, 0.28);
+  --caution: #8a3c14;
+  --caution-bg: rgba(255, 109, 46, 0.18);
+  --risk: #e8382f;
+  --risk-bg: rgba(232, 56, 47, 0.13);
+  --info: #2f5cd6;
+  --info-bg: rgba(77, 125, 255, 0.12);
+
+  /* ── rem scale (1rem = 16px) ── */
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.25rem;   /* 20 */
+  --space-6: 1.5rem;    /* 24 */
+  --space-7: 2rem;      /* 32 */
+  --space-8: 2.5rem;    /* 40 */
+  --space-9: 3rem;      /* 48 */
+  --space-10: 4rem;     /* 64 */
+  --space-11: 5rem;     /* 80 */
+  --space-12: 6rem;     /* 96 */
+
+  --text-xs: 0.625rem;   /* 10 */
+  --text-sm: 0.6875rem;  /* 11 */
+  --text-md: 0.875rem;   /* 14 */
+  --text-base: 1rem;     /* 16 */
+  --text-lg: 1.125rem;   /* 18 */
+  --text-xl: 1.25rem;    /* 20 */
 
   /* ── shape & motion ── */
-  --radius-sm:10px;
-  --radius:14px;
-  --radius-lg:26px;
-  --ease:cubic-bezier(.16,1,.3,1);
+  --radius-sm: 0.625rem;
+  --radius: 0.875rem;
+  --radius-lg: 1.625rem;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --hairline: 1px;
 }
 
-*, *::before, *::after { box-sizing:border-box; }
-::selection { background:var(--ink); color:var(--acid); }
-.mono { font-family:"Space Mono",monospace; }
+*, *::before, *::after { box-sizing: border-box; }
+::selection { background: var(--ink); color: var(--acid); }
+.mono { font-family: "Space Mono", monospace; }
 
-/* ── brand serif accent — Hanora's ownable detail.
-     Wrap one key concept per heading: <em class="accent">word</em> ── */
 .accent {
-  font-family:Georgia,serif;
-  font-weight:400;
-  font-style:italic;
-  color:var(--orange);
-  letter-spacing:-.02em;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--orange);
+  letter-spacing: -0.02em;
 }
 
-/* ── eyebrow label ── */
 .eyebrow {
-  display:inline-flex; align-items:center; gap:10px;
-  font-family:"Space Mono",monospace; font-size:11px; line-height:1;
-  letter-spacing:.13em; text-transform:uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-sm);
+  line-height: 1;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 .eyebrow::before {
-  content:""; width:8px; height:8px; border-radius:50%;
-  background:var(--orange); box-shadow:0 0 0 5px rgba(255,109,46,.12);
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 0 0.3125rem rgba(255, 109, 46, 0.12);
 }
 
-/* ── pill button ── */
 .btn {
-  display:inline-flex; align-items:center; gap:10px;
-  padding:12px 24px; border:0; border-radius:100px;
-  background:var(--ink); color:#fff; cursor:pointer;
-  font-family:"Space Mono",monospace; font-size:11px;
-  letter-spacing:.08em; text-transform:uppercase; text-decoration:none;
-  transition:transform .35s var(--ease), box-shadow .35s var(--ease), opacity .3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 6.25rem;
+  background: var(--ink);
+  color: #fff;
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), opacity 0.3s;
 }
-.btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 24px rgba(18,23,17,.18); }
-.btn:active:not(:disabled) { transform:scale(.98); }
-.btn:disabled { opacity:.45; cursor:wait; }
+.btn:hover:not(:disabled) {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.625rem 1.5rem rgba(18, 23, 17, 0.18);
+}
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn:disabled { opacity: 0.45; cursor: wait; }
 .btn--ghost {
-  background:transparent; color:var(--ink); border:1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  border: var(--hairline) solid var(--line);
 }
-.btn--ghost:hover:not(:disabled) { background:var(--paper-light); box-shadow:none; }
+.btn--ghost:hover:not(:disabled) {
+  background: var(--paper-light);
+  box-shadow: none;
+}
 
-/* ── status badge ── */
 .badge {
-  display:inline-block; padding:4px 12px; border-radius:100px;
-  font-family:"Space Mono",monospace; font-size:10px;
-  text-transform:uppercase; letter-spacing:.08em;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6.25rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
-.badge.low, .badge.success { background:var(--safe-bg); color:var(--safe); }
-.badge.medium { background:var(--caution-bg); color:var(--caution); }
-.badge.high, .badge.critical, .badge.error { background:var(--risk-bg); color:var(--risk); }
-.badge.skipped { background:rgba(18,23,17,.08); color:var(--ink-soft); }
-.badge.info { background:var(--info-bg); color:var(--info); }
+.badge.low, .badge.success { background: var(--safe-bg); color: var(--safe); }
+.badge.medium { background: var(--caution-bg); color: var(--caution); }
+.badge.high, .badge.critical, .badge.error { background: var(--risk-bg); color: var(--risk); }
+.badge.skipped { background: rgba(18, 23, 17, 0.08); color: var(--ink-soft); }
+.badge.info { background: var(--info-bg); color: var(--info); }
 
-/* ── card ── */
 .card {
-  background:var(--paper-light);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
+  background: var(--paper-light);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius);
 }
 
-/* ── boxed form field (app / settings) ── */
-.field { margin-bottom:16px; }
+.field { margin-bottom: 1rem; }
 .field label {
-  display:block; margin-bottom:6px;
-  font-family:"Space Mono",monospace; font-size:10px;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft);
-  transition:color .3s;
+  display: block;
+  margin-bottom: 0.375rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: color 0.3s;
 }
 .field input, .field textarea, .field select {
-  width:100%; padding:10px 12px;
-  border:1px solid var(--line); border-radius:var(--radius-sm);
-  background:var(--paper-light);
-  font-family:"DM Sans",sans-serif; font-size:14px; color:var(--ink);
-  outline:none;
-  transition:border-color .3s, box-shadow .3s, background .3s;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-light);
+  font-family: "DM Sans", sans-serif;
+  font-size: var(--text-md);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
 }
-.field textarea { min-height:90px; resize:vertical; }
+.field textarea { min-height: 5.625rem; resize: vertical; }
 .field input:focus, .field textarea:focus, .field select:focus {
-  border-color:var(--ink);
-  box-shadow:0 0 0 3px rgba(18,23,17,.06);
-  background:#fff;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 0.1875rem rgba(18, 23, 17, 0.06);
+  background: #fff;
 }
-.field:focus-within label { color:var(--ink); }
+.field:focus-within label { color: var(--ink); }
 
-/* ── check chips ── */
-.checks { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+}
 .checks label {
-  display:flex; align-items:center; gap:6px;
-  padding:8px 14px; border:1px solid var(--line); border-radius:100px;
-  font-size:12px; background:var(--paper-light); cursor:pointer;
-  transition:border-color .3s, background .3s, transform .3s var(--ease);
-  user-select:none;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: var(--hairline) solid var(--line);
+  border-radius: 6.25rem;
+  font-size: 0.75rem;
+  background: var(--paper-light);
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease);
+  user-select: none;
 }
-.checks label:hover { transform:translateY(-1px); border-color:rgba(18,23,17,.35); }
+.checks label:hover {
+  transform: translateY(-0.0625rem);
+  border-color: rgba(18, 23, 17, 0.35);
+}
 .checks label:has(input:checked) {
-  background:var(--ink); color:var(--paper); border-color:var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
 }
-.checks input { accent-color:var(--orange); }
+.checks input { accent-color: var(--orange); }
 
-/* ── gentle rise reveal (used when results appear) ── */
 @keyframes rise {
-  from { opacity:0; transform:translateY(18px); }
-  to   { opacity:1; transform:none; }
+  from { opacity: 0; transform: translateY(1.125rem); }
+  to { opacity: 1; transform: none; }
 }
-.rise { animation:rise .7s var(--ease) backwards; }
+.rise { animation: rise 0.7s var(--ease) backwards; }
 
-@media (prefers-reduced-motion:reduce) {
-  *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 48rem) {
+  html { font-size: 15px; }
+}
+@media (max-width: 30rem) {
+  html { font-size: 14px; }
 }

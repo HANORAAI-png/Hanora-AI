@@ -2,7 +2,7 @@
   "framework": null,
   "headers": [
     {
-      "source": "/assets/(.*)\\.(mp4|webm|ogg)",
+      "source": "/assets/(.*)\\.(mp4|webm|ogg|png|jpg|webp|svg)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -16,14 +16,16 @@
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }

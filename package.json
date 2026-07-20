@@ -4,7 +4,7 @@
   "description": "Hanora AI — Global Campaign Intelligence",
   "private": true,
   "engines": { "node": ">=20" },
-  "scripts": { "test": "node tests/core.test.js", "check": "node --check lib/json.js && node --check lib/llm.js && node --check lib/search.js && node --check lib/validation.js && node --check api/workspace.js && node --check api/launch.js" },
+  "scripts": { "test": "node tests/core.test.js", "check": "node --check lib/json.js && node --check lib/llm.js && node --check lib/search.js && node --check lib/validation.js && node --check api/workspace.js && node --check api/launch.js && node --check api/paid-review.js", "dev": "vercel dev" },
   "dependencies": {
     "firebase-admin": "^14.2.0"
   }

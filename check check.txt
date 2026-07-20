@@ -1,0 +1,281 @@
+Purpose & Strategy
+Information Architecture
+ User Experience (UX)
+Design & Visual Quality
+Accessibility (a11y)
+Performance
+Security
+Privacy & Compliance
+Content Quality
+
+
+
+
+
+1. Purpose & Strategy
+Before features, clarity:
+
+• Clear value proposition — what it is, who it’s for, why it exists (in under 5 seconds)
+• Primary goal — sell, sign up, book, educate, support, brand
+• Audience definition — beginner vs expert, mobile-first vs desktop, local vs global
+• Success metrics — conversion rate, bounce, time-to-task, retention, support tickets
+• Content strategy — what pages matter, what can be cut
+
+───
+
+2. Information Architecture
+How content is structured:
+
+• Logical navigation hierarchy
+• Sensible URL structure (/pricing, /docs/getting-started)
+• Clear page roles (home, product, pricing, about, contact, legal)
+• Search (if content is large)
+• Breadcrumbs on deep sites
+• No dead ends — every page should lead somewhere useful
+
+───
+
+3. User Experience (UX)
+Can people complete tasks without friction?
+
+• Fast path to the main action (CTA above the fold)
+• Consistent patterns (buttons, forms, links behave the same)
+• Forms that are short, labeled, and forgiving of errors
+• Helpful empty states, loading states, error states
+• Undo / confirmation for destructive actions
+• Accessibility of flow (not just visuals): keyboard, focus, screen readers
+• Onboarding that doesn’t block exploration
+• Mobile parity — not a broken desktop site shrunk down
+
+───
+
+4. Design & Visual Quality
+Looks professional and communicates hierarchy:
+
+• Visual hierarchy (what to read first)
+• Typography that is readable (size, line height, contrast)
+• Consistent spacing, alignment, grid
+• Color system with meaning (primary, danger, success)
+• Brand consistency without gimmicks
+• Imagery that supports meaning (not stock fluff)
+• Dark mode only if done properly (not inverted chaos)
+• Micro-interactions that feel responsive, not decorative noise
+
+───
+
+5. Accessibility (a11y)
+Often skipped, always important:
+
+• Keyboard navigation
+• Visible focus states
+• Alt text for meaningful images
+• Color contrast (WCAG AA minimum)
+• Semantic HTML (h1–h6, landmarks, labels)
+• Captions/transcripts for media
+• No information only by color
+• Respect prefers-reduced-motion
+
+───
+
+6. Performance
+Speed is UX and SEO:
+
+• Fast first load (LCP)
+• Low interaction delay (INP)
+• Stable layout (CLS)
+• Optimized images (modern formats, sizes, lazy load)
+• Minimal JS, code splitting
+• Caching / CDN
+• Font loading strategy
+• Avoid third-party script bloat
+
+───
+
+7. Security
+Non-negotiable for any real site:
+
+• HTTPS everywhere
+• Secure auth (password hashing, MFA where needed, session handling)
+• CSRF / XSS / injection protections
+• Input validation + output encoding
+• AuthZ (users only access their data)
+• Rate limiting / brute-force protection
+• Secure cookies (HttpOnly, Secure, SameSite)
+• Headers (CSP, HSTS, X-Frame-Options, etc.)
+• Dependency hygiene (no known vulnerable packages)
+• Secrets never in frontend or git
+• Least-privilege APIs and storage
+• Backup + recovery plan
+• Privacy: only collect what you need
+
+───
+
+8. Privacy & Compliance
+Trust and law:
+
+• Privacy policy, terms, cookie consent where required
+• Clear data use explanation
+• GDPR/CCPA-style rights if applicable (access, delete, export)
+• Cookie/tracking transparency
+• Age / region restrictions if relevant
+• Email marketing opt-in, not dark patterns
+
+───
+
+9. Content Quality
+Content is the product for many sites:
+
+• Clear writing, scannable structure
+• Honest claims (no fake social proof)
+• Updated dates on critical info
+• FAQ for real objections
+• Help/docs that match the product
+• Multilingual support if audience needs it
+• Tone consistent with brand
+
+───
+
+10. Conversion & Business Flow
+If the site has a business goal:
+
+• Strong, specific CTAs
+• Pricing clarity (no surprise fees)
+• Trust signals (real reviews, security badges only if true, company info)
+• Friction removal at checkout/signup
+• Abandoned flow recovery (email, save cart)
+• A/B test readiness without breaking UX
+• Analytics that answer “where do people drop?”
+
+───
+
+11. SEO & Discoverability
+People need to find it:
+
+• Unique titles + meta descriptions
+• Semantic headings
+• Clean internal linking
+• Sitemap + robots.txt
+• Structured data (where useful)
+• Mobile-friendly + fast
+• Canonical URLs, no duplicate content mess
+• Open Graph / social previews
+• Local SEO if location matters
+
+───
+
+12. Reliability & Operations
+It should stay up and recover:
+
+• Uptime monitoring
+• Error tracking (Sentry-style)
+• Logging that is useful and privacy-safe
+• Health checks
+• Graceful degradation when APIs fail
+• Staging environment
+• Safe deploy process + rollback
+• Backups tested, not theoretical
+
+───
+
+13. Technical Architecture
+How it’s built matters long-term:
+
+• Responsive design (all breakpoints)
+• Progressive enhancement where possible
+• API design that is stable and versioned
+• Auth model that scales (sessions/JWT/OAuth as appropriate)
+• Database integrity + migrations
+• Environment config (dev/stage/prod)
+• Feature flags for risky launches
+• Documentation for the team (not only users)
+
+───
+
+14. Trust & Legitimacy
+People decide in seconds:
+
+• Real contact info / support path
+• About page with substance
+• Transparent pricing and policies
+• No dark patterns (hidden cancel, fake urgency)
+• Security indicators (HTTPS, sensible login UX)
+• Professional domain/email, not shady free webmail for business
+
+───
+
+15. Support & Feedback Loops
+After launch is half the product:
+
+• Contact / chat / help center
+• Status page for outages
+• In-product feedback
+• Bug reporting path
+• Changelog / “what’s new”
+• Support SLAs if B2B
+
+───
+
+16. Analytics & Measurement
+You can’t improve what you don’t measure:
+
+• Core traffic + conversion funnels
+• Event tracking that maps to goals
+• Heatmaps/session replay carefully (privacy-aware)
+• Performance monitoring (RUM)
+• Error rates + user-impact metrics
+• Avoid vanity metrics only (pageviews without outcomes)
+
+───
+
+17. Internationalization & Inclusivity (when relevant)
+• Language, currency, date/number formats
+• RTL support if needed
+• Cultural sensitivity in imagery/copy
+• Inclusive language and representation
+
+───
+
+18. Maintainability
+A site that can’t be updated dies:
+
+• Component system / design tokens
+• Clean content model (CMS if needed)
+• Tests for critical flows
+• Dependency updates process
+• Ownership: who fixes what when it breaks
+
+───
+
+Priority order (if you’re building or auditing)
+
+┌──────────┬───────────────────────────┬─────────────────────────────────────────────┐
+│ Priority │ Area                      │ Why                                         │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P0       │ Security + Privacy        │ One breach kills trust                      │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P0       │ Core UX path              │ If the main job fails, nothing else matters │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P0       │ Performance basics        │ Slow = bounce                               │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P1       │ Design consistency        │ Signals quality and reduces cognitive load  │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P1       │ Accessibility             │ Ethics, law, larger audience                │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P1       │ Reliability/monitoring    │ Know when it’s broken                       │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P2       │ SEO                       │ Growth channel                              │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P2       │ Conversion polish         │ Business outcomes                           │
+├──────────┼───────────────────────────┼─────────────────────────────────────────────┤
+│ P3       │ Fancy animations / extras │ Only after fundamentals                     │
+└──────────┴───────────────────────────┴─────────────────────────────────────────────┘
+
+───
+
+One-line mental model
+
+A website should be:
+
+│ Clear (purpose), usable (UX), beautiful enough (design), fast, accessible, secure, trustworthy, findable, measurable, and maintainable.
+
+If you want, next I can turn this into a scoring rubric (e.g. 1–10 per category) you can use to audit any site — still without touching code.

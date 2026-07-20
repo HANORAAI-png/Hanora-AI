@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>Hanora AI — Founding Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* Paid review experience — rem-based, fluid signal UI */
+:root {
+  --rv-ink: #0b1020;
+  --rv-fog: rgba(255, 255, 255, 0.78);
+  --rv-muted: rgba(255, 255, 255, 0.5);
+  --rv-line: rgba(255, 255, 255, 0.55);
+  --rv-glass: rgba(255, 255, 255, 0.08);
+  --rv-glass-border: rgba(255, 255, 255, 0.18);
+  --rv-orange: #ff6a45;
+  --rv-violet: #7b6cff;
+  --rv-blue: #2f5bff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  color: #fff;
+  background: #0b1020;
+  font-family: "DM Sans", sans-serif;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+a { color: inherit; }
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 55% 45% at 18% 42%, rgba(255, 90, 55, 0.55), transparent 58%),
+    radial-gradient(ellipse 50% 55% at 72% 48%, rgba(55, 80, 255, 0.72), transparent 60%),
+    radial-gradient(ellipse 40% 40% at 48% 20%, rgba(160, 130, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, #d7d2ea 0%, #b8c0e8 28%, #8ea0e8 55%, #e8e6ef 100%);
+}
+.bg__fluid {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  filter: blur(2.8rem) saturate(1.22);
+  pointer-events: none;
+}
+.bg__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E");
+}
+.bg__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2.5rem);
+  animation: drift 14s var(--ease) infinite alternate;
+  pointer-events: none;
+}
+.bg__orb--a {
+  width: 28rem; height: 28rem; left: -4rem; top: 20%;
+  background: rgba(255, 90, 50, 0.45);
+}
+.bg__orb--b {
+  width: 36rem; height: 36rem; right: -6rem; top: 10%;
+  background: rgba(50, 70, 255, 0.5);
+  animation-delay: -4s;
+}
+.bg__orb--c {
+  width: 22rem; height: 22rem; left: 40%; bottom: -4rem;
+  background: rgba(140, 120, 255, 0.35);
+  animation-delay: -8s;
+}
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(1.5rem, -2rem) scale(1.08); }
+}
+
+#graph {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem;
+  pointer-events: none;
+}
+.topbar a, .topbar .pill { pointer-events: auto; }
+.brand {
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: var(--text-xl);
+  letter-spacing: -0.05em;
+  text-decoration: none;
+  text-shadow: 0 0.125rem 1rem rgba(0,0,0,.25);
+}
+.brand span {
+  margin-left: 0.25rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  vertical-align: super;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6.25rem;
+  border: var(--hairline) solid var(--rv-glass-border);
+  background: rgba(10, 14, 30, 0.28);
+  backdrop-filter: blur(0.75rem);
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.pill i {
+  width: 0.4rem; height: 0.4rem; border-radius: 50%;
+  background: var(--acid);
+  box-shadow: 0 0 0 0.25rem rgba(216, 255, 69, 0.18);
+}
+
+.stage {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 5rem 1.25rem 3rem;
+}
+
+.panel {
+  width: min(42rem, 100%);
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  border: var(--hairline) solid var(--rv-glass-border);
+  background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+  backdrop-filter: blur(1.4rem) saturate(1.2);
+  box-shadow:
+    inset 0 0.0625rem 0 rgba(255,255,255,.28),
+    0 1.5rem 3.5rem rgba(10, 14, 40, 0.28);
+  transform-origin: center;
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), filter 0.55s var(--ease);
+}
+.panel.is-out {
+  opacity: 0;
+  transform: translateY(1.25rem) scale(0.98);
+  filter: blur(0.35rem);
+  pointer-events: none;
+}
+.panel.is-in {
+  animation: panelIn 0.65s var(--ease) both;
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(1.5rem) scale(0.97); filter: blur(0.4rem); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.7);
+}
+.kicker::before {
+  content: "";
+  width: 0.45rem; height: 0.45rem; border-radius: 50%;
+  background: var(--acid);
+}
+.panel h1, .panel h2 {
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 1.05;
+}
+.panel h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 0.75rem; }
+.panel h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); margin-bottom: 0.5rem; }
+.panel .lead {
+  color: rgba(255,255,255,.72);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+}
+.progress-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+.progress-row span {
+  flex: 1;
+  height: 0.2rem;
+  border-radius: 6.25rem;
+  background: rgba(255,255,255,.18);
+  overflow: hidden;
+}
+.progress-row span i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--acid), #fff);
+  transition: width 0.45s var(--ease);
+}
+.progress-row span.is-done i,
+.progress-row span.is-now i { width: 100%; }
+.progress-row span.is-now i { opacity: 0.7; }
+
+.q-grid { display: grid; gap: 1rem; }
+.q-grid.two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 40rem) {
+  .q-grid.two { grid-template-columns: 1fr; }
+}
+.field-dark label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+}
+.field-dark input,
+.field-dark textarea,
+.field-dark select {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.75rem;
+  border: var(--hairline) solid rgba(255,255,255,.22);
+  background: rgba(8, 12, 28, 0.35);
+  color: #fff;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.field-dark textarea { min-height: 6rem; resize: vertical; }
+.field-dark input:focus,
+.field-dark textarea:focus,
+.field-dark select:focus {
+  border-color: rgba(216, 255, 69, 0.7);
+  box-shadow: 0 0 0 0.2rem rgba(216, 255, 69, 0.12);
+  background: rgba(8, 12, 28, 0.5);
+}
+.field-dark input::placeholder,
+.field-dark textarea::placeholder { color: rgba(255,255,255,.35); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 6.25rem;
+  border: var(--hairline) solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.06);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.3s var(--ease), background 0.3s, border-color 0.3s;
+}
+.chips label:hover { transform: translateY(-0.0625rem); }
+.chips label:has(input:checked) {
+  background: rgba(216, 255, 69, 0.18);
+  border-color: rgba(216, 255, 69, 0.7);
+  color: #fff;
+}
+.chips input { accent-color: var(--acid); }
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.ghost-btn, .next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 0;
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ghost-btn {
+  padding: 0.85rem 1.5rem;
+  border: var(--hairline) solid rgba(255,255,255,.28);
+  border-radius: 6.25rem;
+  background: rgba(255,255,255,.05);
+  backdrop-filter: blur(0.5rem);
+  color: rgba(255,255,255,.75);
+  text-decoration: none;
+  transition: color .35s, border-color .35s, background .35s, transform .35s var(--ease);
+}
+.ghost-btn:hover { color: #fff; border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.1); transform: translateY(-0.125rem); }
+.next-btn {
+  margin-left: auto;
+  padding: 0.55rem 0.55rem 0.55rem 1.6rem;
+  border-radius: 6.25rem;
+  background: var(--acid, #d8ff45);
+  color: #0b1020;
+  gap: 1.1rem;
+  box-shadow: 0 1rem 2.5rem rgba(216,255,69,.18);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.next-btn i {
+  display: grid;
+  place-items: center;
+  width: 2.5rem; height: 2.5rem;
+  border-radius: 50%;
+  background: #0b1020;
+  color: var(--acid, #d8ff45);
+  font-style: normal;
+  transition: transform 0.5s var(--ease);
+}
+.next-btn:hover { transform: translateY(-0.185rem); box-shadow: 0 1.4rem 3.2rem rgba(216,255,69,.28); }
+.next-btn:hover i { transform: rotate(45deg); }
+.next-btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+/* Intro spiral stage */
+.intro {
+  text-align: center;
+  width: min(48rem, 100%);
+}
+.intro h1 { margin-bottom: 0.75rem; }
+.lens-track {
+  position: relative;
+  height: 14rem;
+  margin: 2rem auto 1.5rem;
+  max-width: 40rem;
+}
+.lens-node {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6.25rem;
+  border: var(--hairline) solid rgba(255,255,255,.35);
+  background: rgba(10,14,30,.35);
+  backdrop-filter: blur(0.5rem);
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-2rem, -50%);
+}
+.lens-node b {
+  width: 0.45rem; height: 0.45rem; border-radius: 50%;
+  background: var(--acid);
+}
+
+/* Loading */
+.load-card { text-align: center; width: min(36rem, 100%); }
+.load-card .pulse {
+  width: 4.5rem; height: 4.5rem; margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  border: 0.125rem solid rgba(255,255,255,.25);
+  border-top-color: var(--acid);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.load-steps {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+.load-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  background: rgba(255,255,255,.06);
+  border: var(--hairline) solid rgba(255,255,255,.12);
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+  transition: color 0.35s, border-color 0.35s, background 0.35s;
+}
+.load-steps li.is-on {
+  color: #fff;
+  border-color: rgba(216,255,69,.45);
+  background: rgba(216,255,69,.1);
+}
+.load-steps li.is-done { color: rgba(255,255,255,.8); }
+.load-steps li::before {
+  content: "";
+  width: 0.45rem; height: 0.45rem; border-radius: 50%;
+  background: currentColor;
+}
+
+/* Results */
+.results {
+  width: min(72rem, 100%);
+  display: none;
+}
+.results.is-show { display: block; animation: panelIn 0.7s var(--ease) both; }
+.results__hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 56rem) {
+  .results__hero { grid-template-columns: 1fr; }
+}
+.glass {
+  padding: 1.35rem;
+  border-radius: 1.25rem;
+  border: var(--hairline) solid var(--rv-glass-border);
+  background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  backdrop-filter: blur(1.2rem);
+  box-shadow: inset 0 0.0625rem 0 rgba(255,255,255,.2);
+}
+.score-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+@media (max-width: 40rem) { .score-row { grid-template-columns: 1fr; } }
+.score {
+  padding: 0.9rem;
+  border-radius: 0.9rem;
+  background: rgba(8,12,28,.28);
+  border: var(--hairline) solid rgba(255,255,255,.12);
+}
+.score em {
+  display: block;
+  font-style: normal;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 0.35rem;
+}
+.score strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: -0.05em;
+}
+.badge-lvl {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6.25rem;
+  font-family: "Space Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.badge-lvl.low { background: var(--safe-bg); color: #d8ff9a; }
+.badge-lvl.medium { background: var(--caution-bg); color: #ffc29a; }
+.badge-lvl.high, .badge-lvl.critical { background: var(--risk-bg); color: #ffb0ad; }
+
+.radar-wrap { display: grid; place-items: center; min-height: 18rem; }
+.bars { display: grid; gap: 0.7rem; }
+.bar-row { display: grid; grid-template-columns: 7rem 1fr 2.5rem; gap: 0.6rem; align-items: center; }
+.bar-row span {
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.65);
+}
+.bar-track {
+  height: 0.45rem;
+  border-radius: 6.25rem;
+  background: rgba(255,255,255,.12);
+  overflow: hidden;
+}
+.bar-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--rv-blue), var(--acid));
+  transition: width 1s var(--ease);
+}
+.bar-row b { text-align: right; font-family: "Space Mono", monospace; font-size: var(--text-xs); }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+@media (max-width: 56rem) { .grid-2 { grid-template-columns: 1fr; } }
+.issue {
+  padding: 0.85rem;
+  border-radius: 0.85rem;
+  background: rgba(8,12,28,.25);
+  border: var(--hairline) solid rgba(255,255,255,.1);
+  margin-bottom: 0.55rem;
+}
+.issue strong {
+  display: block;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+  color: var(--acid);
+}
+.issue p { font-size: 0.9rem; line-height: 1.5; color: rgba(255,255,255,.8); }
+.timeline { display: grid; gap: 0.55rem; }
+.tl-item {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  background: rgba(8,12,28,.22);
+  border: var(--hairline) solid rgba(255,255,255,.1);
+}
+.tl-item em {
+  font-style: normal;
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+}
+.sentiment { display: grid; gap: 0.55rem; }
+.sent-row { display: grid; grid-template-columns: 1fr 4rem; gap: 0.5rem; align-items: center; }
+.sent-track {
+  height: 0.4rem; border-radius: 6.25rem;
+  background: rgba(255,255,255,.12); overflow: hidden;
+}
+.sent-track i {
+  display: block; height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--rv-orange), var(--acid));
+  transition: width 1s var(--ease);
+}
+.rewrite {
+  margin-top: 1.25rem;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,.88);
+}
+.err {
+  display: none;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(232, 56, 47, 0.18);
+  border: var(--hairline) solid rgba(255,120,120,.4);
+  font-family: "Space Mono", monospace;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.err.is-on { display: block; }
+
+.hidden { display: none !important; }
+
+/* ── entrance: slats lift, intro blur-rises ── */
+.rvcover{position:fixed;inset:0;z-index:9000;display:flex;pointer-events:none}
+.rvcover i{flex:1;background:#0b1020}
+.rvcover.lift i{transform:translateY(-101%);transition:transform .85s var(--ease)}
+.rvcover.lift i:nth-child(2){transition-delay:.06s}
+.rvcover.lift i:nth-child(3){transition-delay:.12s}
+.rvcover.lift i:nth-child(4){transition-delay:.18s}
+.rvcover.lift i:nth-child(5){transition-delay:.24s}
+.rvcover.lift i:nth-child(6){transition-delay:.3s}
+.intro > *{opacity:0;transform:translateY(1.4rem);filter:blur(6px)}
+.intro.enter > *{opacity:1;transform:none;filter:blur(0);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+.intro.enter > *:nth-child(2){transition-delay:.09s}
+.intro.enter > *:nth-child(3){transition-delay:.18s}
+.intro.enter > *:nth-child(4){transition-delay:.27s}
+.intro.enter > *:nth-child(5){transition-delay:.36s}
+.founder-tag{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1.1rem;padding:.5rem .9rem;border-radius:6.25rem;border:var(--hairline) solid rgba(216,255,69,.4);background:rgba(216,255,69,.1);font-family:"Space Mono",monospace;font-size:var(--text-xs);letter-spacing:.12em;text-transform:uppercase;color:#d8ff45}
+.founder-tag::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:#d8ff45}
+
+#startBtn{margin-left:0;padding:.9rem .9rem .9rem 1.8rem}
+@view-transition{navigation:auto}
+@media (prefers-reduced-motion:reduce){.rvcover{display:none}.intro > *{opacity:1;transform:none;filter:none}}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg__orb, .load-card .pulse { animation: none !important; }
+}
+</style>
+</head>
+<body>
+  <div class="rvcover" id="rvcover" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="bg" aria-hidden="true">
+    <canvas class="bg__fluid" id="fluid"></canvas>
+    <div class="bg__grain"></div>
+  </div>
+  <canvas id="graph" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <a class="brand" href="index.html">Hanora<span>AI</span></a>
+  </header>
+
+  <main class="stage">
+    <!-- INTRO -->
+    <section class="intro" id="intro">
+      <div class="founder-tag hidden" id="founderTag">Founding access · unlocked</div>
+      <p class="kicker">Campaign intelligence · six lenses</p>
+      <h1>Signal lock before launch.</h1>
+      <p class="lead" style="max-width:34rem;margin:0 auto 2rem;color:rgba(255,255,255,.72)">
+        Six lenses read your campaign — culture, history, religion, politics, society and language — before anything ships.
+      </p>
+      <div class="actions" style="justify-content:center">
+        <button class="next-btn" type="button" id="startBtn"><span>Begin the briefing</span><i>→</i></button>
+      </div>
+    </section>
+
+    <!-- QUESTIONS -->
+    <section class="panel hidden" id="quiz"></section>
+
+    <!-- LOADING -->
+    <section class="panel load-card hidden" id="loading">
+      <div class="pulse" aria-hidden="true"></div>
+      <h2>Running the six lenses</h2>
+      <p class="lead">Ingesting your brief · retrieving market context · scoring risk</p>
+      <ol class="load-steps" id="loadSteps">
+        <li>Ingestion</li>
+        <li>Reasoning</li>
+        <li>Cultural act</li>
+        <li>Observe</li>
+        <li>Localization</li>
+        <li>Egress</li>
+      </ol>
+      <div class="err" id="loadErr" role="alert"></div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="results" id="results"></section>
+  </main>
+
+<script>
+(() => {
+  const LENSES = [
+    { id: "cultural", label: "Cultural" },
+    { id: "historical", label: "Historical" },
+    { id: "religious", label: "Religious" },
+    { id: "political", label: "Political" },
+    { id: "social", label: "Social" },
+    { id: "localization", label: "Localization" },
+  ];
+
+  const SETS = [
+    {
+      title: "Business identity",
+      lead: "Who you are — so the lenses know what they are protecting.",
+      fields: [
+        { key: "businessName", label: "Business name", type: "text", required: true, placeholder: "Hanora Labs" },
+        { key: "industry", label: "Industry", type: "text", required: true, placeholder: "Consumer tech / beauty / fintech…" },
+        { key: "products", label: "Products / services", type: "textarea", required: true, placeholder: "What you sell, in plain language." },
+      ],
+    },
+    {
+      title: "Goals & audience",
+      lead: "What success looks like — and who must feel it.",
+      fields: [
+        { key: "goals", label: "Campaign goals", type: "textarea", required: true, placeholder: "Awareness, launches, leads, brand trust…" },
+        { key: "audience", label: "Target audience", type: "textarea", required: true, placeholder: "Age, culture, mindset, buying context…" },
+        { key: "tone", label: "Brand tone", type: "text", required: false, placeholder: "Calm, bold, witty, premium…" },
+      ],
+    },
+    {
+      title: "Markets & budget",
+      lead: "Where you launch — and what you can spend.",
+      fields: [
+        {
+          key: "countries",
+          label: "Target countries",
+          type: "chips",
+          required: true,
+          options: ["India", "UAE", "UK", "USA", "Singapore", "Japan", "Germany", "Brazil"],
+        },
+        { key: "budget", label: "Budget range", type: "text", required: true, placeholder: "$5k–$25k / month" },
+        { key: "campaign", label: "Offer / campaign idea", type: "textarea", required: true, placeholder: "Headline, promise, creative direction…" },
+      ],
+    },
+    {
+      title: "Competitors & brand",
+      lead: "The field you compete in — and the rules you keep.",
+      fields: [
+        { key: "competitors", label: "Competitors", type: "textarea", required: true, placeholder: "3–5 names + what they do well" },
+        { key: "brand", label: "Brand guidelines", type: "textarea", required: false, placeholder: "Colors, words to avoid, cultural do’s/don’ts…" },
+        { key: "constraints", label: "Hard constraints", type: "textarea", required: false, placeholder: "Legal, religious, regional, channel limits…" },
+      ],
+    },
+    {
+      title: "Platforms",
+      lead: "Where this campaign will live.",
+      fields: [
+        {
+          key: "platforms",
+          label: "Primary platforms",
+          type: "chips",
+          required: true,
+          options: ["Instagram", "Facebook", "LinkedIn", "YouTube", "Google Ads", "X"],
+        },
+      ],
+    },
+  ];
+
+  const answers = {};
+  let step = 0;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const intro = document.getElementById("intro");
+  const quiz = document.getElementById("quiz");
+  const loading = document.getElementById("loading");
+  const results = document.getElementById("results");
+  const loadSteps = [...document.querySelectorAll("#loadSteps li")];
+  const loadErr = document.getElementById("loadErr");
+
+  /* ── canvas signal graph ── */
+  const canvas = document.getElementById("graph");
+  const ctx = canvas.getContext("2d");
+  let mode = "idle"; // idle | spiral | flow | analyze
+  let t0 = performance.now();
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(innerWidth * dpr);
+    canvas.height = Math.floor(innerHeight * dpr);
+    canvas.style.width = innerWidth + "px";
+    canvas.style.height = innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  /* ── living ink background ── */
+  const fcv = document.getElementById("fluid");
+  const fx = fcv.getContext("2d");
+  const FW = 240;
+  let FH = 140;
+  function fresize() { FH = Math.max(80, Math.round(FW * innerHeight / Math.max(innerWidth, 1))); fcv.width = FW; fcv.height = FH; }
+  fresize();
+  addEventListener("resize", fresize);
+  const INKS = [
+    { c: "47,91,255",   r: 1.05, s1: .10, s2: .13, ph: 0.0 },
+    { c: "255,90,55",   r: 0.85, s1: .13, s2: .09, ph: 1.9 },
+    { c: "160,130,255", r: 0.95, s1: .08, s2: .12, ph: 3.7 },
+    { c: "30,60,220",   r: 0.75, s1: .12, s2: .10, ph: 5.2 },
+    { c: "255,140,90",  r: 0.6,  s1: .15, s2: .11, ph: 2.6 },
+    { c: "235,232,246", r: 1.1,  s1: .07, s2: .08, ph: 4.4 },
+  ];
+  function drawFluid(el) {
+    fx.fillStyle = "#c9c6e6";
+    fx.fillRect(0, 0, FW, FH);
+    INKS.forEach((k, i) => {
+      const x = FW * (0.5 + 0.44 * Math.sin(el * k.s1 + k.ph));
+      const y = FH * (0.5 + 0.44 * Math.cos(el * k.s2 + k.ph * 1.4));
+      const r = FH * 0.62 * k.r * (1 + 0.2 * Math.sin(el * 0.21 + i * 1.1));
+      const g = fx.createRadialGradient(x, y, 0, x, y, Math.max(r, 4));
+      g.addColorStop(0, `rgba(${k.c},0.88)`);
+      g.addColorStop(0.55, `rgba(${k.c},0.4)`);
+      g.addColorStop(1, `rgba(${k.c},0)`);
+      fx.fillStyle = g;
+      fx.fillRect(0, 0, FW, FH);
+    });
+  }
+
+  /* ── flowing signal lines with drifting labels ── */
+  const CURVES = [
+    { pts: [[-.1,.62],[.25,.28],[.55,.75],[1.08,.34]], dash: false, alpha: .5,  sp: .27, amp: .07 },
+    { pts: [[-.08,.34],[.3,.66],[.7,.24],[1.1,.6]],    dash: true,  alpha: .42, sp: .21, amp: .09 },
+    { pts: [[-.1,.82],[.35,.52],[.75,.86],[1.08,.56]], dash: false, alpha: .26, sp: .33, amp: .06 },
+  ];
+  const NODE_POS = [[0,.2],[1,.36],[0,.56],[2,.46],[1,.74],[2,.86]];
+
+  function bez(p, t) {
+    const u = 1 - t;
+    return [
+      u*u*u*p[0][0] + 3*u*u*t*p[1][0] + 3*u*t*t*p[2][0] + t*t*t*p[3][0],
+      u*u*u*p[0][1] + 3*u*u*t*p[1][1] + 3*u*t*t*p[2][1] + t*t*t*p[3][1],
+    ];
+  }
+  function curveCtrl(c, el) {
+    return c.pts.map((p, i) => [
+      p[0] * innerWidth,
+      (p[1] + Math.sin(el * c.sp + i * 1.7) * c.amp * (i === 0 || i === 3 ? .35 : 1)) * innerHeight,
+    ]);
+  }
+
+  function drawGraph(now) {
+    const w = innerWidth, h = innerHeight;
+    const elapsed = now / 1000;
+    const since = (now - t0) / 1000;
+    ctx.clearRect(0, 0, w, h);
+
+    if (!reduceMotion) drawFluid(elapsed * 0.5);
+    else if (!fcv.__once) { drawFluid(3); fcv.__once = true; }
+
+    const fade = Math.min(1, since / 1.4);
+    const lineA = mode === "idle" ? 0 : mode === "flow" ? .45 : 1;
+    const labelA = (mode === "spiral" || mode === "analyze") ? 1 : 0;
+    if (lineA === 0) { requestAnimationFrame(drawGraph); return; }
+
+    const ctrls = CURVES.map(c => curveCtrl(c, elapsed));
+
+    CURVES.forEach((c, ci) => {
+      const P = ctrls[ci];
+      ctx.beginPath();
+      for (let s = 0; s <= 72; s++) {
+        const [x, y] = bez(P, s / 72);
+        s === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash(c.dash ? [3, 8] : []);
+      ctx.strokeStyle = `rgba(255,255,255,${c.alpha * lineA * fade})`;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const ct = (elapsed * (mode === "analyze" ? .11 : .05) + ci * .33) % 1;
+      const [px, py] = bez(P, ct);
+      const trail = ctx.createRadialGradient(px, py, 0, px, py, 26);
+      trail.addColorStop(0, `rgba(255,255,255,${.5 * lineA * fade})`);
+      trail.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = trail;
+      ctx.beginPath(); ctx.arc(px, py, 26, 0, 7); ctx.fill();
+      ctx.fillStyle = `rgba(255,255,255,${.95 * lineA * fade})`;
+      ctx.beginPath(); ctx.arc(px, py, 2.4, 0, 7); ctx.fill();
+    });
+
+    if (labelA > 0) {
+      ctx.font = "11px 'Space Mono', monospace";
+      NODE_POS.forEach(([ci, base], i) => {
+        const t = base + Math.sin(elapsed * .3 + i * 1.6) * .035;
+        const [x, y] = bez(ctrls[ci], Math.min(.97, Math.max(.03, t)));
+        const edge = Math.min(1, Math.min(x, w - x) / 140);
+        const a = fade * labelA * Math.max(0, edge);
+        if (a <= 0.02) return;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255,255,255,${.95 * a})`;
+        ctx.arc(x, y, 3.6, 0, 7);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(216,255,69,${.5 * a * (0.7 + 0.3 * Math.sin(elapsed * 2 + i))})`;
+        ctx.lineWidth = 1;
+        ctx.arc(x, y, 9, 0, 7);
+        ctx.stroke();
+        ctx.fillStyle = `rgba(255,255,255,${.85 * a})`;
+        ctx.fillText(`${String(i + 1).padStart(2, "0")} ${LENSES[i].label}`, x + 14, y + 4);
+      });
+    }
+
+    requestAnimationFrame(drawGraph);
+  }
+  requestAnimationFrame(drawGraph);
+
+  function playSpiral() {
+    mode = "spiral";
+    t0 = performance.now();
+  }
+  playSpiral();
+
+  /* ── entrance: lift the slats, reveal the intro ── */
+  (function enter() {
+    const cover = document.getElementById("rvcover");
+    const tag = document.getElementById("founderTag");
+    const fresh = Date.now() - (+sessionStorage.getItem("hanora-unlock") || 0) < 20000;
+    sessionStorage.removeItem("hanora-unlock");
+    if (fresh) tag.classList.remove("hidden");
+    if (reduceMotion) { intro.classList.add("enter"); cover.remove(); return; }
+    const wait = fresh ? 200 : 120;
+    setTimeout(() => { cover.classList.add("lift"); intro.classList.add("enter"); }, wait);
+    setTimeout(() => cover.remove(), wait + 1500);
+  })();
+
+  document.getElementById("startBtn").addEventListener("click", () => {
+    intro.classList.add("hidden");
+    mode = "flow";
+    t0 = performance.now();
+    showStep(0);
+  });
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
+  function showStep(i) {
+    step = i;
+    const set = SETS[i];
+    quiz.classList.remove("hidden");
+    quiz.classList.remove("is-out");
+    quiz.classList.add("is-in");
+
+    const progress = SETS.map((_, idx) => {
+      const cls = idx < i ? "is-done" : idx === i ? "is-now" : "";
+      return `<span class="${cls}"><i></i></span>`;
+    }).join("");
+
+    const fieldsHtml = set.fields.map((f) => {
+      if (f.type === "chips") {
+        const opts = f.options.map((o) => {
+          const checked = [].concat(answers[f.key] || []).includes(o) ? "checked" : "";
+          return `<label><input type="checkbox" name="${esc(f.key)}" value="${esc(o)}" ${checked}> ${esc(o)}</label>`;
+        }).join("");
+        return `<div class="field-dark"><label>${esc(f.label)}</label><div class="chips">${opts}</div></div>`;
+      }
+      if (f.type === "textarea") {
+        return `<div class="field-dark"><label for="f-${esc(f.key)}">${esc(f.label)}</label>
+          <textarea id="f-${esc(f.key)}" name="${esc(f.key)}" placeholder="${esc(f.placeholder || "")}">${esc(answers[f.key] || "")}</textarea></div>`;
+      }
+      return `<div class="field-dark"><label for="f-${esc(f.key)}">${esc(f.label)}</label>
+        <input id="f-${esc(f.key)}" name="${esc(f.key)}" type="text" placeholder="${esc(f.placeholder || "")}" value="${esc(answers[f.key] || "")}"></div>`;
+    }).join("");
+
+    const twoCol = set.fields.length > 1 && set.fields.every((f) => f.type !== "textarea" && f.type !== "chips");
+
+    quiz.innerHTML = `
+      <div class="progress-row">${progress}</div>
+      <p class="kicker">Set ${i + 1} / ${SETS.length}</p>
+      <h2>${esc(set.title)}</h2>
+      <p class="lead">${esc(set.lead)}</p>
+      <div class="q-grid ${twoCol ? "two" : ""}">${fieldsHtml}</div>
+      <div class="actions">
+        <button class="ghost-btn" type="button" id="backBtn" ${i === 0 ? "disabled style=\"opacity:.35\"" : ""}>← Back</button>
+        <button class="next-btn" type="button" id="nextBtn"><span>${i === SETS.length - 1 ? "Run analysis" : "Next set"}</span><i>→</i></button>
+      </div>
+      <div class="err" id="stepErr" role="alert"></div>
+    `;
+
+    document.getElementById("backBtn")?.addEventListener("click", () => {
+      if (step === 0) return;
+      collectStep(false);
+      vanishThen(() => showStep(step - 1));
+    });
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      if (!collectStep(true)) return;
+      if (step >= SETS.length - 1) {
+        vanishThen(runAnalysis);
+      } else {
+        vanishThen(() => showStep(step + 1));
+      }
+    });
+  }
+
+  function collectStep(validate) {
+    const set = SETS[step];
+    const err = document.getElementById("stepErr");
+    for (const f of set.fields) {
+      if (f.type === "chips") {
+        const vals = [...quiz.querySelectorAll(`input[name="${f.key}"]:checked`)].map((el) => el.value);
+        answers[f.key] = vals;
+        if (validate && f.required && !vals.length) {
+          err.textContent = `Select at least one for ${f.label}.`;
+          err.classList.add("is-on");
+          return false;
+        }
+      } else {
+        const el = quiz.querySelector(`[name="${f.key}"]`);
+        const val = (el?.value || "").trim();
+        answers[f.key] = val;
+        if (validate && f.required && !val) {
+          err.textContent = `${f.label} is required.`;
+          err.classList.add("is-on");
+          el?.focus();
+          return false;
+        }
+      }
+    }
+    err?.classList.remove("is-on");
+    return true;
+  }
+
+  function vanishThen(fn) {
+    quiz.classList.add("is-out");
+    setTimeout(() => {
+      quiz.classList.remove("is-in");
+      fn();
+    }, reduceMotion ? 0 : 420);
+  }
+
+  async function runAnalysis() {
+    quiz.classList.add("hidden");
+    loading.classList.remove("hidden");
+    loading.classList.add("is-in");
+    mode = "analyze";
+    t0 = performance.now();
+    loadErr.classList.remove("is-on");
+
+    let idx = 0;
+    loadSteps.forEach((li) => li.classList.remove("is-on", "is-done"));
+    const tick = setInterval(() => {
+      if (idx > 0) loadSteps[idx - 1]?.classList.replace("is-on", "is-done");
+      if (idx < loadSteps.length) {
+        loadSteps[idx].classList.add("is-on");
+        idx += 1;
+      }
+    }, 700);
+
+    try {
+      const res = await fetch("/api/paid-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Analysis failed");
+      clearInterval(tick);
+      loadSteps.forEach((li) => { li.classList.remove("is-on"); li.classList.add("is-done"); });
+      setTimeout(() => renderResults(data.analysis), reduceMotion ? 0 : 500);
+    } catch (e) {
+      clearInterval(tick);
+      loadErr.textContent = e.message || "Something went wrong. Check API keys / network.";
+      loadErr.classList.add("is-on");
+    }
+  }
+
+  function renderResults(a) {
+    loading.classList.add("hidden");
+    results.classList.add("is-show");
+    mode = "flow";
+
+    const lensScores = a.lensScores || {};
+    const lensOrder = LENSES.map((l) => l.id);
+    const bars = lensOrder.map((id) => {
+      const v = Number(lensScores[id] ?? 0);
+      return `<div class="bar-row"><span>${esc(id)}</span><div class="bar-track"><i data-w="${v}"></i></div><b>${v}</b></div>`;
+    }).join("");
+
+    const issues = (a.detectedIssues || []).map((it) => `
+      <div class="issue"><strong>${esc(it.lens)} · ${esc(it.severity)}</strong><p>${esc(it.issue)}</p></div>
+    `).join("") || `<div class="issue"><p>No critical issues flagged.</p></div>`;
+
+    const timeline = (a.timelineRisks || []).map((t) => `
+      <div class="tl-item"><em>${esc(t.month || t.label)}</em><div><strong style="font-size:.85rem">${esc(t.label)}</strong><p style="color:rgba(255,255,255,.7);font-size:.85rem;margin-top:.2rem">${esc(t.note)}</p></div></div>
+    `).join("") || "<p style='opacity:.7'>No timeline risks returned.</p>";
+
+    const sentiments = (a.audienceReaction || []).map((s) => `
+      <div>
+        <div class="sent-row"><span style="font-size:.85rem">${esc(s.segment)}</span><b style="font-family:Space Mono,monospace;font-size:.7rem">${Number(s.sentiment)||0}</b></div>
+        <div class="sent-track"><i data-w="${Number(s.sentiment)||0}"></i></div>
+        <p style="font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.25rem">${esc(s.note || "")}</p>
+      </div>
+    `).join("");
+
+    const actions = (a.nextActions || []).map((x) => `<li style="margin:.35rem 0 0 1rem">${esc(x)}</li>`).join("");
+
+    results.innerHTML = `
+      <div class="results__hero">
+        <div class="glass">
+          <p class="kicker">Paid intelligence report</p>
+          <h2>${esc(a.headline || "Campaign intelligence ready")}</h2>
+          <p class="lead">${esc(a.summary || "")}</p>
+          <div class="score-row">
+            <div class="score"><em>Risk</em><strong>${esc(a.riskScore ?? "—")}</strong>
+              <div class="badge-lvl ${esc(a.riskLevel || "")}">${esc(a.riskLevel || "")}</div></div>
+            <div class="score"><em>Localization</em><strong>${esc(a.localizationScore ?? "—")}</strong></div>
+            <div class="score"><em>Readiness</em><strong>${esc(a.marketReadinessScore ?? "—")}</strong></div>
+          </div>
+          <p style="color:rgba(255,255,255,.78);line-height:1.55">${esc(a.audiencePrediction || "")}</p>
+        </div>
+        <div class="glass">
+          <p class="kicker">Lens fitness radar</p>
+          <div class="radar-wrap">${radarSVG(lensScores)}</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="glass">
+          <p class="kicker">Lens scores</p>
+          <div class="bars">${bars}</div>
+        </div>
+        <div class="glass">
+          <p class="kicker">Detected issues</p>
+          ${issues}
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="glass">
+          <p class="kicker">Calendar risk map</p>
+          <div class="timeline">${timeline}</div>
+        </div>
+        <div class="glass">
+          <p class="kicker">Audience reaction</p>
+          <div class="sentiment">${sentiments || "<p style='opacity:.7'>No segments returned.</p>"}</div>
+        </div>
+      </div>
+      <div class="glass" style="margin-top:1.25rem">
+        <p class="kicker">Recommendation</p>
+        <p class="lead" style="margin-bottom:.75rem">${esc(a.recommendation || "")}</p>
+        <p style="color:rgba(255,255,255,.75);line-height:1.55;margin-bottom:1rem">${esc(a.improvementCoach || "")}</p>
+        <p class="kicker">Safer rewrite</p>
+        <div class="rewrite">${esc(a.aiRewrite || "")}</div>
+        <p class="kicker" style="margin-top:1.25rem">Next actions</p>
+        <ul>${actions}</ul>
+        <div class="actions">
+          <a class="ghost-btn" href="index.html">← Back home</a>
+          <button class="next-btn" type="button" onclick="location.reload()"><span>Run another</span><i>↻</i></button>
+        </div>
+      </div>
+    `;
+
+    requestAnimationFrame(() => {
+      results.querySelectorAll("[data-w]").forEach((el) => {
+        el.style.width = `${Math.max(0, Math.min(100, Number(el.dataset.w) || 0))}%`;
+      });
+    });
+    results.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  }
+
+  function radarSVG(scores) {
+    const keys = LENSES.map((l) => l.id);
+    const cx = 140, cy = 140, R = 100;
+    const pts = keys.map((k, i) => {
+      const ang = -Math.PI / 2 + (i / keys.length) * Math.PI * 2;
+      const v = Math.max(0, Math.min(100, Number(scores[k]) || 0)) / 100;
+      return [cx + Math.cos(ang) * R * v, cy + Math.sin(ang) * R * v];
+    });
+    const poly = pts.map((p) => p.join(",")).join(" ");
+    const rings = [0.33, 0.66, 1].map((s) => {
+      const ring = keys.map((_, i) => {
+        const ang = -Math.PI / 2 + (i / keys.length) * Math.PI * 2;
+        return `${cx + Math.cos(ang) * R * s},${cy + Math.sin(ang) * R * s}`;
+      }).join(" ");
+      return `<polygon points="${ring}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/>`;
+    }).join("");
+    const labels = keys.map((k, i) => {
+      const ang = -Math.PI / 2 + (i / keys.length) * Math.PI * 2;
+      const x = cx + Math.cos(ang) * (R + 22);
+      const y = cy + Math.sin(ang) * (R + 22);
+      return `<text x="${x}" y="${y}" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="10" font-family="Space Mono, monospace">${k.slice(0, 4)}</text>`;
+    }).join("");
+    return `<svg viewBox="0 0 280 280" width="100%" height="280" aria-hidden="true">${rings}
+      <polygon points="${poly}" fill="rgba(216,255,69,.22)" stroke="#d8ff45" stroke-width="2"/>
+      ${labels}</svg>`;
+  }
+})();
+</script>
+</body>
+</html>

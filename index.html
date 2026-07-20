@@ -7,6 +7,7 @@
 <title>Hanora AI — Global Campaign Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="prefetch" href="review.html">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
@@ -267,6 +268,41 @@ img{max-width:100%;display:block}
 .button span{position:relative;z-index:2;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
 .button i{position:relative;z-index:2;display:grid;width:48px;height:48px;place-items:center;border-radius:50%;color:var(--ink);background:var(--acid);font-style:normal}
 
+/* ── UNLOCK TRANSITION (pricing → founding review) ── */
+.unlock{position:fixed;inset:0;z-index:30000;visibility:hidden;pointer-events:none}
+.unlock.on{visibility:visible;pointer-events:all}
+.unlock__slats{position:absolute;inset:0;display:flex}
+.unlock__slats i{flex:1;background:#0b1020;transform:translateY(101%)}
+.unlock.on .unlock__slats i{transform:none;transition:transform .78s var(--ease)}
+.unlock.on .unlock__slats i:nth-child(2){transition-delay:.055s}
+.unlock.on .unlock__slats i:nth-child(3){transition-delay:.11s}
+.unlock.on .unlock__slats i:nth-child(4){transition-delay:.165s}
+.unlock.on .unlock__slats i:nth-child(5){transition-delay:.22s}
+.unlock.on .unlock__slats i:nth-child(6){transition-delay:.275s}
+.unlock__blooms{position:absolute;inset:0;overflow:hidden}
+.unlock__blooms b{position:absolute;border-radius:50%;filter:blur(70px);opacity:0;transition:opacity 1.6s ease,transform 1.6s var(--ease);transform:scale(.7)}
+.unlock.bloom .unlock__blooms b{opacity:.5;transform:none}
+.ub--a{width:44rem;height:44rem;right:-10rem;top:-8rem;background:rgba(47,91,255,.75)}
+.ub--b{width:30rem;height:30rem;left:-6rem;bottom:-4rem;background:rgba(255,90,55,.6)}
+.ub--c{width:26rem;height:26rem;left:38%;top:55%;background:rgba(160,130,255,.55)}
+.unlock__core{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:white;opacity:0;transform:translateY(16px)}
+.unlock.core .unlock__core{opacity:1;transform:none;transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.unlock__ring{position:relative;width:106px;height:106px;margin:0 auto 26px}
+.unlock__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.unlock__arc{transition:stroke-dashoffset 1.15s var(--ease) .15s}
+.unlock.core .unlock__arc{stroke-dashoffset:0}
+.unlock__keyhole{position:absolute;inset:0;display:grid;place-items:center;color:var(--acid);font-size:30px;opacity:0;transform:scale(.4);transition:opacity .5s var(--ease) 1.1s,transform .5s var(--ease) 1.1s}
+.unlock.core .unlock__keyhole{opacity:1;transform:none}
+.unlock__title{font-family:"Manrope",sans-serif;font-size:clamp(44px,6.5vw,92px);font-weight:600;letter-spacing:-.06em;line-height:.95}
+.unlock__title em{font-family:Georgia,serif;font-weight:400;color:var(--acid)}
+.unlock__lines{margin-top:24px;display:grid;gap:9px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.unlock__lines span{color:rgba(255,255,255,.35);opacity:0;transform:translateY(9px);transition:opacity .5s var(--ease),transform .5s var(--ease),color .5s}
+.unlock__lines span.on{opacity:1;transform:none;color:rgba(255,255,255,.8)}
+.unlock__lines span.on::before{content:"✓  ";color:var(--acid)}
+.unlock.out .unlock__core{opacity:0;filter:blur(10px);transform:scale(1.05);transition:opacity .55s ease,filter .55s ease,transform .55s ease}
+@view-transition{navigation:auto}
+@media (prefers-reduced-motion:reduce){.unlock.on .unlock__slats i{transition:none}.unlock.core .unlock__core{transition:none}}
+
 /* ── FOOTER ── */
 .footer{padding:90px 0 30px;color:white;background:var(--ink)}
 .footer__top{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:50px;padding-bottom:90px}
@@ -506,7 +542,7 @@ img{max-width:100%;display:block}
 <section class="pricing" id="pricing">
   <div class="container pricing__wrap">
     <div class="pricing__intro"><span class="eyebrow">Founding launch offer</span><h2 class="section-title">The confidence<br>to launch.</h2><p>For a limited first cohort, get the complete campaign intelligence review at a founder-friendly price. One campaign. Multiple markets. No blind spots.</p></div>
-    <div class="pricing__card"><span class="pricing__badge">Save $2,500 / limited launch access</span><div class="pricing__name">Campaign intelligence review</div><div class="pricing__price"><span class="pricing__old">$3,500</span><span class="pricing__new">$1,000</span></div><p>One high-stakes campaign reviewed across Hanora's six connected intelligence lenses.</p><ul class="pricing__includes"><li>Copy, visual and strategy assessment</li><li>Up to three priority markets</li><li>Explainable findings and safer alternatives</li><li>Human-validated review summary</li></ul><a href="mailto:hello@hanora.ai?subject=Founding%20launch%20offer" class="button magnetic"><span>Claim launch access</span><i>↗</i></a></div>
+    <div class="pricing__card"><span class="pricing__badge">Test path · $100 entry</span><div class="pricing__name">Campaign intelligence review</div><div class="pricing__price"><span class="pricing__old">$1,000</span><span class="pricing__new">$100</span></div><p>One high-stakes campaign reviewed across Hanora's six connected intelligence lenses. Click to enter the interactive founding review (payment skipped for testing).</p><ul class="pricing__includes"><li>Copy, visual and strategy assessment</li><li>Up to three priority markets</li><li>Explainable findings and safer alternatives</li><li>Graph-based paid intelligence report</li></ul><a href="review.html" class="button magnetic"><span>Enter review · $100 test</span><i>↗</i></a></div>
   </div>
 </section>
 <!-- ROADMAP -->
@@ -954,6 +990,44 @@ if(window.matchMedia("(pointer: fine)").matches&&!reduceMotion){
     renderer2.render(scene2,camera2);
   }
   animFusion(0);
+})();
+</script>
+<div class="unlock" id="unlock" aria-hidden="true">
+  <div class="unlock__slats"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="unlock__blooms"><b class="ub--a"></b><b class="ub--b"></b><b class="ub--c"></b></div>
+  <div class="unlock__core">
+    <div>
+      <div class="unlock__ring">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/><circle class="unlock__arc" cx="60" cy="60" r="52" fill="none" stroke="#d8ff45" stroke-width="2.5" stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round"/></svg>
+        <span class="unlock__keyhole">✓</span>
+      </div>
+      <div class="unlock__title">Founding <em>access</em></div>
+      <div class="unlock__lines">
+        <span data-l>Payment confirmed</span>
+        <span data-l>Six lenses armed</span>
+        <span data-l>Review suite unlocked</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var u = document.getElementById("unlock");
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll('a[href="review.html"]').forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (u.classList.contains("on")) return;
+      sessionStorage.setItem("hanora-unlock", String(Date.now()));
+      if (reduced) { location.href = "review.html"; return; }
+      u.classList.add("on");
+      setTimeout(function () { u.classList.add("core"); }, 700);
+      var lines = u.querySelectorAll("[data-l]");
+      lines.forEach(function (l, i) { setTimeout(function () { l.classList.add("on"); }, 1250 + i * 430); });
+      setTimeout(function () { u.classList.add("bloom"); }, 2050);
+      setTimeout(function () { location.href = "review.html"; }, 2950);
+    });
+  });
 })();
 </script>
 </body>
