@@ -41,15 +41,14 @@ img{max-width:100%;display:block}
 .cursor{position:fixed;top:0;left:0;z-index:10000;width:14px;height:14px;border-radius:50%;pointer-events:none;background:var(--acid);border:1px solid rgba(18,23,17,.7);transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .4s var(--ease),height .4s var(--ease),background .4s var(--ease)}
 .cursor.is-active{width:54px;height:54px;background:white}
 .progress{position:fixed;top:0;left:0;z-index:9998;width:100%;height:3px;transform-origin:left center;transform:scaleX(0);background:linear-gradient(90deg,var(--orange),var(--acid),var(--blue))}
-/* ── VIDEO LOADER ── */
-.loader{position:fixed;inset:0;z-index:20000;overflow:hidden;background:#0a0e0b;display:grid;place-items:center;will-change:transform}
-.loader__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.78) contrast(1.05) brightness(.55)}
-.loader::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(10,14,11,.2),rgba(10,14,11,.7)),linear-gradient(180deg,rgba(10,14,11,.55),transparent 35%,rgba(10,14,11,.65))}
-.loader__core{position:relative;z-index:2;width:min(900px,calc(100% - 48px));text-align:center;color:white}
-.loader__mark{font-family:"Manrope",sans-serif;font-weight:600;letter-spacing:-.05em;font-size:clamp(46px,10vw,120px);line-height:.9}
-.loader__mark em{color:var(--acid);font-family:Georgia,serif;font-weight:400}
-.loader__cap{margin-top:22px;color:rgba(255,255,255,.6);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
-.loader__foot{position:absolute;right:42px;bottom:30px;left:42px;z-index:2;display:flex;justify-content:space-between;color:rgba(255,255,255,.42);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+/* ── MICRO LOADER — plain premium, first visit ── */
+.loader{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;background:#f3efe7;overflow:hidden}
+.loader.is-done{pointer-events:none}
+.loader__frame{position:relative;z-index:2;text-align:center;color:var(--ink)}
+.loader__mark{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;font-family:"Manrope",sans-serif;font-weight:600;letter-spacing:-.06em;font-size:clamp(40px,8vw,64px);line-height:1;overflow:visible}
+.loader__mark .ch{display:inline-block;will-change:transform,opacity}
+.loader__mark .ch.is-accent{color:var(--orange);font-family:Georgia,serif;font-weight:400;font-style:italic}
+.loader__mark .ch.is-space{width:.28em}
 .header{position:fixed;top:0;left:0;z-index:5000;width:100%;height:var(--header-height);color:white;pointer-events:none;mix-blend-mode:difference;transition:height .4s var(--ease)}
 .header.on-dark{height:calc(var(--header-height) - 20px)}
 .header__inner{width:min(1440px,calc(100% - 64px));height:100%;margin-inline:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
@@ -353,15 +352,10 @@ img{max-width:100%;display:block}
 <div class="cursor" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"></div>
 
-<div class="loader" aria-label="Loading Hanora AI">
-  <video class="loader__video" data-autoplay autoplay muted loop playsinline preload="auto" aria-hidden="true">
-    <source src="assets/loader-ink.mp4" type="video/mp4">
-  </video>
-  <div class="loader__core">
-    <div class="loader__mark">Hanora <em>AI</em></div>
-    <div class="loader__cap">Global campaign intelligence · 2026</div>
+<div class="loader" id="loader" aria-label="Loading Hanora AI" role="status">
+  <div class="loader__frame">
+    <div class="loader__mark" id="loaderMark" aria-hidden="true"></div>
   </div>
-  <div class="loader__foot"><span>Hanora AI</span><span>Establishing signal</span></div>
 </div>
 
 <header class="header">
@@ -582,21 +576,93 @@ if(!reduceMotion&&window.Lenis){
   gsap.ticker.lagSmoothing(0);
 }
 
-/* ── LOADER (full-screen video, then dissolve into hero) ── */
-const loader=document.querySelector(".loader");
-const loaderTL=gsap.timeline({defaults:{ease:"power3.out"},onComplete:()=>{document.body.classList.remove("is-loading");ScrollTrigger.refresh()}});
-if(reduceMotion){
-  loaderTL.set(loader,{display:"none"});
+/* ── LOADER — plain premium scatter in/out · first visit only ── */
+const LOADER_KEY="hanora_intro_seen";
+const loader=document.getElementById("loader");
+const loaderMark=document.getElementById("loaderMark");
+const hasSeenIntro=(()=>{try{return localStorage.getItem(LOADER_KEY)==="1"}catch{return false}})();
+
+function markIntroSeen(){
+  try{localStorage.setItem(LOADER_KEY,"1")}catch{}
+}
+
+/* Build "Hanora AI" as scatterable letters */
+(function buildLoaderMark(){
+  if(!loaderMark)return;
+  [..."Hanora AI"].forEach((c,i)=>{
+    const span=document.createElement("span");
+    span.className="ch";
+    if(c===" ")span.classList.add("is-space");
+    if(i>=7)span.classList.add("is-accent");
+    span.textContent=c===" "?"\u00A0":c;
+    loaderMark.appendChild(span);
+  });
+})();
+
+function finishLoader(){
+  document.body.classList.remove("is-loading");
+  if(loader){
+    loader.classList.add("is-done");
+    loader.style.display="none";
+    loader.setAttribute("aria-hidden","true");
+  }
+  ScrollTrigger.refresh();
+}
+
+function playHeroIn(){
+  if(reduceMotion)return;
+  gsap.from(".hero-title__line span",{yPercent:110,duration:1.05,stagger:.08,ease:"power4.out"});
+  gsap.from([".hero-copy__label",".hero-intro",".hero-bottom"],{opacity:0,y:20,duration:.75,stagger:.07,delay:.15,ease:"power3.out"});
+}
+
+/* Skip loader: return visit, reduced motion, or missing DOM */
+if(!loader||reduceMotion||hasSeenIntro){
+  finishLoader();
+  if(!hasSeenIntro&&!reduceMotion)playHeroIn();
+  else if(!hasSeenIntro)playHeroIn();
+  /* Return visitors: no hero intro animation either — page is ready */
+  if(!hasSeenIntro&&reduceMotion){/* nothing */}
+  if(hasSeenIntro){/* quiet entry */}
+  else playHeroIn();
 }else{
-  loaderTL
-  .from(".loader__mark",{yPercent:60,opacity:0,duration:1.1,ease:"power4.out"})
-  .from(".loader__cap",{opacity:0,y:14,duration:.6},"-=.6")
-  .to(".loader__foot",{opacity:1,duration:.5},"-=.4")
-  .to(".loader__core",{opacity:0,duration:.5,ease:"power2.in"},"+=.7")
-  .to(loader,{yPercent:-100,duration:1,ease:"power4.inOut"},"-=.1")
-  .set(loader,{display:"none"})
-  .from(".hero-title__line span",{yPercent:110,duration:1.1,stagger:.09,ease:"power4.out"},"-=.35")
-  .from([".hero-copy__label",".hero-intro",".hero-bottom"],{opacity:0,y:22,duration:.8,stagger:.08},"-=.75");
+  const chars=loaderMark?loaderMark.querySelectorAll(".ch:not(.is-space)"):[];
+  const scatterIn=()=>({
+    x:()=>gsap.utils.random(-120,120),
+    y:()=>gsap.utils.random(-70,70),
+    rotation:()=>gsap.utils.random(-22,22),
+    opacity:0,
+    scale:()=>gsap.utils.random(.85,1.15)
+  });
+
+  gsap.set(chars,scatterIn());
+
+  const loaderTL=gsap.timeline({
+    defaults:{ease:"power3.out"},
+    onComplete:()=>{markIntroSeen();finishLoader();playHeroIn()}
+  });
+
+  /* scatter appear → settle */
+  loaderTL.to(chars,{
+    x:0,y:0,rotation:0,opacity:1,scale:1,
+    duration:.7,
+    stagger:{each:.03,from:"random"},
+    ease:"power4.out"
+  },0)
+  /* brief hold */
+  .to({}, {duration:.35})
+  /* scatter disappear */
+  .to(chars,{
+    x:()=>gsap.utils.random(-160,160),
+    y:()=>gsap.utils.random(-100,100),
+    rotation:()=>gsap.utils.random(-30,30),
+    opacity:0,
+    scale:()=>gsap.utils.random(.75,1.2),
+    duration:.55,
+    stagger:{each:.02,from:"center"},
+    ease:"power3.in"
+  })
+  .to(loader,{opacity:0,duration:.3,ease:"power2.inOut"},"-=.15")
+  .set(loader,{display:"none"});
 }
 
 /* ── CURSOR ── */
