@@ -97,7 +97,7 @@ Rules:
     const raw = await chat([{ role: "user", content: prompt }], {
       baseURL: process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1",
       apiKey: process.env.LLM_API_KEY,
-      model: process.env.LLM_MODEL || "anthropic/claude-sonnet-4.5",
+      model: process.env.LLM_MODEL || "openrouter/free",
     });
     const analysis = parseJSON(raw);
     return res.status(200).json({ analysis, market: targetCountry });

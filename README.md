@@ -55,7 +55,7 @@ These areas are still partial or future work:
 LLM API KEYS VERCEL ENV LO ADD CHESUKOVACHU AKKA 
 LLM_BASE_URL=https://openrouter.ai/api/v1
 LLM_API_KEY=<your LLM key>
-LLM_MODEL=anthropic/claude-sonnet-4.5
+LLM_MODEL=openrouter/free
 TAVILY_API_KEY=<optional Tavily key>
 ```
 
