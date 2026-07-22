@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ede8df">
+<title>Hanora AI — Get Early Access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{display:grid;place-items:center;min-height:100dvh;padding:24px;color:var(--ink);font-family:"DM Sans",sans-serif;
+  background:radial-gradient(circle at 15% 5%,rgba(216,255,69,.16),transparent 28rem),radial-gradient(circle at 90% 55%,rgba(77,125,255,.08),transparent 34rem),var(--paper)}
+a{color:inherit}
+::selection{background:var(--ink);color:var(--acid)}
+.card{position:relative;width:min(420px,100%);padding:44px 36px;border-radius:var(--radius-lg);background:var(--paper-light);border:var(--hairline) solid var(--line);box-shadow:0 30px 60px rgba(18,23,17,.08)}
+.logo{display:inline-block;margin-bottom:28px;font-family:"Manrope",sans-serif;font-weight:700;font-size:20px;letter-spacing:-.05em;text-decoration:none}
+.logo span{font-size:9px;vertical-align:top;margin-left:4px;font-family:"Space Mono",monospace;letter-spacing:0;color:var(--ink-soft)}
+h1{margin:18px 0 10px;font-family:"Manrope",sans-serif;font-weight:600;font-size:clamp(28px,4vw,36px);letter-spacing:-.04em;line-height:1.05}
+h1 em{font-family:Georgia,serif;font-style:italic;font-weight:400;color:var(--orange)}
+.sub{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-bottom:28px}
+.msg{display:none;margin:0 0 20px;padding:12px 15px;border-radius:12px;font-family:"Space Mono",monospace;font-size:11px;line-height:1.55}
+.msg.is-err{display:block;background:rgba(232,56,47,.09);border:var(--hairline) solid rgba(232,56,47,.35);color:var(--red)}
+.btn{width:100%;justify-content:center}
+.back{display:inline-block;margin-top:24px;color:var(--ink-soft);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.back:hover{color:var(--ink)}
+.done{display:none;text-align:center}
+.done.is-on{display:block}
+.done .tick{width:52px;height:52px;margin:0 auto 18px;display:grid;place-items:center;border-radius:50%;background:var(--acid);color:var(--ink);font-size:22px;font-family:"Manrope",sans-serif}
+#form-wrap.is-hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <a class="logo" href="index.html">Hanora<span>AI</span></a>
+
+  <div id="form-wrap">
+    <span class="eyebrow">Early access</span>
+    <h1>Be first in <em>line.</em></h1>
+    <p class="sub">Hanora is opening to a founding cohort soon. Leave your name and email and we'll reach out personally when your spot opens.</p>
+    <div class="msg" id="msg" role="alert"></div>
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="ps-name">Name</label>
+        <input id="ps-name" type="text" autocomplete="name" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="ps-email">Email</label>
+        <input id="ps-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+      </div>
+      <button class="btn" id="ps-submit" type="submit"><span>Request early access</span></button>
+    </form>
+  </div>
+
+  <div class="done" id="done">
+    <div class="tick">✓</div>
+    <h1>Thank you<em>.</em></h1>
+    <p class="sub">We'll reach out to you soon — keep an eye on your inbox (and spam folder, just in case).</p>
+  </div>
+
+  <a class="back" href="index.html">← Back to site</a>
+</div>
+
+<script>
+const form = document.getElementById("form");
+const msg = document.getElementById("msg");
+const submit = document.getElementById("ps-submit");
+
+function fail(text) {
+  msg.className = "msg is-err";
+  msg.textContent = text;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("ps-name").value.trim();
+  const email = document.getElementById("ps-email").value.trim();
+  if (!name) return fail("Enter your name.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Enter a valid email.");
+
+  submit.disabled = true;
+  submit.querySelector("span").textContent = "Sending…";
+  try {
+    const res = await fetch("/api/presignup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, source: location.href }),
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById("form-wrap").classList.add("is-hidden");
+    document.getElementById("done").classList.add("is-on");
+  } catch {
+    fail("Something went wrong. Try again.");
+    submit.disabled = false;
+    submit.querySelector("span").textContent = "Request early access";
+  }
+});
+</script>
+</body>
+</html>

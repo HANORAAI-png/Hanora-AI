@@ -7,7 +7,7 @@
 <title>Hanora AI — Global Campaign Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="prefetch" href="review.html">
+<link rel="prefetch" href="presignup.html">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
@@ -60,7 +60,7 @@ img{max-width:100%;display:block}
 .nav a{position:relative;text-decoration:none;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase}
 .nav a::after{content:"";position:absolute;right:0;bottom:-7px;left:0;height:1px;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease);background:currentColor}
 .nav a:hover::after{transform:scaleX(1);transform-origin:left}
-.header__action{justify-self:end;border:0;color:inherit;background:transparent;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}
+.header__action{justify-self:end;border:0;color:inherit;background:transparent;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;text-decoration:none;cursor:pointer}
 .header__action span{display:inline-grid;width:25px;height:25px;margin-left:8px;place-items:center;border:1px solid currentColor;border-radius:50%}
 
 /* ── HERO ── */
@@ -223,7 +223,7 @@ img{max-width:100%;display:block}
 
 /* ── PRICING ── */
 .pricing{position:relative;overflow:hidden;padding:180px 0;background:var(--acid)}.pricing::after{content:"";position:absolute;right:-18vw;bottom:-28vw;width:65vw;aspect-ratio:1;border:1px solid rgba(18,23,17,.22);border-radius:50%;box-shadow:0 0 0 50px rgba(18,23,17,.05),0 0 0 100px rgba(18,23,17,.04)}
-.pricing__wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr minmax(360px,.78fr);gap:70px;align-items:end}.pricing__intro p{max-width:520px;margin-top:30px;color:rgba(18,23,17,.7);font-size:17px;line-height:1.6}.pricing__card{padding:34px;border:1px solid rgba(18,23,17,.45);border-radius:24px;background:var(--ink);color:white;box-shadow:14px 14px 0 rgba(18,23,17,.14)}.pricing__badge{display:inline-block;padding:8px 11px;border-radius:100px;color:var(--ink);background:var(--acid);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}.pricing__name{margin-top:32px;color:rgba(255,255,255,.55);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase}.pricing__price{display:flex;align-items:baseline;gap:15px;margin:12px 0 18px;font-family:"Manrope",sans-serif;letter-spacing:-.08em}.pricing__old{color:rgba(255,255,255,.36);font-size:clamp(32px,4vw,52px);text-decoration:line-through;text-decoration-thickness:3px}.pricing__new{color:var(--acid);font-size:clamp(64px,8vw,105px);font-weight:500}.pricing__card p{padding-bottom:25px;border-bottom:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.63);font-size:14px;line-height:1.55}.pricing__includes{display:grid;gap:12px;margin:25px 0;list-style:none}.pricing__includes li::before{content:"✓";margin-right:10px;color:var(--acid)}.pricing__card .button{width:100%;justify-content:center;background:var(--acid);color:var(--ink)}
+.pricing__wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr minmax(360px,.78fr);gap:70px;align-items:end}.pricing__intro p{max-width:520px;margin-top:30px;color:rgba(18,23,17,.7);font-size:17px;line-height:1.6}.pricing__card{padding:34px;border:1px solid rgba(18,23,17,.45);border-radius:24px;background:var(--ink);color:white;box-shadow:14px 14px 0 rgba(18,23,17,.14)}.pricing__badge{display:inline-block;padding:8px 11px;border-radius:100px;color:var(--ink);background:var(--acid);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}.pricing__name{margin-top:32px;color:rgba(255,255,255,.55);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase}.pricing__price{display:flex;align-items:baseline;gap:15px;margin:12px 0 18px;font-family:"Manrope",sans-serif;letter-spacing:-.08em}.pricing__new{color:var(--acid);font-size:clamp(64px,8vw,105px);font-weight:500}.pricing__soon{filter:blur(9px);user-select:none}.pricing__soon-label{margin:-10px 0 18px;color:rgba(255,255,255,.55);font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}.pricing__card p{padding-bottom:25px;border-bottom:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.63);font-size:14px;line-height:1.55}.pricing__includes{display:grid;gap:12px;margin:25px 0;list-style:none}.pricing__includes li::before{content:"✓";margin-right:10px;color:var(--acid)}.pricing__card .button{width:100%;justify-content:center;background:var(--acid);color:var(--ink)}
 /* ── ROADMAP ── */
 .roadmap{position:relative;overflow:hidden;padding:180px 0;color:white;background:#131814}
 .roadmap__glow{position:absolute;top:15%;left:50%;width:70vw;height:70vw;border-radius:50%;opacity:.2;pointer-events:none;background:radial-gradient(circle,var(--blue),transparent 65%);transform:translateX(-50%)}
@@ -398,9 +398,9 @@ img{max-width:100%;display:block}
   <div class="header__inner">
     <a href="#hero" class="logo magnetic">Hanora<span>AI</span></a>
     <nav class="nav" aria-label="Primary navigation">
-      <a href="#modules">Intelligence</a><a href="#process">Process</a><a href="#markets">Markets</a><a href="#pricing">Pricing</a><a href="login.html">Login</a>
+      <a href="#modules">Intelligence</a><a href="#process">Process</a><a href="#markets">Markets</a><a href="#pricing">Pricing</a><a href="presignup.html">Login</a>
     </nav>
-    <button class="header__action magnetic" type="button" data-scroll-target="#contact">Start analysis <span>↗</span></button>
+    <a class="header__action magnetic" href="presignup.html">Start analysis <span>↗</span></a>
   </div>
 </header>
 
@@ -542,7 +542,7 @@ img{max-width:100%;display:block}
 <section class="pricing" id="pricing">
   <div class="container pricing__wrap">
     <div class="pricing__intro"><span class="eyebrow">Founding launch offer</span><h2 class="section-title">The confidence<br>to launch.</h2><p>For a limited first cohort, get the complete campaign intelligence review at a founder-friendly price. One campaign. Multiple markets. No blind spots.</p></div>
-    <div class="pricing__card"><span class="pricing__badge">Test path · $100 entry</span><div class="pricing__name">Campaign intelligence review</div><div class="pricing__price"><span class="pricing__old">$1,000</span><span class="pricing__new">$100</span></div><p>One high-stakes campaign reviewed across Hanora's six connected intelligence lenses. Click to enter the interactive founding review (payment skipped for testing).</p><ul class="pricing__includes"><li>Copy, visual and strategy assessment</li><li>Up to three priority markets</li><li>Explainable findings and safer alternatives</li><li>Graph-based paid intelligence report</li></ul><a href="review.html" class="button magnetic"><span>Enter review · $100 test</span><i>↗</i></a></div>
+    <div class="pricing__card"><span class="pricing__badge">Founding cohort · Waitlist open</span><div class="pricing__name">Campaign intelligence review</div><div class="pricing__price"><span class="pricing__new pricing__soon" aria-hidden="true">$•••</span></div><p class="pricing__soon-label">Price will be revealed soon</p><p>One high-stakes campaign reviewed across Hanora's six connected intelligence lenses, for the founding cohort.</p><ul class="pricing__includes"><li>Copy, visual and strategy assessment</li><li>Up to three priority markets</li><li>Explainable findings and safer alternatives</li><li>Graph-based paid intelligence report</li></ul><a href="presignup.html" class="button magnetic"><span>Join the waitlist</span><i>↗</i></a></div>
   </div>
 </section>
 <!-- ROADMAP -->
@@ -576,7 +576,7 @@ img{max-width:100%;display:block}
 <!-- FINAL CTA -->
 <section class="final" id="contact">
   <div class="final__rings" aria-hidden="true"><span class="final__orbit-dot"></span></div>
-  <div class="final__content"><div class="final__label">Your next market is waiting</div><h2>Launch without guessing.</h2><p>Analyze your next campaign with cultural intelligence built for the complexity of global markets.</p><a href="login.html" class="button magnetic"><span>Start your analysis</span><i>↗</i></a></div>
+  <div class="final__content"><div class="final__label">Your next market is waiting</div><h2>Launch without guessing.</h2><p>Analyze your next campaign with cultural intelligence built for the complexity of global markets.</p><a href="presignup.html" class="button magnetic"><span>Start your analysis</span><i>↗</i></a></div>
 </section>
 
 </main>
