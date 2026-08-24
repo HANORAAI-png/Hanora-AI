@@ -224,6 +224,7 @@ a{color:inherit}button,a{-webkit-tap-highlight-color:transparent}button{font:inh
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { isAdminCredentials, saveAdminSession } from "./lib/demo-users.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDbCysobv_WCcyxa87KCIuXvGy_ZCJ4JSE",
@@ -237,6 +238,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const REDIRECT = "app.html";
+const ADMIN_REDIRECT = "admin.html";
 
 /* ── panel switching ── */
 function q(s){ return document.querySelector(s); }
@@ -285,20 +287,28 @@ const ERRORS = {
 const errText = e => ERRORS[e.code] || "Something went wrong. Try again.";
 
 /* ── access granted → redirect ── */
-function grant(name){
+function grant(name, href){
   const g = q("#granted");
   if (name) q("#grantedSub").textContent = "Welcome, " + name.split(" ")[0] + " — opening your command center";
   g.classList.add("is-on");
-  setTimeout(() => location.href = REDIRECT, 1400);
+  setTimeout(() => location.href = href || REDIRECT, 1400);
 }
 
 /* ── login ── */
 q("#form-login").addEventListener("submit", async e => {
   e.preventDefault();
   const btn = q("#btn-login"), msg = q("#msg-login");
+  const email = q("#li-email").value.trim();
+  const password = q("#li-pass").value;
   busy(btn, true, "Sign in");
   try {
-    const cred = await signInWithEmailAndPassword(auth, q("#li-email").value.trim(), q("#li-pass").value);
+    if (isAdminCredentials(email, password)) {
+      saveAdminSession();
+      btn.classList.add("is-ok");
+      grant("Admin", ADMIN_REDIRECT);
+      return;
+    }
+    const cred = await signInWithEmailAndPassword(auth, email, password);
     btn.classList.add("is-ok");
     grant(cred.user.displayName || "");
   } catch (err) { fail(msg, errText(err)); }

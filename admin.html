@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ede8df">
+<title>Hanora AI — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+body{
+  min-height:100vh;color:var(--ink);font-family:"DM Sans",sans-serif;
+  background:
+    radial-gradient(circle at 12% 0%,rgba(216,255,69,.14),transparent 26rem),
+    radial-gradient(circle at 95% 60%,rgba(77,125,255,.06),transparent 30rem),
+    var(--paper);
+}
+.gate,.dash{display:none}
+.gate.is-on,.dash.is-on{display:block}
+.gate{min-height:100vh;display:none;place-items:center;padding:32px}
+.gate.is-on{display:grid}
+.gate__card{width:min(420px,100%);padding:44px 36px;border-radius:var(--radius-lg);background:var(--paper-light);border:var(--hairline) solid var(--line);box-shadow:0 30px 60px rgba(18,23,17,.08)}
+.gate h1{margin:18px 0 10px;font-family:"Manrope",sans-serif;font-weight:600;font-size:32px;letter-spacing:-.04em}
+.gate .sub{color:var(--ink-soft);font-size:14px;line-height:1.6;margin-bottom:28px}
+.msg{display:none;margin:0 0 18px;padding:12px 15px;border-radius:12px;font-family:"Space Mono",monospace;font-size:11px}
+.msg.is-err{display:block;background:var(--risk-bg);border:var(--hairline) solid rgba(232,56,47,.35);color:var(--red)}
+.btn{width:100%;justify-content:center;margin-top:8px}
+
+header{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 32px;border-bottom:1px solid var(--line);
+  background:rgba(247,243,235,.82);backdrop-filter:blur(10px);
+}
+.logo{font-family:"Manrope",sans-serif;font-weight:700;font-size:18px;letter-spacing:-.04em;text-decoration:none;color:inherit}
+.logo span{font-size:9px;vertical-align:top;margin-left:4px;font-family:"Space Mono",monospace;color:var(--ink-soft)}
+.who{display:flex;align-items:center;gap:14px;font-family:"Space Mono",monospace;font-size:11px;color:var(--ink-soft)}
+.who button{border:0;background:transparent;cursor:pointer;color:inherit;font:inherit;text-transform:uppercase;letter-spacing:.08em}
+.who button:hover{color:var(--ink)}
+
+main{max-width:1240px;margin:0 auto;padding:40px 24px 80px}
+.kicker{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
+h1{font-family:"Manrope",sans-serif;font-size:clamp(32px,4vw,48px);font-weight:600;letter-spacing:-.05em;line-height:1}
+.lead{margin:12px 0 32px;color:var(--ink-soft);max-width:54ch}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat{padding:22px 22px 18px;background:var(--paper-light);border:var(--hairline) solid var(--line);border-radius:var(--radius)}
+.stat b{display:block;font-family:"Manrope",sans-serif;font-size:36px;letter-spacing:-.05em;line-height:1}
+.stat span{display:block;margin-top:8px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.stat.is-live b{color:var(--safe)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.search{flex:1;min-width:220px;padding:12px 16px;border:var(--hairline) solid var(--line);border-radius:100px;background:var(--paper-light);font:inherit;outline:none}
+.search:focus{border-color:var(--ink);background:#fff}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:var(--hairline) solid var(--line);background:transparent;border-radius:100px;padding:8px 14px;cursor:pointer;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.chip.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.table-wrap{overflow:auto;border:var(--hairline) solid var(--line);border-radius:var(--radius);background:var(--paper-light)}
+table{width:100%;border-collapse:collapse;min-width:880px}
+th,td{padding:14px 16px;text-align:left;border-bottom:var(--hairline) solid var(--line);vertical-align:middle}
+th{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);background:rgba(18,23,17,.03);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+.name{font-weight:600}
+.email,.muted{color:var(--ink-soft);font-size:13px}
+.count{margin-top:14px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+
+@media (max-width:900px){
+  .stats{grid-template-columns:1fr 1fr}
+  header{padding:16px 18px}
+}
+</style>
+</head>
+<body>
+
+<section class="gate" id="gate">
+  <div class="gate__card">
+    <span class="eyebrow">Admin console</span>
+    <h1>Sign in<em class="accent">.</em></h1>
+    <p class="sub">Use the admin credentials to view the live user list.</p>
+    <div class="msg" id="gate-msg" role="alert"></div>
+    <form id="gate-form" novalidate>
+      <div class="field">
+        <label for="ad-email">Email</label>
+        <input id="ad-email" type="email" autocomplete="username" placeholder="ivan.p@example.net" required>
+      </div>
+      <div class="field">
+        <label for="ad-pass">Password</label>
+        <input id="ad-pass" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn" type="submit">Enter admin</button>
+    </form>
+  </div>
+</section>
+
+<div class="dash" id="dash">
+  <header>
+    <a class="logo" href="index.html">Hanora<span>AI</span></a>
+    <div class="who">
+      <span id="who-label">Admin</span>
+      <button type="button" id="logout">Sign out</button>
+    </div>
+  </header>
+  <main>
+    <p class="kicker">Operations / users</p>
+    <h1>People on Hanora</h1>
+    <p class="lead">Registered accounts, waitlist invites and last-seen activity. This is the live admin list for the founding cohort.</p>
+
+    <div class="stats">
+      <div class="stat"><b id="stat-total">96</b><span>Total people</span></div>
+      <div class="stat is-live"><b id="stat-active">94</b><span>Active users</span></div>
+      <div class="stat"><b id="stat-invited">2</b><span>Invited</span></div>
+      <div class="stat"><b id="stat-week">11</b><span>New this week</span></div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="Search name, email, company…">
+      <div class="filters">
+        <button class="chip is-on" type="button" data-filter="all">All</button>
+        <button class="chip" type="button" data-filter="Active">Active</button>
+        <button class="chip" type="button" data-filter="Invited">Invited</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Plan</th>
+            <th>Joined</th>
+            <th>Last active</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="count" id="count"></p>
+  </main>
+</div>
+
+<script type="module">
+import {
+  ADMIN_NAME, STATS, USERS, clearAdminSession, getAdminSession,
+  isAdminCredentials, saveAdminSession,
+} from "./lib/demo-users.js";
+
+const gate = document.getElementById("gate");
+const dash = document.getElementById("dash");
+const rows = document.getElementById("rows");
+const search = document.getElementById("search");
+const count = document.getElementById("count");
+let filter = "all";
+
+function showDash() {
+  gate.classList.remove("is-on");
+  dash.classList.add("is-on");
+  document.getElementById("who-label").textContent = ADMIN_NAME;
+  document.getElementById("stat-total").textContent = STATS.total;
+  document.getElementById("stat-active").textContent = STATS.active;
+  document.getElementById("stat-invited").textContent = STATS.invited;
+  document.getElementById("stat-week").textContent = STATS.newThisWeek;
+  render();
+}
+
+function showGate() {
+  dash.classList.remove("is-on");
+  gate.classList.add("is-on");
+}
+
+function badge(status) {
+  return status === "Active"
+    ? `<span class="badge success">Active</span>`
+    : `<span class="badge skipped">Invited</span>`;
+}
+
+function render() {
+  const q = search.value.trim().toLowerCase();
+  const list = USERS.filter((u) => {
+    const okFilter = filter === "all" || u.status === filter;
+    const hay = `${u.name} ${u.email} ${u.company} ${u.role} ${u.city}`.toLowerCase();
+    return okFilter && (!q || hay.includes(q));
+  });
+  rows.innerHTML = list.map((u) => `
+    <tr>
+      <td>
+        <div class="name">${u.name}</div>
+        <div class="muted">${u.role} · ${u.city}</div>
+      </td>
+      <td class="email">${u.email}</td>
+      <td>${u.company}</td>
+      <td>${badge(u.status)}</td>
+      <td>${u.plan}</td>
+      <td class="muted">${u.joined}</td>
+      <td class="muted">${u.lastActive}</td>
+    </tr>
+  `).join("");
+  count.textContent = `Showing ${list.length} of ${USERS.length} people`;
+}
+
+document.getElementById("gate-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("ad-email").value;
+  const password = document.getElementById("ad-pass").value;
+  const msg = document.getElementById("gate-msg");
+  if (!isAdminCredentials(email, password)) {
+    msg.className = "msg is-err";
+    msg.textContent = "Wrong email or password.";
+    return;
+  }
+  saveAdminSession();
+  showDash();
+});
+
+document.getElementById("logout").addEventListener("click", () => {
+  clearAdminSession();
+  location.href = "login.html";
+});
+
+search.addEventListener("input", render);
+document.querySelectorAll("[data-filter]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    filter = btn.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("is-on", b === btn));
+    render();
+  });
+});
+
+if (getAdminSession()) showDash();
+else showGate();
+</script>
+</body>
+</html>
