@@ -1,0 +1,12 @@
+{
+  "bank_id": "hanora-ai",
+  "name": "Hanora AI Cultural Intelligence Memory",
+  "description": "Long-term memory for Hanora AI campaign analysis, cultural intelligence findings, localization decisions, brand preferences and feedback.",
+  "retain_mission": "Remember durable facts and decisions that can improve future Hanora AI campaign analysis. Focus on cultural risks, market-specific patterns, localization decisions, approved recommendations, brand constraints, and validated user feedback. Avoid storing secrets, API keys, passwords, or unnecessary personal data.",
+  "suggested_tags": [
+    "app:hanora-ai",
+    "domain:cultural-intelligence",
+    "domain:marketing-os"
+  ],
+  "status": "prepared-not-activated"
+}

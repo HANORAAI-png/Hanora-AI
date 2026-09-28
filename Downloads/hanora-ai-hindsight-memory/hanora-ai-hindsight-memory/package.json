@@ -1,0 +1,9 @@
+{
+  "name": "hanora-ai-hindsight-memory",
+  "private": true,
+  "type": "module",
+  "description": "Prepared Hindsight memory layer for Hanora AI. Disabled by default.",
+  "dependencies": {
+    "@vectorize-io/hindsight-client": "^0.4.0"
+  }
+}
