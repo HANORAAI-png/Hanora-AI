@@ -1,6 +1,6 @@
 # Hanora AI
 
-Hi akka 👋
+
 
 Hanora AI is a marketing intelligence platform. User business details enter chesaka, app step-by-step ga strategy, content, SEO, cultural validation, launch and analytics flow ni handle chestundi.
 
